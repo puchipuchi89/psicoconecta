@@ -13,6 +13,9 @@
 <h3>Tus respuestas:</h3>
 <ul id="respuestas"></ul>
 
+<h3>Resultado psicológico:</h3>
+<p id="resultado">Analizando...</p>
+
 <button onclick="logout()">Cerrar sesión</button>
 
 <!-- Firebase -->
@@ -21,8 +24,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-console.log("SCRIPT CARGADO");
-
 const firebaseConfig = {
   apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
   authDomain: "psicoconecta-a507d.firebaseapp.com",
@@ -34,19 +35,92 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let unsubscribe = null; // para limpiar listener si cambia usuario
+let unsubscribe = null;
+
+// 🧠 ANALIZADOR MULTICORRIENTE
+function analizarCorriente(respuestas) {
+
+    let score = {
+        psicoanalitica: 0,
+        tcc: 0,
+        humanista: 0,
+        sistemica: 0,
+        gestalt: 0,
+        conductual: 0,
+        familiar: 0,
+        integrativa: 0
+    };
+
+    const text = respuestas.join(" ").toLowerCase();
+
+    // Psicoanalítica
+    if (text.includes("infancia") || text.includes("inconsciente") || text.includes("pasado") || text.includes("emociones reprimidas")) {
+        score.psicoanalitica++;
+    }
+
+    // Cognitivo-conductual
+    if (text.includes("pensamiento") || text.includes("conducta") || text.includes("hábitos") || text.includes("ansiedad") || text.includes("cambiar")) {
+        score.tcc++;
+    }
+
+    // Humanista
+    if (text.includes("crecimiento") || text.includes("autoestima") || text.includes("propósito") || text.includes("identidad")) {
+        score.humanista++;
+    }
+
+    // Sistémica
+    if (text.includes("entorno") || text.includes("contexto") || text.includes("relación") || text.includes("comunicación")) {
+        score.sistemica++;
+    }
+
+    // Gestalt
+    if (text.includes("presente") || text.includes("aquí") || text.includes("ahora") || text.includes("experiencia")) {
+        score.gestalt++;
+    }
+
+    // Conductual
+    if (text.includes("refuerzo") || text.includes("conducta") || text.includes("estímulo") || text.includes("recompensa")) {
+        score.conductual++;
+    }
+
+    // Familiar
+    if (text.includes("familia") || text.includes("padres") || text.includes("hogar") || text.includes("crianza")) {
+        score.familiar++;
+    }
+
+    // Integrativa (se activa si no hay dominante claro)
+    let maxKey = Object.keys(score).reduce((a, b) => score[a] > score[b] ? a : b);
+
+    const total = Object.values(score).reduce((a,b)=>a+b,0);
+
+    if (total === 0 || score[maxKey] === 0) {
+        return "Tu enfoque favorecido es: 🔄 Integrativa (combinas varios enfoques psicológicos)";
+    }
+
+    const resultados = {
+        psicoanalitica: "Tu enfoque favorecido es: 🧠 Psicoanalítica (explora el inconsciente y el pasado)",
+        tcc: "Tu enfoque favorecido es: 🧩 Cognitivo-Conductual (trabaja pensamientos y conductas)",
+        humanista: "Tu enfoque favorecido es: 🌱 Humanista (crecimiento personal y autenticidad)",
+        sistemica: "Tu enfoque favorecido es: 👥 Sistémica (relaciones y contexto)",
+        gestalt: "Tu enfoque favorecido es: 🎯 Gestalt (enfoque en el aquí y ahora)",
+        conductual: "Tu enfoque favorecido es: ⚙️ Conductual (aprendizaje por estímulos y refuerzo)",
+        familiar: "Tu enfoque favorecido es: 🏠 Familiar (dinámicas familiares y crianza)",
+        integrativa: "Tu enfoque favorecido es: 🔄 Integrativa (combinación de varios enfoques)"
+    };
+
+    return resultados[maxKey];
+}
 
 auth.onAuthStateChanged(user => {
-    console.log("USER:", user);
 
     const status = document.getElementById("status");
     const lista = document.getElementById("respuestas");
+    const resultado = document.getElementById("resultado");
 
     if (user) {
         status.innerText = "Cargando datos...";
         document.getElementById("user").innerText = user.email;
 
-        // 🔥 IMPORTANTE: listener en tiempo real
         if (unsubscribe) unsubscribe();
 
         unsubscribe = db.collection("usuarios").doc(user.uid)
@@ -56,26 +130,32 @@ auth.onAuthStateChanged(user => {
 
                 if (doc.exists) {
                     const data = doc.data();
+                    const respuestas = data.respuestas || [];
 
-                    if (data.respuestas && data.respuestas.length > 0) {
-                        data.respuestas.forEach((r, i) => {
+                    if (respuestas.length > 0) {
+
+                        respuestas.forEach((r, i) => {
                             const li = document.createElement("li");
                             li.innerText = "Pregunta " + (i + 1) + ": " + r;
                             lista.appendChild(li);
                         });
+
+                        resultado.innerText = analizarCorriente(respuestas);
+
                     } else {
                         lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+                        resultado.innerText = "Sin datos suficientes";
                     }
 
                 } else {
                     lista.innerHTML = "<li>No hay datos del usuario</li>";
+                    resultado.innerText = "";
                 }
 
                 status.innerText = "";
             });
 
     } else {
-        status.innerText = "No hay sesión";
         window.location.href = "index.html";
     }
 });
