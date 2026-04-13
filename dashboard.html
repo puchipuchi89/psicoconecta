@@ -35,27 +35,34 @@ auth.onAuthStateChanged(async user => {
         document.getElementById("user").innerText = user.email;
 
         try {
-            const doc = await db.collection("usuarios").doc(user.uid).get();
+const query = await db.collection("usuarios")
+    .where("email", "==", user.email)
+    .get();
 
-            const lista = document.getElementById("respuestas");
-            lista.innerHTML = "";
+try {
+    const lista = document.getElementById("respuestas");
+    lista.innerHTML = "";
 
-            if (doc.exists) {
-                const data = doc.data();
+    const query = await db.collection("usuarios")
+        .where("email", "==", user.email)
+        .get();
 
-                data.respuestas.forEach((r, i) => {
-                    const li = document.createElement("li");
-                    li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                    lista.appendChild(li);
-                });
+    if (!query.empty) {
+        const data = query.docs[0].data();
 
-            } else {
-                lista.innerHTML = "<li>No hay respuestas guardadas</li>";
-            }
+        data.respuestas.forEach((r, i) => {
+            const li = document.createElement("li");
+            li.innerText = "Pregunta " + (i + 1) + ": " + r;
+            lista.appendChild(li);
+        });
 
-        } catch (error) {
-            console.log(error);
-        }
+    } else {
+        lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+    }
+
+} catch (error) {
+    console.log(error);
+}
 
     } else {
         window.location.href = "index.html";
