@@ -34,11 +34,6 @@ auth.onAuthStateChanged(async user => {
     if (user) {
         document.getElementById("user").innerText = user.email;
 
-        try {
-const query = await db.collection("usuarios")
-    .where("email", "==", user.email)
-    .get();
-
 try {
     const lista = document.getElementById("respuestas");
     lista.innerHTML = "";
@@ -50,11 +45,15 @@ try {
     if (!query.empty) {
         const data = query.docs[0].data();
 
-        data.respuestas.forEach((r, i) => {
-            const li = document.createElement("li");
-            li.innerText = "Pregunta " + (i + 1) + ": " + r;
-            lista.appendChild(li);
-        });
+        if (data.respuestas && data.respuestas.length > 0) {
+            data.respuestas.forEach((r, i) => {
+                const li = document.createElement("li");
+                li.innerText = "Pregunta " + (i + 1) + ": " + r;
+                lista.appendChild(li);
+            });
+        } else {
+            lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+        }
 
     } else {
         lista.innerHTML = "<li>No hay respuestas guardadas</li>";
@@ -62,6 +61,7 @@ try {
 
 } catch (error) {
     console.log(error);
+}
 }
 
     } else {
