@@ -4,28 +4,92 @@
     <title>Dashboard</title>
 
     <style>
-        body { font-family: Arial; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
+        }
 
-        .tabs {
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        #status, #user {
+            text-align: center;
+            color: #444;
+        }
+
+        /* BOTONES */
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-top: 20px;
         }
 
         .tab-buttons button {
-            padding: 10px;
-            margin-right: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
+            background: #6c63ff;
+            color: white;
+            transition: 0.2s;
         }
 
+        .tab-buttons button:hover {
+            transform: scale(1.05);
+            background: #5848e5;
+        }
+
+        /* CARDS */
         .tab {
             display: none;
-            margin-top: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
         .active {
             display: block;
         }
+
+        /* FEED */
+        .feed-box {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 18px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        button.logout {
+            display: block;
+            margin: 30px auto;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: #ff4d6d;
+            color: white;
+            cursor: pointer;
+        }
+
+        button.logout:hover {
+            background: #e63e5c;
+        }
+
     </style>
 </head>
 
@@ -36,16 +100,23 @@
 <p id="status">Cargando sesión...</p>
 <p id="user"></p>
 
-<div class="tabs">
+<div class="container">
 
     <!-- BOTONES -->
     <div class="tab-buttons">
+        <button onclick="openTab('feedTab')">🏠 Feed</button>
         <button onclick="openTab('resultadoTab')">🧠 Resultado</button>
         <button onclick="openTab('respuestasTab')">📋 Mis respuestas</button>
     </div>
 
+    <!-- FEED -->
+    <div id="feedTab" class="tab active">
+        <h3>Feed</h3>
+        <div class="feed-box">📭 Feed vacío</div>
+    </div>
+
     <!-- RESULTADO -->
-    <div id="resultadoTab" class="tab active">
+    <div id="resultadoTab" class="tab">
         <h3>Resultado psicológico</h3>
         <p id="resultado">Analizando...</p>
     </div>
@@ -58,8 +129,7 @@
 
 </div>
 
-<br>
-<button onclick="logout()">Cerrar sesión</button>
+<button class="logout" onclick="logout()">Cerrar sesión</button>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -110,23 +180,23 @@ function analizarCorriente(respuestas) {
         score.tcc += 2;
     }
 
-    if (text.includes("crecimiento personal") || text.includes("autoestima") || text.includes("escucha") || text.includes("emocional")) {
+    if (text.includes("crecimiento personal") || text.includes("autoestima") || text.includes("emocional")) {
         score.humanista += 2;
     }
 
-    if (text.includes("pareja") || text.includes("familia") || text.includes("grupo") || text.includes("relación")) {
+    if (text.includes("familia") || text.includes("pareja") || text.includes("relación")) {
         score.sistemica += 2;
     }
 
-    if (text.includes("presente") || text.includes("aquí") || text.includes("ahora") || text.includes("experiencia")) {
+    if (text.includes("presente") || text.includes("aquí") || text.includes("ahora")) {
         score.gestalt += 2;
     }
 
-    if (text.includes("hábitos") || text.includes("conducta") || text.includes("refuerzo")) {
+    if (text.includes("conducta") || text.includes("hábitos")) {
         score.conductual += 2;
     }
 
-    if (text.includes("familia") || text.includes("crianza") || text.includes("padres") || text.includes("hogar")) {
+    if (text.includes("crianza") || text.includes("hogar")) {
         score.familiar += 2;
     }
 
@@ -134,17 +204,17 @@ function analizarCorriente(respuestas) {
     let top = Object.keys(score).filter(k => score[k] === max);
 
     if (top.length > 1 || max === 0) {
-        return "🔄 Integrativa: combinación de varios enfoques terapéuticos";
+        return "🔄 Integrativa: combinación de varios enfoques";
     }
 
     const resultados = {
-        psicoanalitica: "🧠 Psicoanalítica: análisis profundo de tu historia y emociones",
-        tcc: "🧩 Cognitivo-Conductual: enfoque en soluciones y cambio de hábitos",
-        humanista: "🌱 Humanista: crecimiento personal y desarrollo emocional",
-        sistemica: "👥 Sistémica: enfoque en relaciones y entorno",
-        gestalt: "🎯 Gestalt: enfoque en el presente y experiencia",
-        conductual: "⚙️ Conductual: cambio de conducta y hábitos",
-        familiar: "🏠 Familiar: dinámica familiar y crianza",
+        psicoanalitica: "🧠 Psicoanalítica",
+        tcc: "🧩 Cognitivo-Conductual",
+        humanista: "🌱 Humanista",
+        sistemica: "👥 Sistémica",
+        gestalt: "🎯 Gestalt",
+        conductual: "⚙️ Conductual",
+        familiar: "🏠 Familiar",
         integrativa: "🔄 Integrativa"
     };
 
@@ -174,20 +244,13 @@ auth.onAuthStateChanged(user => {
                     const data = doc.data();
                     const respuestas = data.respuestas || [];
 
-                    if (respuestas.length > 0) {
+                    respuestas.forEach((r, i) => {
+                        const li = document.createElement("li");
+                        li.innerText = "Pregunta " + (i + 1) + ": " + r;
+                        lista.appendChild(li);
+                    });
 
-                        respuestas.forEach((r, i) => {
-                            const li = document.createElement("li");
-                            li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                            lista.appendChild(li);
-                        });
-
-                        resultado.innerText = analizarCorriente(respuestas);
-
-                    } else {
-                        lista.innerHTML = "<li>No hay respuestas</li>";
-                        resultado.innerText = "Sin datos suficientes";
-                    }
+                    resultado.innerText = analizarCorriente(respuestas);
 
                 } else {
                     lista.innerHTML = "<li>No hay datos</li>";
