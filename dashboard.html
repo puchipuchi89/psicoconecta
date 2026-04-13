@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+<h1>Bienvenido 🎉</h1>
+<p id="user"></p>
+
+<button onclick="logout()">Cerrar sesión</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
+  authDomain: "psicoconecta-a507d.firebaseapp.com",
+  projectId: "psicoconecta-a507d",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById("user").innerText = user.email;
+    } else {
+        window.location.href = "index.html";
+    }
+});
+
+function logout() {
+    auth.signOut().then(() => {
+        window.location.href = "index.html";
+    });
+}
+</script>
+
+</body>
+</html>
