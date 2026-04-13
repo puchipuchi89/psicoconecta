@@ -94,7 +94,6 @@
     <!-- BOTONES -->
     <div class="tab-buttons">
         <button onclick="openTab('feedTab')">🏠 Feed</button>
-        <button onclick="openTab('resultadoTab')">🧠 Resultado</button>
         <button onclick="openTab('respuestasTab')">📋 Respuestas</button>
         <button onclick="openTab('perfilTab')">👤 Ver perfil</button>
     </div>
@@ -103,12 +102,6 @@
     <div id="feedTab" class="tab active">
         <h3>Feed</h3>
         <div class="feed-box">📭 Feed vacío</div>
-    </div>
-
-    <!-- RESULTADO -->
-    <div id="resultadoTab" class="tab">
-        <h3>Resultado psicológico</h3>
-        <p id="resultado">Analizando...</p>
     </div>
 
     <!-- RESPUESTAS -->
@@ -195,7 +188,7 @@ auth.onAuthStateChanged(user => {
                 const data = doc.data();
                 const respuestas = data.respuestas || [];
 
-                // ---------------- RESPUESTAS ----------------
+                // RESPUESTAS
                 const lista = document.getElementById("respuestas");
                 lista.innerHTML = "";
 
@@ -205,12 +198,11 @@ auth.onAuthStateChanged(user => {
                     lista.appendChild(li);
                 });
 
-                // ---------------- RESULTADO ----------------
+                // PERFIL + RESULTADO
                 const resultado = analizarCorriente(respuestas);
-                document.getElementById("resultado").innerText = resultado;
+
                 document.getElementById("p_resultado").innerText = resultado;
 
-                // ---------------- PERFIL ----------------
                 document.getElementById("p_nombre").innerText = data.nombre || "";
                 document.getElementById("p_email").innerText = data.email || user.email;
                 document.getElementById("p_ubicacion").innerText = data.ubicacion || "";
