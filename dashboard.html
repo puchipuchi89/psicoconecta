@@ -37,7 +37,7 @@ const db = firebase.firestore();
 
 let unsubscribe = null;
 
-// 🧠 ANALIZADOR MULTICORRIENTE
+// 🧠 ANALIZADOR PSICOLÓGICO (TU VERSION REAL)
 function analizarCorriente(respuestas) {
 
     let score = {
@@ -53,64 +53,64 @@ function analizarCorriente(respuestas) {
 
     const text = respuestas.join(" ").toLowerCase();
 
-    // Psicoanalítica
-    if (text.includes("infancia") || text.includes("inconsciente") || text.includes("pasado") || text.includes("emociones reprimidas")) {
-        score.psicoanalitica++;
+    // 🧠 Psicoanalítica
+    if (text.includes("historia") || text.includes("pasado") || text.includes("análisis") || text.includes("duelo")) {
+        score.psicoanalitica += 2;
     }
 
-    // Cognitivo-conductual
-    if (text.includes("pensamiento") || text.includes("conducta") || text.includes("hábitos") || text.includes("ansiedad") || text.includes("cambiar")) {
-        score.tcc++;
+    // 🧩 TCC
+    if (text.includes("soluciones") || text.includes("herramientas") || text.includes("ejercicios prácticos") || text.includes("ansiedad")) {
+        score.tcc += 2;
     }
 
-    // Humanista
-    if (text.includes("crecimiento") || text.includes("autoestima") || text.includes("propósito") || text.includes("identidad")) {
-        score.humanista++;
+    // 🌱 Humanista
+    if (text.includes("crecimiento personal") || text.includes("autoestima") || text.includes("escucha") || text.includes("emocional")) {
+        score.humanista += 2;
     }
 
-    // Sistémica
-    if (text.includes("entorno") || text.includes("contexto") || text.includes("relación") || text.includes("comunicación")) {
-        score.sistemica++;
+    // 👥 Sistémica
+    if (text.includes("pareja") || text.includes("familia") || text.includes("grupo") || text.includes("relación")) {
+        score.sistemica += 2;
     }
 
-    // Gestalt
+    // 🎯 Gestalt
     if (text.includes("presente") || text.includes("aquí") || text.includes("ahora") || text.includes("experiencia")) {
-        score.gestalt++;
+        score.gestalt += 2;
     }
 
-    // Conductual
-    if (text.includes("refuerzo") || text.includes("conducta") || text.includes("estímulo") || text.includes("recompensa")) {
-        score.conductual++;
+    // ⚙️ Conductual
+    if (text.includes("hábitos") || text.includes("conducta") || text.includes("refuerzo")) {
+        score.conductual += 2;
     }
 
-    // Familiar
-    if (text.includes("familia") || text.includes("padres") || text.includes("hogar") || text.includes("crianza")) {
-        score.familiar++;
+    // 🏠 Familiar
+    if (text.includes("familia") || text.includes("crianza") || text.includes("padres") || text.includes("hogar")) {
+        score.familiar += 2;
     }
 
-    // Integrativa (se activa si no hay dominante claro)
-    let maxKey = Object.keys(score).reduce((a, b) => score[a] > score[b] ? a : b);
+    // 🔄 Integrativa (balance o empate)
+    let max = Math.max(...Object.values(score));
+    let top = Object.keys(score).filter(k => score[k] === max);
 
-    const total = Object.values(score).reduce((a,b)=>a+b,0);
-
-    if (total === 0 || score[maxKey] === 0) {
-        return "Tu enfoque favorecido es: 🔄 Integrativa (combinas varios enfoques psicológicos)";
+    if (top.length > 1 || max === 0) {
+        return "🔄 Integrativa: tu perfil combina varios enfoques terapéuticos";
     }
 
     const resultados = {
-        psicoanalitica: "Tu enfoque favorecido es: 🧠 Psicoanalítica (explora el inconsciente y el pasado)",
-        tcc: "Tu enfoque favorecido es: 🧩 Cognitivo-Conductual (trabaja pensamientos y conductas)",
-        humanista: "Tu enfoque favorecido es: 🌱 Humanista (crecimiento personal y autenticidad)",
-        sistemica: "Tu enfoque favorecido es: 👥 Sistémica (relaciones y contexto)",
-        gestalt: "Tu enfoque favorecido es: 🎯 Gestalt (enfoque en el aquí y ahora)",
-        conductual: "Tu enfoque favorecido es: ⚙️ Conductual (aprendizaje por estímulos y refuerzo)",
-        familiar: "Tu enfoque favorecido es: 🏠 Familiar (dinámicas familiares y crianza)",
-        integrativa: "Tu enfoque favorecido es: 🔄 Integrativa (combinación de varios enfoques)"
+        psicoanalitica: "🧠 Psicoanalítica: análisis profundo de tu historia y emociones",
+        tcc: "🧩 Cognitivo-Conductual: enfoque en soluciones y cambio de hábitos",
+        humanista: "🌱 Humanista: crecimiento personal y desarrollo emocional",
+        sistemica: "👥 Sistémica: enfoque en relaciones y entorno",
+        gestalt: "🎯 Gestalt: enfoque en el presente y experiencia",
+        conductual: "⚙️ Conductual: cambio de conducta y hábitos",
+        familiar: "🏠 Familiar: dinámica familiar y crianza",
+        integrativa: "🔄 Integrativa: combinación de varios enfoques"
     };
 
-    return resultados[maxKey];
+    return resultados[top[0]];
 }
 
+// 🔐 AUTH + FIRESTORE REALTIME
 auth.onAuthStateChanged(user => {
 
     const status = document.getElementById("status");
@@ -160,6 +160,7 @@ auth.onAuthStateChanged(user => {
     }
 });
 
+// 🚪 LOGOUT
 function logout() {
     auth.signOut().then(() => {
         window.location.href = "index.html";
