@@ -42,22 +42,27 @@ try {
         .where("email", "==", user.email)
         .get();
 
-    if (!query.empty) {
-        const data = query.docs[0].data();
+  if (!query.empty) {
 
-        if (data.respuestas && data.respuestas.length > 0) {
-            data.respuestas.forEach((r, i) => {
-                const li = document.createElement("li");
-                li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                lista.appendChild(li);
-            });
-        } else {
-            lista.innerHTML = "<li>No hay respuestas guardadas</li>";
-        }
+    let data = null;
 
+    query.forEach(doc => {
+        data = doc.data();
+    });
+
+    if (data.respuestas && data.respuestas.length > 0) {
+        data.respuestas.forEach((r, i) => {
+            const li = document.createElement("li");
+            li.innerText = "Pregunta " + (i + 1) + ": " + r;
+            lista.appendChild(li);
+        });
     } else {
         lista.innerHTML = "<li>No hay respuestas guardadas</li>";
     }
+
+} else {
+    lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+}
 
 } catch (error) {
     console.log(error);
