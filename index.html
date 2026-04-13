@@ -195,10 +195,14 @@ async function finish() {
     }
 
     try {
-        await db.collection("usuarios").doc(user.uid).set({
-            email: user.email,
-            respuestas: respuestas,
-            fecha: new Date()
+await db.collection("usuarios").doc(user.uid).set({
+    email: user.email,
+    nombre: document.getElementById("nombre").value,
+    ubicacion: document.getElementById("ubicacion").value,
+    motivo: document.getElementById("motivo").value,
+    respuestas: respuestas,
+    fecha: new Date()
+});
         });
 
         document.getElementById("step2").style.display = "none";
@@ -216,6 +220,20 @@ async function finish() {
 function goHome() {
     window.location.href = "dashboard.html";
 }
+
+// 👇👇👇 PEGA AQUÍ 👇👇👇
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log("Usuario activo:", user.email);
+    }
+});
+
+auth.onAuthStateChanged(user => {
+    if (user && window.location.pathname.includes("index")) {
+        window.location.href = "dashboard.html";
+    }
+});
 </script>
 </body>
 </html>
