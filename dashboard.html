@@ -1,4 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+<h1>Bienvenido 🎉</h1>
+<p id="user"></p>
+
+<h3>Tus respuestas:</h3>
+<ul id="respuestas"></ul>
+
+<button onclick="logout()">Cerrar sesión</button>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
 <script>
+console.log("SCRIPT CARGADO");
+
 const firebaseConfig = {
   apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
   authDomain: "psicoconecta-a507d.firebaseapp.com",
@@ -9,8 +31,9 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// USUARIO + RESPUESTAS
 auth.onAuthStateChanged(async user => {
+    console.log("USER:", user);
+
     if (user) {
         document.getElementById("user").innerText = user.email;
 
@@ -46,10 +69,12 @@ auth.onAuthStateChanged(async user => {
     }
 });
 
-// LOGOUT
 function logout() {
     auth.signOut().then(() => {
         window.location.href = "index.html";
     });
 }
 </script>
+
+</body>
+</html>
