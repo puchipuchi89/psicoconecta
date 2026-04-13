@@ -149,19 +149,28 @@
 
 <script>
 const preguntas = [
-    {
-        q: "¿Cómo prefieres tomar terapia?",
-        opts: ["Presencial", "En línea", "Me da igual"]
-    },
-    {
-        q: "¿Para quién es la terapia?",
-        opts: ["Niño", "Adulto", "Grupo"]
-    },
-    {
-        q: "Motivo principal",
-        opts: ["Ansiedad", "Evaluación", "Conducta"]
-    }
+   { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
+    { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
+    { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
+    { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
+    { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
+    { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Con ejercicios y tareas prácticas", "Mezcla de conversación y herramientas", "Conversación profunda y reflexión"] },
+    { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Estrategias para cambiar pensamientos, hábitos y enfocado en soluciones", "Aumentar la conciencia, la aceptación y el crecimiento personal", "Explorar mi historia personal y patrones relacionales"] },
+    { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo y orientado a soluciones", "Colaborativo", "Más reflexivo"] },
+    { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas prácticas", "Escucha y comprensión", "Análisis profundo de mis patrones"] },
+    { q: "¿Te gustaría que tu terapia incluya elementos de religión o espiritualidad?", opts: ["No, prefiero una terapia sin enfoque religioso", "Podría estar bien", "Sí, me gustaría que incluya mi religión"] },
+    { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Algunos meses", "Proceso largo"] },
+    { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Cada semana", "Cada 15 días", "Flexible"] },
+    { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
+    { q: "¿Te gustaría que tu terapeuta tome en cuenta alguno de estos aspectos?", opts: ["Terapia clínica", "Contexto cultural/social", "Creencias espirituales"] },
+    { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche o fines de semana"] },
+    { q: "¿Cuál es tu presupuesto por sesión?", opts: ["Menos de $500 MXN", "$500–$1,000 MXN", "Más de $700 MXN"] },
+    { q: "¿Te importa la experiencia del terapeuta?", opts: ["No mucho", "Algo", "Mucho"] },
+    { q: "¿Qué nivel de formación prefieres en tu terapeuta?", opts: ["Licenciatura", "Maestría", "Doctorado o especialización avanzada"] },
+    { q: "¿Te interesan otras actividades además de terapia individual?", opts: ["No", "Tal vez talleres o grupos", "Sí, ambas"] },
+    { q: "¿Qué tan pronto necesitas empezar terapia?", opts: ["Puedo esperar", "Pronto", "Lo antes posible"] }
 ];
+    
 
 let current = 0;
 let respuestas = [];
