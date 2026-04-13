@@ -1,135 +1,181 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>PsicoConecta</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <style>
         body {
             margin: 0;
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
         }
 
-        h1 {
+        /* HEADER */
+        #header {
             text-align: center;
+            padding: 40px 20px;
         }
 
-        .container {
-            max-width: 900px;
+        #header h1 {
+            font-size: 40px;
+            margin: 0;
+            color: #333;
+        }
+
+        #header p {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* CONTENEDOR */
+        .box {
+            max-width: 500px;
             margin: auto;
-            padding: 20px;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        #status, #user {
-            text-align: center;
-            color: #444;
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
         }
 
         /* BOTONES */
-        .tab-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
-        .tab-buttons button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
+        .primary {
             background: #6c63ff;
             color: white;
         }
 
-        .tab {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            background: white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        .secondary {
+            background: transparent;
+            border: 2px solid #6c63ff;
+            color: #6c63ff;
         }
 
-        .active {
-            display: block;
+        button:hover {
+            opacity: 0.9;
         }
 
-        .feed-box {
+        /* QUIZ */
+        #step2 {
             text-align: center;
-            padding: 40px;
-            color: #777;
         }
 
-        .profile-box p {
-            margin: 10px 0;
+        #question {
+            font-size: 20px;
+            margin-bottom: 20px;
         }
 
-        ul {
-            padding-left: 20px;
+        #options button {
+            margin: 5px 0;
+            background: white;
+            border: 2px solid #6c63ff;
+            color: #6c63ff;
         }
 
-        button.logout {
-            display: block;
-            margin: 30px auto;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            background: #ff4d6d;
+        #options button:hover {
+            background: #6c63ff;
             color: white;
         }
+
+        /* FINAL */
+        #final {
+            text-align: center;
+        }
+
     </style>
 </head>
 
-<body>
+<body class="is-preload">
 
-<h1>Bienvenido 🎉</h1>
+<!-- HEADER -->
+<div id="header">
+    <h1>PsicoConecta 🧠</h1>
+    <p>Encuentra tu mejor enfoque terapéutico</p>
+</div>
 
-<p id="status">Cargando sesión...</p>
-<p id="user"></p>
+<div class="box">
 
-<div class="container">
+<!-- ================= LOGIN / REGISTRO ================= -->
+<div id="step1">
 
-    <!-- BOTONES -->
-    <div class="tab-buttons">
-        <button onclick="openTab('feedTab')">🏠 Feed</button>
-        <button onclick="openTab('respuestasTab')">📋 Respuestas</button>
-        <button onclick="openTab('perfilTab')">👤 Ver perfil</button>
-    </div>
+    <h2 style="text-align:center;">Crear perfil</h2>
 
-    <!-- FEED -->
-    <div id="feedTab" class="tab active">
-        <h3>Feed</h3>
-        <div class="feed-box">📭 Feed vacío</div>
-    </div>
+    <input type="text" id="nombre" placeholder="Primer nombre" />
+    <input type="text" id="apellido" placeholder="Apellido" />
 
-    <!-- RESPUESTAS -->
-    <div id="respuestasTab" class="tab">
-        <h3>Tus respuestas</h3>
-        <ul id="respuestas"></ul>
-    </div>
+    <input type="email" id="correo" placeholder="Correo electrónico" />
+    <input type="password" id="password" placeholder="Contraseña" />
 
-    <!-- PERFIL -->
-    <div id="perfilTab" class="tab profile-box">
-        <h3>👤 Perfil del usuario</h3>
+    <select id="ubicacion">
+        <option value="">Elige tu estado</option>
+        <option>Puebla</option>
+        <option>Ciudad de México</option>
+        <option>Jalisco</option>
+        <option>Nuevo León</option>
+        <option>Veracruz</option>
+    </select>
 
-        <p><strong>Nombre:</strong> <span id="p_nombre"></span></p>
-        <p><strong>Correo:</strong> <span id="p_email"></span></p>
-        <p><strong>Ubicación:</strong> <span id="p_ubicacion"></span></p>
-        <p><strong>Motivo:</strong> <span id="p_motivo"></span></p>
+    <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
-        <hr>
-
-        <p><strong>Resultado psicológico:</strong></p>
-        <p id="p_resultado">Analizando...</p>
-    </div>
+    <button class="primary" onclick="startQuiz()">Continuar</button>
+    <button class="secondary" onclick="showLogin()">Ya tengo cuenta</button>
 
 </div>
 
-<button class="logout" onclick="logout()">Cerrar sesión</button>
+<!-- LOGIN -->
+<div id="loginBox" style="display:none;">
 
-<!-- Firebase -->
+    <h2 style="text-align:center;">Iniciar sesión</h2>
+
+    <input type="email" id="loginCorreo" placeholder="Correo electrónico" />
+    <input type="password" id="loginPassword" placeholder="Contraseña" />
+
+    <button class="primary" onclick="loginUser()">Entrar</button>
+    <button class="secondary" onclick="showRegister()">Crear cuenta</button>
+
+</div>
+
+<!-- QUIZ -->
+<div id="step2" style="display:none;">
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <button class="secondary" onclick="prevQuestion()">Atrás</button>
+</div>
+
+<!-- FINAL -->
+<div id="final" style="display:none;">
+    <h2>✅ Todo listo</h2>
+    <p>Tu perfil fue creado correctamente</p>
+    <button class="primary" onclick="goHome()">Ir al dashboard</button>
+</div>
+
+</div>
+
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -142,86 +188,78 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
+</script>
 
-let unsubscribe = null;
+<script>
 
-// ---------------- TABS ----------------
-function openTab(tabId) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
+// ================= UI NAV =================
+function showLogin() {
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("loginBox").style.display = "block";
 }
 
-// ---------------- ANALISIS ----------------
-function analizarCorriente(respuestas) {
-
-    const text = respuestas.join(" ").toLowerCase();
-
-    if (text.includes("familia") || text.includes("relación")) return "👥 Sistémica";
-    if (text.includes("soluciones") || text.includes("herramientas")) return "🧩 TCC";
-    if (text.includes("crecimiento") || text.includes("autoestima")) return "🌱 Humanista";
-    if (text.includes("historia") || text.includes("pasado")) return "🧠 Psicoanalítica";
-    if (text.includes("presente") || text.includes("ahora")) return "🎯 Gestalt";
-
-    return "🔄 Integrativa";
+function showRegister() {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("step1").style.display = "block";
 }
 
-// ---------------- AUTH ----------------
-auth.onAuthStateChanged(user => {
+// ================= LOGIN =================
+async function loginUser() {
+    const email = document.getElementById("loginCorreo").value;
+    const pass = document.getElementById("loginPassword").value;
 
-    const status = document.getElementById("status");
-
-    if (user) {
-
-        status.innerText = "Cargando datos...";
-        document.getElementById("user").innerText = user.email;
-
-        if (unsubscribe) unsubscribe();
-
-        unsubscribe = db.collection("usuarios").doc(user.uid)
-            .onSnapshot(doc => {
-
-                if (!doc.exists) return;
-
-                const data = doc.data();
-                const respuestas = data.respuestas || [];
-
-                // RESPUESTAS
-                const lista = document.getElementById("respuestas");
-                lista.innerHTML = "";
-
-                respuestas.forEach((r, i) => {
-                    const li = document.createElement("li");
-                    li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                    lista.appendChild(li);
-                });
-
-                // PERFIL + RESULTADO
-                const resultado = analizarCorriente(respuestas);
-
-                document.getElementById("p_resultado").innerText = resultado;
-
-                document.getElementById("p_nombre").innerText = data.nombre || "";
-                document.getElementById("p_email").innerText = data.email || user.email;
-                document.getElementById("p_ubicacion").innerText = data.ubicacion || "";
-                document.getElementById("p_motivo").innerText = data.motivo || "";
-
-                status.innerText = "";
-            });
-
-    } else {
-        window.location.href = "index.html";
+    try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        window.location.href = "dashboard.html";
+    } catch (e) {
+        alert(e.message);
     }
-});
-
-// ---------------- LOGOUT ----------------
-function logout() {
-    auth.signOut().then(() => {
-        window.location.href = "index.html";
-    });
 }
+
+// ================= REGISTRO =================
+async function startQuiz() {
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const correo = document.getElementById("correo").value;
+    const password = document.getElementById("password").value;
+
+    if (!nombre || !apellido || !correo || !password) {
+        alert("Completa todos los campos");
+        return;
+    }
+
+    try {
+        await auth.createUserWithEmailAndPassword(correo, password);
+
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2").style.display = "block";
+
+        showQuestion();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// ================= QUIZ (placeholder) =================
+let current = 0;
+let respuestas = [];
+
+function showQuestion() {
+    document.getElementById("question").innerText = "Pregunta " + (current + 1);
+}
+
+function prevQuestion() {
+    if (current > 0) current--;
+}
+
+// ================= FINAL =================
+function goHome() {
+    window.location.href = "dashboard.html";
+}
+
 </script>
 
 </body>
