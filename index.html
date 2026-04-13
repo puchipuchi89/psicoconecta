@@ -23,7 +23,45 @@
     <input type="text" id="nombre" placeholder="Nombre completo" />
     <input type="email" id="correo" placeholder="Correo electrónico" />
     <input type="password" id="password" placeholder="Contraseña" />
-    <input type="text" id="ubicacion" placeholder="Ciudad" />
+
+    <!-- 🔥 CAMBIO AQUÍ: SELECT DE ESTADOS -->
+    <select id="ubicacion">
+        <option value="">Elige tu estado</option>
+
+        <option>Aguascalientes</option>
+        <option>Baja California</option>
+        <option>Baja California Sur</option>
+        <option>Campeche</option>
+        <option>Chiapas</option>
+        <option>Chihuahua</option>
+        <option>Ciudad de México</option>
+        <option>Coahuila</option>
+        <option>Colima</option>
+        <option>Durango</option>
+        <option>Estado de México</option>
+        <option>Guanajuato</option>
+        <option>Guerrero</option>
+        <option>Hidalgo</option>
+        <option>Jalisco</option>
+        <option>Michoacán</option>
+        <option>Morelos</option>
+        <option>Nayarit</option>
+        <option>Nuevo León</option>
+        <option>Oaxaca</option>
+        <option>Puebla</option>
+        <option>Querétaro</option>
+        <option>Quintana Roo</option>
+        <option>San Luis Potosí</option>
+        <option>Sinaloa</option>
+        <option>Sonora</option>
+        <option>Tabasco</option>
+        <option>Tamaulipas</option>
+        <option>Tlaxcala</option>
+        <option>Veracruz</option>
+        <option>Yucatán</option>
+        <option>Zacatecas</option>
+    </select>
+
     <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
     <button onclick="startQuiz()">Continuar</button>
@@ -102,7 +140,7 @@ async function startQuiz() {
         return;
     }
 
-    respuestas = []; // 🔥 reset
+    respuestas = [];
 
     try {
         await auth.createUserWithEmailAndPassword(correo, password);
@@ -135,7 +173,7 @@ async function login() {
     }
 }
 
-// ---------------- MOSTRAR ----------------
+// ---------------- PREGUNTAS ----------------
 function showQuestion() {
     const q = preguntas[current];
 
@@ -153,9 +191,8 @@ function showQuestion() {
     });
 }
 
-// ---------------- NEXT ----------------
 function nextQuestion(answer) {
-    respuestas.push(answer); // 🔥 más seguro
+    respuestas.push(answer);
 
     if (current < preguntas.length - 1) {
         current++;
@@ -165,11 +202,10 @@ function nextQuestion(answer) {
     }
 }
 
-// ---------------- BACK ----------------
 function prevQuestion() {
     if (current > 0) {
         current--;
-        respuestas.pop(); // 🔥 sincroniza
+        respuestas.pop();
         showQuestion();
     }
 }
@@ -178,10 +214,7 @@ function prevQuestion() {
 async function finish() {
     const user = auth.currentUser;
 
-    if (!user) {
-        alert("Error: usuario no autenticado");
-        return;
-    }
+    if (!user) return alert("Error: usuario no autenticado");
 
     try {
         await db.collection("usuarios").doc(user.uid).set({
@@ -197,8 +230,8 @@ async function finish() {
         document.getElementById("final").style.display = "block";
 
     } catch (error) {
-        alert("Error guardando datos");
         console.log(error);
+        alert("Error guardando datos");
     }
 }
 
@@ -208,5 +241,6 @@ function goHome() {
 }
 
 </script>
+
 </body>
 </html>
