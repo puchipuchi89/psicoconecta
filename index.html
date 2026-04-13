@@ -19,7 +19,7 @@
         }
 
         #header h1 {
-            font-size: 40px;
+            font-size: 42px;
             margin: 0;
             color: #333;
         }
@@ -29,23 +29,34 @@
             margin-top: 10px;
         }
 
-        /* CONTENEDOR */
+        /* 🔥 BOX PERFECTO */
         .box {
-            max-width: 500px;
+            max-width: 420px;
             margin: auto;
             background: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* 🔥 INPUTS UNIFORMES */
         input, select, textarea {
             width: 100%;
+            box-sizing: border-box;
             padding: 12px;
-            margin: 8px 0;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid #ddd;
             outline: none;
+            font-size: 14px;
         }
 
         textarea {
@@ -53,15 +64,15 @@
             height: 80px;
         }
 
-        /* BOTONES */
+        /* 🔥 BOTONES */
         button {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 14px;
         }
 
         .primary {
@@ -85,12 +96,17 @@
         }
 
         #question {
-            font-size: 20px;
-            margin-bottom: 20px;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        #options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         #options button {
-            margin: 5px 0;
             background: white;
             border: 2px solid #6c63ff;
             color: #6c63ff;
@@ -105,11 +121,10 @@
         #final {
             text-align: center;
         }
-
     </style>
 </head>
 
-<body class="is-preload">
+<body>
 
 <!-- HEADER -->
 <div id="header">
@@ -119,10 +134,10 @@
 
 <div class="box">
 
-<!-- ================= LOGIN / REGISTRO ================= -->
+<!-- ================= REGISTRO ================= -->
 <div id="step1">
 
-    <h2 style="text-align:center;">Crear perfil</h2>
+    <h2>Crear perfil</h2>
 
     <input type="text" id="nombre" placeholder="Primer nombre" />
     <input type="text" id="apellido" placeholder="Apellido" />
@@ -143,30 +158,28 @@
 
     <button class="primary" onclick="startQuiz()">Continuar</button>
     <button class="secondary" onclick="showLogin()">Ya tengo cuenta</button>
-
 </div>
 
-<!-- LOGIN -->
+<!-- ================= LOGIN ================= -->
 <div id="loginBox" style="display:none;">
 
-    <h2 style="text-align:center;">Iniciar sesión</h2>
+    <h2>Iniciar sesión</h2>
 
     <input type="email" id="loginCorreo" placeholder="Correo electrónico" />
     <input type="password" id="loginPassword" placeholder="Contraseña" />
 
     <button class="primary" onclick="loginUser()">Entrar</button>
     <button class="secondary" onclick="showRegister()">Crear cuenta</button>
-
 </div>
 
-<!-- QUIZ -->
+<!-- ================= QUIZ ================= -->
 <div id="step2" style="display:none;">
     <h2 id="question"></h2>
     <div id="options"></div>
     <button class="secondary" onclick="prevQuestion()">Atrás</button>
 </div>
 
-<!-- FINAL -->
+<!-- ================= FINAL ================= -->
 <div id="final" style="display:none;">
     <h2>✅ Todo listo</h2>
     <p>Tu perfil fue creado correctamente</p>
@@ -194,7 +207,7 @@ const db = firebase.firestore();
 
 <script>
 
-// ================= UI NAV =================
+// ================= UI SWITCH =================
 function showLogin() {
     document.getElementById("step1").style.display = "none";
     document.getElementById("loginBox").style.display = "block";
@@ -243,12 +256,13 @@ async function startQuiz() {
     }
 }
 
-// ================= QUIZ (placeholder) =================
+// ================= QUIZ SIMPLE =================
 let current = 0;
 let respuestas = [];
 
 function showQuestion() {
-    document.getElementById("question").innerText = "Pregunta " + (current + 1);
+    document.getElementById("question").innerText =
+        "Pregunta " + (current + 1);
 }
 
 function prevQuestion() {
