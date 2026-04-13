@@ -6,6 +6,8 @@
 <body>
 
 <h1>Bienvenido 🎉</h1>
+
+<p id="status">Cargando sesión...</p>
 <p id="user"></p>
 
 <h3>Tus respuestas:</h3>
@@ -28,43 +30,52 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-auth.onAuthStateChanged(async user => {
+let unsubscribe = null; // para limpiar listener si cambia usuario
+
+auth.onAuthStateChanged(user => {
     console.log("USER:", user);
 
+    const status = document.getElementById("status");
+    const lista = document.getElementById("respuestas");
+
     if (user) {
+        status.innerText = "Cargando datos...";
         document.getElementById("user").innerText = user.email;
 
-        try {
-            const doc = await db.collection("usuarios").doc(user.uid).get();
+        // 🔥 IMPORTANTE: listener en tiempo real
+        if (unsubscribe) unsubscribe();
 
-            const lista = document.getElementById("respuestas");
-            lista.innerHTML = "";
+        unsubscribe = db.collection("usuarios").doc(user.uid)
+            .onSnapshot(doc => {
 
-            if (doc.exists) {
-                const data = doc.data();
+                lista.innerHTML = "";
 
-                if (data.respuestas && data.respuestas.length > 0) {
-                    data.respuestas.forEach((r, i) => {
-                        const li = document.createElement("li");
-                        li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                        lista.appendChild(li);
-                    });
+                if (doc.exists) {
+                    const data = doc.data();
+
+                    if (data.respuestas && data.respuestas.length > 0) {
+                        data.respuestas.forEach((r, i) => {
+                            const li = document.createElement("li");
+                            li.innerText = "Pregunta " + (i + 1) + ": " + r;
+                            lista.appendChild(li);
+                        });
+                    } else {
+                        lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+                    }
+
                 } else {
-                    lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+                    lista.innerHTML = "<li>No hay datos del usuario</li>";
                 }
 
-            } else {
-                lista.innerHTML = "<li>No hay datos del usuario</li>";
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
+                status.innerText = "";
+            });
 
     } else {
+        status.innerText = "No hay sesión";
         window.location.href = "index.html";
     }
 });
