@@ -74,18 +74,35 @@ const auth = firebase.auth();
 
 <script>
 // PREGUNTAS
+<script>
+// ---------------- PREGUNTAS COMPLETAS ----------------
 const preguntas = [
-    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
-    { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
-    { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto", "Grupo"] },
-    { q: "Tipo de terapia", opts: ["Individual", "Pareja", "Grupal"] },
-    { q: "Motivo", opts: ["Ansiedad", "Evaluación", "Conducta"] }
+   { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
+   { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
+   { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
+   { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
+   { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación neuropsicológica", "Trastornos conductuales"] },
+   { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Ejercicios prácticos", "Mixto", "Reflexión profunda"] },
+   { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Soluciones", "Crecimiento personal", "Historia personal"] },
+   { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo", "Colaborativo", "Reflexivo"] },
+   { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas", "Escucha", "Análisis"] },
+   { q: "¿Te gustaría que incluya espiritualidad?", opts: ["No", "Tal vez", "Sí"] },
+   { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Meses", "Proceso largo"] },
+   { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Semanal", "Quincenal", "Flexible"] },
+   { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
+   { q: "¿Qué aspectos son importantes?", opts: ["Clínico", "Cultural", "Espiritual"] },
+   { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche"] },
+   { q: "¿Cuál es tu presupuesto?", opts: ["< $500", "$500–$1000", "> $700"] },
+   { q: "¿Te importa la experiencia?", opts: ["No", "Algo", "Mucho"] },
+   { q: "¿Nivel de formación?", opts: ["Licenciatura", "Maestría", "Doctorado"] },
+   { q: "¿Te interesan otras actividades?", opts: ["No", "Tal vez", "Sí"] },
+   { q: "¿Qué tan pronto necesitas empezar?", opts: ["Puedo esperar", "Pronto", "Urgente"] }
 ];
 
 let current = 0;
 let respuestas = [];
 
-// REGISTRO
+// ---------------- REGISTRO ----------------
 async function startQuiz() {
     const nombre = document.getElementById("nombre").value;
     const correo = document.getElementById("correo").value;
@@ -109,11 +126,12 @@ async function startQuiz() {
     }
 }
 
-// MOSTRAR PREGUNTA
+// ---------------- MOSTRAR ----------------
 function showQuestion() {
     const q = preguntas[current];
-    document.getElementById("question").innerText = q.q;
-    document.getElementById("progress").innerText = (current + 1) + "/" + preguntas.length;
+
+    document.getElementById("question").innerText =
+        (current + 1) + "/20 - " + q.q;
 
     const optionsDiv = document.getElementById("options");
     optionsDiv.innerHTML = "";
@@ -126,7 +144,7 @@ function showQuestion() {
     });
 }
 
-// SIGUIENTE
+// ---------------- NEXT ----------------
 function nextQuestion(answer) {
     respuestas[current] = answer;
 
@@ -138,7 +156,7 @@ function nextQuestion(answer) {
     }
 }
 
-// ATRÁS
+// ---------------- BACK ----------------
 function prevQuestion() {
     if (current > 0) {
         current--;
@@ -146,17 +164,18 @@ function prevQuestion() {
     }
 }
 
-// FINAL
+// ---------------- FINAL ----------------
 function finish() {
     document.getElementById("step2").style.display = "none";
     document.getElementById("final").style.display = "block";
+
+    console.log("Respuestas:", respuestas);
 }
 
-// REDIRECCIÓN
+// ---------------- DASHBOARD ----------------
 function goHome() {
     window.location.href = "dashboard.html";
 }
 </script>
-
 </body>
 </html>
