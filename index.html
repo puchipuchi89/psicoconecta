@@ -20,11 +20,14 @@
 <div id="step1">
     <h2>Crear perfil</h2>
 
-    <input type="text" id="nombre" placeholder="Nombre completo" />
+    <!-- 🔥 CAMBIO: NOMBRE SEPARADO -->
+    <input type="text" id="nombre" placeholder="Primer nombre" />
+    <input type="text" id="apellido" placeholder="Apellido" />
+
     <input type="email" id="correo" placeholder="Correo electrónico" />
     <input type="password" id="password" placeholder="Contraseña" />
 
-    <!-- 🔥 CAMBIO AQUÍ: SELECT DE ESTADOS -->
+    <!-- ESTADO -->
     <select id="ubicacion">
         <option value="">Elige tu estado</option>
 
@@ -132,10 +135,11 @@ let respuestas = [];
 // ---------------- REGISTRO ----------------
 async function startQuiz() {
     const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
     const correo = document.getElementById("correo").value;
     const password = document.getElementById("password").value;
 
-    if (!nombre || !correo || !password) {
+    if (!nombre || !apellido || !correo || !password) {
         alert("Completa todos los campos");
         return;
     }
@@ -216,10 +220,14 @@ async function finish() {
 
     if (!user) return alert("Error: usuario no autenticado");
 
+    const nombreCompleto =
+        document.getElementById("nombre").value + " " +
+        document.getElementById("apellido").value;
+
     try {
         await db.collection("usuarios").doc(user.uid).set({
             email: user.email,
-            nombre: document.getElementById("nombre").value,
+            nombre: nombreCompleto,
             ubicacion: document.getElementById("ubicacion").value,
             motivo: document.getElementById("motivo").value,
             respuestas: respuestas,
