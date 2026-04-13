@@ -11,41 +11,32 @@
 
 <!-- HEADER -->
 <div id="header">
-    <span class="logo icon fa-users"></span>
     <h1>Bienvenido a Enfoques</h1>
-    <p>Explora diferentes enfoques, conecta con perfiles y crea tu cuenta fácilmente.</p>
+    <p>Crea tu perfil y encuentra tu mejor opción de terapia</p>
 </div>
 
 <!-- MAIN -->
 <div id="main">
 
-    <!-- INTRO -->
-    <header class="major container medium">
-        <h2>Descubre, aprende y conecta
-        <br />
-        con distintos enfoques
-        <br />
-        en un solo lugar</h2>
-    </header>
-
-    <!-- FEATURES -->
 <div class="box container">
 
-    <!-- PASO 1: DATOS -->
+    <!-- PASO 1 -->
     <div id="step1">
         <h2>Crear perfil</h2>
 
         <input type="text" id="nombre" placeholder="Nombre completo" />
         <input type="email" id="correo" placeholder="Correo electrónico" />
+        <input type="password" id="password" placeholder="Contraseña" />
         <input type="text" id="ubicacion" placeholder="Ciudad" />
         <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
         <button onclick="startQuiz()">Continuar</button>
     </div>
 
-    <!-- PASO 2: CUESTIONARIO -->
+    <!-- PASO 2 -->
     <div id="step2" style="display:none;">
         <h2 id="question"></h2>
+        <p id="progress"></p>
         <div id="options"></div>
 
         <button onclick="prevQuestion()">Atrás</button>
@@ -55,92 +46,11 @@
     <div id="final" style="display:none;">
         <h2>✅ Todo listo</h2>
         <p>Tu perfil ha sido creado correctamente.</p>
-        <button onclick="goHome()">Acceder a la página</button>
+        <button onclick="goHome()">Ir al dashboard</button>
     </div>
 
 </div>
 
-        <!-- CONOCE ENFOQUES -->
-        <section class="feature left">
-            <a href="#" class="image icon solid fa-brain">
-                <img src="images/pic01.jpg" alt="" />
-            </a>
-            <div class="content">
-                <h3>Conoce los enfoques</h3>
-                <p>Explora diferentes perspectivas, teorías y formas de entender distintas áreas. Aprende de manera sencilla y visual.</p>
-            </div>
-        </section>
-
-        <!-- CREAR CUENTA -->
-        <section class="feature right">
-            <a href="#" class="image icon solid fa-user-plus">
-                <img src="images/pic02.jpg" alt="" />
-            </a>
-            <div class="content">
-                <h3>Crear cuenta</h3>
-                <p>Regístrate para guardar tus preferencias, interactuar con contenido y formar parte de la comunidad.</p>
-            </div>
-        </section>
-
-        <!-- VER PERFILES -->
-        <section class="feature left">
-            <a href="#" class="image icon solid fa-id-card">
-                <img src="images/pic03.jpg" alt="" />
-            </a>
-            <div class="content">
-                <h3>Ver perfiles</h3>
-                <p>Conecta con otros usuarios, revisa sus intereses y descubre nuevas formas de aprendizaje.</p>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- CTA -->
-    <footer class="major container medium">
-        <h3>Empieza ahora</h3>
-        <p>Únete a la plataforma y comienza a explorar nuevos enfoques hoy mismo.</p>
-        <ul class="actions special">
-            <li><a href="#" class="button primary">Crear cuenta</a></li>
-            <li><a href="#" class="button">Explorar</a></li>
-        </ul>
-    </footer>
-
-</div>
-
-<!-- FOOTER -->
-<div id="footer">
-    <div class="container medium">
-
-        <header class="major last">
-            <h2>Contáctanos</h2>
-        </header>
-
-        <p>¿Tienes dudas o sugerencias? Escríbenos y te responderemos lo antes posible.</p>
-
-        <form method="post" action="#">
-            <div class="row">
-                <div class="col-6 col-12-mobilep">
-                    <input type="text" name="name" placeholder="Nombre" />
-                </div>
-                <div class="col-6 col-12-mobilep">
-                    <input type="email" name="email" placeholder="Correo" />
-                </div>
-                <div class="col-12">
-                    <textarea name="message" placeholder="Mensaje" rows="6"></textarea>
-                </div>
-                <div class="col-12">
-                    <ul class="actions special">
-                        <li><input type="submit" value="Enviar mensaje" /></li>
-                    </ul>
-                </div>
-            </div>
-        </form>
-
-        <ul class="copyright">
-            <li>&copy; Enfoques. Todos los derechos reservados.</li>
-        </ul>
-
-    </div>
 </div>
 
 <!-- SCRIPTS -->
@@ -156,9 +66,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
   authDomain: "psicoconecta-a507d.firebaseapp.com",
   projectId: "psicoconecta-a507d",
-  storageBucket: "psicoconecta-a507d.appspot.com",
-  messagingSenderId: "709997696142",
-  appId: "1:709997696142:web:60981b4ea6ff93f16925df"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -166,41 +73,26 @@ const auth = firebase.auth();
 </script>
 
 <script>
-// ---------------- PREGUNTAS ----------------
+// PREGUNTAS
 const preguntas = [
     { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
     { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
-    { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
-    { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
-    { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
-    { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Con ejercicios y tareas prácticas", "Mezcla de conversación y herramientas", "Conversación profunda y reflexión"] },
-    { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Estrategias para cambiar pensamientos", "Crecimiento personal", "Explorar historia personal"] },
-    { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo", "Colaborativo", "Reflexivo"] },
-    { q: "¿Qué esperas del terapeuta?", opts: ["Herramientas", "Escucha", "Análisis profundo"] },
-    { q: "¿Quieres elementos espirituales?", opts: ["No", "Tal vez", "Sí"] },
-    { q: "¿Cuánto tiempo terapia?", opts: ["Pocas sesiones", "Meses", "Largo"] },
-    { q: "Frecuencia", opts: ["Semanal", "Quincenal", "Flexible"] },
-    { q: "Género terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
-    { q: "Aspectos importantes", opts: ["Clínico", "Cultural", "Espiritual"] },
-    { q: "Horario", opts: ["Mañana", "Tarde", "Noche"] },
-    { q: "Presupuesto", opts: ["< $500", "$500–$1000", "> $700"] },
-    { q: "Experiencia", opts: ["No importa", "Algo", "Mucho"] },
-    { q: "Formación", opts: ["Licenciatura", "Maestría", "Doctorado"] },
-    { q: "Extras", opts: ["No", "Tal vez", "Sí"] },
-    { q: "Inicio", opts: ["Puedo esperar", "Pronto", "Urgente"] }
+    { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto", "Grupo"] },
+    { q: "Tipo de terapia", opts: ["Individual", "Pareja", "Grupal"] },
+    { q: "Motivo", opts: ["Ansiedad", "Evaluación", "Conducta"] }
 ];
 
 let current = 0;
 let respuestas = [];
 
-// ---------------- REGISTRO + INICIO ----------------
+// REGISTRO
 async function startQuiz() {
     const nombre = document.getElementById("nombre").value;
     const correo = document.getElementById("correo").value;
-    const password = "123456"; // simple por ahora
+    const password = document.getElementById("password").value;
 
-    if (!nombre || !correo) {
-        alert("Completa nombre y correo");
+    if (!nombre || !correo || !password) {
+        alert("Completa todos los campos");
         return;
     }
 
@@ -217,15 +109,16 @@ async function startQuiz() {
     }
 }
 
-// ---------------- CUESTIONARIO ----------------
+// MOSTRAR PREGUNTA
 function showQuestion() {
     const q = preguntas[current];
-    document.getElementById("question").innerText = (current + 1) + ". " + q.q;
+    document.getElementById("question").innerText = q.q;
+    document.getElementById("progress").innerText = (current + 1) + "/" + preguntas.length;
 
     const optionsDiv = document.getElementById("options");
     optionsDiv.innerHTML = "";
 
-    q.opts.forEach((opt) => {
+    q.opts.forEach(opt => {
         const btn = document.createElement("button");
         btn.innerText = opt;
         btn.onclick = () => nextQuestion(opt);
@@ -233,6 +126,7 @@ function showQuestion() {
     });
 }
 
+// SIGUIENTE
 function nextQuestion(answer) {
     respuestas[current] = answer;
 
@@ -244,6 +138,7 @@ function nextQuestion(answer) {
     }
 }
 
+// ATRÁS
 function prevQuestion() {
     if (current > 0) {
         current--;
@@ -251,15 +146,17 @@ function prevQuestion() {
     }
 }
 
-// ---------------- FINAL ----------------
+// FINAL
 function finish() {
     document.getElementById("step2").style.display = "none";
     document.getElementById("final").style.display = "block";
-
-    console.log("Respuestas:", respuestas);
 }
 
+// REDIRECCIÓN
 function goHome() {
     window.location.href = "dashboard.html";
 }
 </script>
+
+</body>
+</html>
