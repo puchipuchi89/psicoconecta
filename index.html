@@ -229,11 +229,6 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-auth.onAuthStateChanged(user => {
-    if (user && window.location.pathname.includes("index")) {
-        window.location.href = "dashboard.html";
-    }
-});
 </script>
 </body>
 </html>
