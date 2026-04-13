@@ -60,7 +60,8 @@
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
@@ -70,11 +71,11 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 </script>
 
 <script>
 // PREGUNTAS
-<script>
 // ---------------- PREGUNTAS COMPLETAS ----------------
 const preguntas = [
    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
@@ -165,11 +166,30 @@ function prevQuestion() {
 }
 
 // ---------------- FINAL ----------------
-function finish() {
-    document.getElementById("step2").style.display = "none";
-    document.getElementById("final").style.display = "block";
+async function finish() {
+    const user = auth.currentUser;
 
-    console.log("Respuestas:", respuestas);
+    if (!user) {
+        alert("Error: usuario no autenticado");
+        return;
+    }
+
+    try {
+        await db.collection("usuarios").doc(user.uid).set({
+            email: user.email,
+            respuestas: respuestas,
+            fecha: new Date()
+        });
+
+        document.getElementById("step2").style.display = "none";
+        document.getElementById("final").style.display = "block";
+
+        console.log("Respuestas guardadas:", respuestas);
+
+    } catch (error) {
+        alert("Error guardando datos");
+        console.log(error);
+    }
 }
 
 // ---------------- DASHBOARD ----------------
