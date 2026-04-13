@@ -29,7 +29,36 @@
     </header>
 
     <!-- FEATURES -->
-    <div class="box alt container">
+<div class="box container">
+
+    <!-- PASO 1: DATOS -->
+    <div id="step1">
+        <h2>Crear perfil</h2>
+
+        <input type="text" id="nombre" placeholder="Nombre completo" />
+        <input type="email" id="correo" placeholder="Correo electrónico" />
+        <input type="text" id="ubicacion" placeholder="Ciudad" />
+        <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
+
+        <button onclick="startQuiz()">Continuar</button>
+    </div>
+
+    <!-- PASO 2: CUESTIONARIO -->
+    <div id="step2" style="display:none;">
+        <h2 id="question"></h2>
+        <div id="options"></div>
+
+        <button onclick="prevQuestion()">Atrás</button>
+    </div>
+
+    <!-- FINAL -->
+    <div id="final" style="display:none;">
+        <h2>✅ Todo listo</h2>
+        <p>Tu perfil ha sido creado correctamente.</p>
+        <button onclick="goHome()">Acceder a la página</button>
+    </div>
+
+</div>
 
         <!-- CONOCE ENFOQUES -->
         <section class="feature left">
@@ -118,5 +147,84 @@
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/main.js"></script>
 
+<script>
+const preguntas = [
+    {
+        q: "¿Cómo prefieres tomar terapia?",
+        opts: ["Presencial", "En línea", "Me da igual"]
+    },
+    {
+        q: "¿Para quién es la terapia?",
+        opts: ["Niño", "Adulto", "Grupo"]
+    },
+    {
+        q: "Motivo principal",
+        opts: ["Ansiedad", "Evaluación", "Conducta"]
+    }
+];
+
+let current = 0;
+let respuestas = [];
+
+function startQuiz() {
+    const nombre = document.getElementById("nombre").value;
+    const correo = document.getElementById("correo").value;
+
+    if (!nombre || !correo) {
+        alert("Completa nombre y correo");
+        return;
+    }
+
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("step2").style.display = "block";
+
+    showQuestion();
+}
+
+function showQuestion() {
+    const q = preguntas[current];
+    document.getElementById("question").innerText = q.q;
+
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+
+    q.opts.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => nextQuestion(opt);
+        optionsDiv.appendChild(btn);
+    });
+}
+
+function nextQuestion(answer) {
+    respuestas[current] = answer;
+
+    if (current < preguntas.length - 1) {
+        current++;
+        showQuestion();
+    } else {
+        finish();
+    }
+}
+
+function prevQuestion() {
+    if (current > 0) {
+        current--;
+        showQuestion();
+    }
+}
+
+function finish() {
+    document.getElementById("step2").style.display = "none";
+    document.getElementById("final").style.display = "block";
+
+    console.log("Respuestas:", respuestas);
+}
+
+function goHome() {
+    location.reload();
+}
+</script>
+    
 </body>
 </html>
