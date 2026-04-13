@@ -1,195 +1,94 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>PsicoConecta</title>
+    <title>Enfoques - Plataforma</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
-        }
-
-        #header {
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        #header h1 {
-            font-size: 42px;
-            margin: 0;
-            color: #333;
-        }
-
-        #header p {
-            color: #666;
-            margin-top: 10px;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 1fr 450px 1fr;
-            gap: 20px;
-            max-width: 1300px;
-            margin: auto;
-            padding: 20px;
-            align-items: start;
-        }
-
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-
-        .box {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-        }
-
-        textarea {
-            height: 80px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            background: #6c63ff;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        #options button {
-            background: white;
-            border: 2px solid #6c63ff;
-            color: #6c63ff;
-        }
-
-        #options button:hover {
-            background: #6c63ff;
-            color: white;
-        }
-
-        @media (max-width: 1000px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 
-<body>
+<body class="is-preload">
 
 <div id="header">
-    <h1>PsicoConecta 🧠</h1>
-    <p>Atención psicológica personalizada</p>
+    <h1>Bienvenido a PsicoConecta</h1>
+    <p>Crea tu perfil y encuentra tu mejor opción de terapia!!!</p>
 </div>
 
-<div class="layout">
+<div id="main">
+<div class="box container">
 
-    <div class="panel">
-        <h3>👥 Sobre nosotros</h3>
-        <p>Plataforma para conectar pacientes con terapeutas según perfil psicológico.</p>
-    </div>
+<!-- ================= STEP 1 ================= -->
+<div id="step1">
+    <h2>Crear perfil</h2>
 
-    <div class="box">
+    <input type="text" id="nombre" placeholder="Primer nombre" />
+    <input type="text" id="apellido" placeholder="Apellido" />
 
-        <div id="step1">
-            <h2>Crear perfil</h2>
+    <input type="email" id="correo" placeholder="Correo electrónico" />
+    <input type="password" id="password" placeholder="Contraseña" />
 
-            <input type="text" id="nombre" placeholder="Primer nombre" />
-            <input type="text" id="apellido" placeholder="Apellido" />
+    <select id="ubicacion">
+        <option value="">Elige tu estado</option>
 
-            <input type="email" id="correo" placeholder="Correo electrónico" />
-            <input type="password" id="password" placeholder="Contraseña" />
+        <option>Aguascalientes</option>
+        <option>Baja California</option>
+        <option>Baja California Sur</option>
+        <option>Campeche</option>
+        <option>Chiapas</option>
+        <option>Chihuahua</option>
+        <option>Ciudad de México</option>
+        <option>Coahuila</option>
+        <option>Colima</option>
+        <option>Durango</option>
+        <option>Estado de México</option>
+        <option>Guanajuato</option>
+        <option>Guerrero</option>
+        <option>Hidalgo</option>
+        <option>Jalisco</option>
+        <option>Michoacán</option>
+        <option>Morelos</option>
+        <option>Nayarit</option>
+        <option>Nuevo León</option>
+        <option>Oaxaca</option>
+        <option>Puebla</option>
+        <option>Querétaro</option>
+        <option>Quintana Roo</option>
+        <option>San Luis Potosí</option>
+        <option>Sinaloa</option>
+        <option>Sonora</option>
+        <option>Tabasco</option>
+        <option>Tamaulipas</option>
+        <option>Tlaxcala</option>
+        <option>Veracruz</option>
+        <option>Yucatán</option>
+        <option>Zacatecas</option>
+    </select>
 
-            <select id="ubicacion">
-                <option value="">Elige tu estado</option>
-                <option>Aguascalientes</option>
-                <option>Baja California</option>
-                <option>Baja California Sur</option>
-                <option>Campeche</option>
-                <option>Chiapas</option>
-                <option>Chihuahua</option>
-                <option>Ciudad de México</option>
-                <option>Coahuila</option>
-                <option>Colima</option>
-                <option>Durango</option>
-                <option>Estado de México</option>
-                <option>Guanajuato</option>
-                <option>Guerrero</option>
-                <option>Hidalgo</option>
-                <option>Jalisco</option>
-                <option>Michoacán</option>
-                <option>Morelos</option>
-                <option>Nayarit</option>
-                <option>Nuevo León</option>
-                <option>Oaxaca</option>
-                <option>Puebla</option>
-                <option>Querétaro</option>
-                <option>Quintana Roo</option>
-                <option>San Luis Potosí</option>
-                <option>Sinaloa</option>
-                <option>Sonora</option>
-                <option>Tabasco</option>
-                <option>Tamaulipas</option>
-                <option>Tlaxcala</option>
-                <option>Veracruz</option>
-                <option>Yucatán</option>
-                <option>Zacatecas</option>
-            </select>
+    <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
-            <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
-
-            <button onclick="startQuiz()">Continuar</button>
-            <button onclick="login()">Ya tengo cuenta</button>
-        </div>
-
-        <div id="step2" style="display:none;">
-            <h2 id="question"></h2>
-            <div id="options"></div>
-            <button onclick="prevQuestion()">Atrás</button>
-        </div>
-
-        <div id="final" style="display:none;">
-            <h2>✅ Todo listo</h2>
-            <button onclick="goHome()">Ir al dashboard</button>
-        </div>
-
-    </div>
-
-    <div class="panel">
-        <h3>🚀 Proyecto</h3>
-        <p>Sistema de emparejamiento psicológico inteligente.</p>
-    </div>
-
+    <button onclick="startQuiz()">Continuar</button>
+    <button onclick="login()" style="margin-top:10px;">Ya tengo cuenta</button>
 </div>
 
-<!-- FIREBASE -->
+<!-- ================= STEP 2 ================= -->
+<div id="step2" style="display:none;">
+    <h2 id="question"></h2>
+    <p id="progress"></p>
+    <div id="options"></div>
+    <button onclick="prevQuestion()">Atrás</button>
+</div>
+
+<!-- ================= FINAL ================= -->
+<div id="final" style="display:none;">
+    <h2>✅ Todo listo</h2>
+    <p>Tu perfil ha sido creado correctamente.</p>
+    <button onclick="goHome()">Ir al dashboard</button>
+</div>
+
+</div>
+</div>
+
+<!-- ================= FIREBASE ================= -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -208,7 +107,7 @@ const db = firebase.firestore();
 
 <script>
 
-// 🔥 TUS PREGUNTAS COMPLETAS (NO TOCADAS)
+// ================= PREGUNTAS (INTACTAS) =================
 const preguntas = [
    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
    { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
@@ -235,35 +134,79 @@ const preguntas = [
 let current = 0;
 let respuestas = [];
 
-function startQuiz() {
-    auth.createUserWithEmailAndPassword(
-        document.getElementById("correo").value,
-        document.getElementById("password").value
-    ).then(() => {
+// ================= REGISTRO =================
+async function startQuiz() {
+
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const correo = document.getElementById("correo").value;
+    const password = document.getElementById("password").value;
+
+    if (!nombre || !apellido || !correo || !password) {
+        alert("Completa todos los campos");
+        return;
+    }
+
+    respuestas = [];
+
+    try {
+        await auth.createUserWithEmailAndPassword(correo, password);
+
         document.getElementById("step1").style.display = "none";
         document.getElementById("step2").style.display = "block";
+
         showQuestion();
-    });
+
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
+// ================= LOGIN =================
+async function login() {
+    const correo = document.getElementById("correo").value;
+    const password = document.getElementById("password").value;
+
+    if (!correo || !password) {
+        alert("Ingresa correo y contraseña");
+        return;
+    }
+
+    try {
+        await auth.signInWithEmailAndPassword(correo, password);
+        window.location.href = "dashboard.html";
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
+
+// ================= QUIZ =================
 function showQuestion() {
     const q = preguntas[current];
-    document.getElementById("question").innerText = q.q;
 
-    const options = document.getElementById("options");
-    options.innerHTML = "";
+    document.getElementById("question").innerText =
+        (current + 1) + "/20 - " + q.q;
+
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
 
     q.opts.forEach(opt => {
         const btn = document.createElement("button");
         btn.innerText = opt;
-        btn.onclick = () => {
-            respuestas.push(opt);
-            current++;
-            if (current < preguntas.length) showQuestion();
-            else finish();
-        };
-        options.appendChild(btn);
+        btn.onclick = () => nextQuestion(opt);
+        optionsDiv.appendChild(btn);
     });
+}
+
+function nextQuestion(answer) {
+    respuestas.push(answer);
+
+    if (current < preguntas.length - 1) {
+        current++;
+        showQuestion();
+    } else {
+        finish();
+    }
 }
 
 function prevQuestion() {
@@ -274,30 +217,36 @@ function prevQuestion() {
     }
 }
 
-function finish() {
+// ================= FINAL (FIRESTORE INTACTO) =================
+async function finish() {
+
     const user = auth.currentUser;
+    if (!user) return alert("Error: usuario no autenticado");
 
-    db.collection("usuarios").doc(user.uid).set({
-        email: user.email,
-        nombre: document.getElementById("nombre").value + " " + document.getElementById("apellido").value,
-        ubicacion: document.getElementById("ubicacion").value,
-        motivo: document.getElementById("motivo").value,
-        respuestas: respuestas
-    });
+    const nombreCompleto =
+        document.getElementById("nombre").value + " " +
+        document.getElementById("apellido").value;
 
-    document.getElementById("step2").style.display = "none";
-    document.getElementById("final").style.display = "block";
+    try {
+        await db.collection("usuarios").doc(user.uid).set({
+            email: user.email,
+            nombre: nombreCompleto,
+            ubicacion: document.getElementById("ubicacion").value,
+            motivo: document.getElementById("motivo").value,
+            respuestas: respuestas,
+            fecha: new Date()
+        });
+
+        document.getElementById("step2").style.display = "none";
+        document.getElementById("final").style.display = "block";
+
+    } catch (error) {
+        console.log(error);
+        alert("Error guardando datos");
+    }
 }
 
-function login() {
-    auth.signInWithEmailAndPassword(
-        document.getElementById("correo").value,
-        document.getElementById("password").value
-    ).then(() => {
-        window.location.href = "dashboard.html";
-    });
-}
-
+// ================= DASHBOARD =================
 function goHome() {
     window.location.href = "dashboard.html";
 }
