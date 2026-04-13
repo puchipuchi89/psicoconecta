@@ -2,7 +2,33 @@
 <html>
 <head>
     <title>Dashboard</title>
+
+    <style>
+        body { font-family: Arial; }
+
+        .tabs {
+            margin-top: 20px;
+        }
+
+        .tab-buttons button {
+            padding: 10px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .tab {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .active {
+            display: block;
+        }
+    </style>
 </head>
+
 <body>
 
 <h1>Bienvenido 🎉</h1>
@@ -10,12 +36,29 @@
 <p id="status">Cargando sesión...</p>
 <p id="user"></p>
 
-<h3>Tus respuestas:</h3>
-<ul id="respuestas"></ul>
+<div class="tabs">
 
-<h3>Resultado psicológico:</h3>
-<p id="resultado">Analizando...</p>
+    <!-- BOTONES -->
+    <div class="tab-buttons">
+        <button onclick="openTab('resultadoTab')">🧠 Resultado</button>
+        <button onclick="openTab('respuestasTab')">📋 Mis respuestas</button>
+    </div>
 
+    <!-- RESULTADO -->
+    <div id="resultadoTab" class="tab active">
+        <h3>Resultado psicológico</h3>
+        <p id="resultado">Analizando...</p>
+    </div>
+
+    <!-- RESPUESTAS -->
+    <div id="respuestasTab" class="tab">
+        <h3>Tus respuestas</h3>
+        <ul id="respuestas"></ul>
+    </div>
+
+</div>
+
+<br>
 <button onclick="logout()">Cerrar sesión</button>
 
 <!-- Firebase -->
@@ -37,7 +80,13 @@ const db = firebase.firestore();
 
 let unsubscribe = null;
 
-// 🧠 ANALIZADOR PSICOLÓGICO (TU VERSION REAL)
+// ---------------- TABS ----------------
+function openTab(tabId) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+}
+
+// ---------------- ANALISIS ----------------
 function analizarCorriente(respuestas) {
 
     let score = {
@@ -53,47 +102,39 @@ function analizarCorriente(respuestas) {
 
     const text = respuestas.join(" ").toLowerCase();
 
-    // 🧠 Psicoanalítica
     if (text.includes("historia") || text.includes("pasado") || text.includes("análisis") || text.includes("duelo")) {
         score.psicoanalitica += 2;
     }
 
-    // 🧩 TCC
     if (text.includes("soluciones") || text.includes("herramientas") || text.includes("ejercicios prácticos") || text.includes("ansiedad")) {
         score.tcc += 2;
     }
 
-    // 🌱 Humanista
     if (text.includes("crecimiento personal") || text.includes("autoestima") || text.includes("escucha") || text.includes("emocional")) {
         score.humanista += 2;
     }
 
-    // 👥 Sistémica
     if (text.includes("pareja") || text.includes("familia") || text.includes("grupo") || text.includes("relación")) {
         score.sistemica += 2;
     }
 
-    // 🎯 Gestalt
     if (text.includes("presente") || text.includes("aquí") || text.includes("ahora") || text.includes("experiencia")) {
         score.gestalt += 2;
     }
 
-    // ⚙️ Conductual
     if (text.includes("hábitos") || text.includes("conducta") || text.includes("refuerzo")) {
         score.conductual += 2;
     }
 
-    // 🏠 Familiar
     if (text.includes("familia") || text.includes("crianza") || text.includes("padres") || text.includes("hogar")) {
         score.familiar += 2;
     }
 
-    // 🔄 Integrativa (balance o empate)
     let max = Math.max(...Object.values(score));
     let top = Object.keys(score).filter(k => score[k] === max);
 
     if (top.length > 1 || max === 0) {
-        return "🔄 Integrativa: tu perfil combina varios enfoques terapéuticos";
+        return "🔄 Integrativa: combinación de varios enfoques terapéuticos";
     }
 
     const resultados = {
@@ -104,13 +145,13 @@ function analizarCorriente(respuestas) {
         gestalt: "🎯 Gestalt: enfoque en el presente y experiencia",
         conductual: "⚙️ Conductual: cambio de conducta y hábitos",
         familiar: "🏠 Familiar: dinámica familiar y crianza",
-        integrativa: "🔄 Integrativa: combinación de varios enfoques"
+        integrativa: "🔄 Integrativa"
     };
 
     return resultados[top[0]];
 }
 
-// 🔐 AUTH + FIRESTORE REALTIME
+// ---------------- AUTH ----------------
 auth.onAuthStateChanged(user => {
 
     const status = document.getElementById("status");
@@ -118,6 +159,7 @@ auth.onAuthStateChanged(user => {
     const resultado = document.getElementById("resultado");
 
     if (user) {
+
         status.innerText = "Cargando datos...";
         document.getElementById("user").innerText = user.email;
 
@@ -143,13 +185,12 @@ auth.onAuthStateChanged(user => {
                         resultado.innerText = analizarCorriente(respuestas);
 
                     } else {
-                        lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+                        lista.innerHTML = "<li>No hay respuestas</li>";
                         resultado.innerText = "Sin datos suficientes";
                     }
 
                 } else {
-                    lista.innerHTML = "<li>No hay datos del usuario</li>";
-                    resultado.innerText = "";
+                    lista.innerHTML = "<li>No hay datos</li>";
                 }
 
                 status.innerText = "";
@@ -160,7 +201,7 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// 🚪 LOGOUT
+// ---------------- LOGOUT ----------------
 function logout() {
     auth.signOut().then(() => {
         window.location.href = "index.html";
