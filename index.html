@@ -147,57 +147,85 @@
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/main.js"></script>
 
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
+  authDomain: "psicoconecta-a507d.firebaseapp.com",
+  projectId: "psicoconecta-a507d",
+  storageBucket: "psicoconecta-a507d.appspot.com",
+  messagingSenderId: "709997696142",
+  appId: "1:709997696142:web:60981b4ea6ff93f16925df"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+</script>
+
+<script>
+// ---------------- PREGUNTAS ----------------
 const preguntas = [
-   { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
+    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
     { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
     { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
     { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
     { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
     { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Con ejercicios y tareas prácticas", "Mezcla de conversación y herramientas", "Conversación profunda y reflexión"] },
-    { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Estrategias para cambiar pensamientos, hábitos y enfocado en soluciones", "Aumentar la conciencia, la aceptación y el crecimiento personal", "Explorar mi historia personal y patrones relacionales"] },
-    { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo y orientado a soluciones", "Colaborativo", "Más reflexivo"] },
-    { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas prácticas", "Escucha y comprensión", "Análisis profundo de mis patrones"] },
-    { q: "¿Te gustaría que tu terapia incluya elementos de religión o espiritualidad?", opts: ["No, prefiero una terapia sin enfoque religioso", "Podría estar bien", "Sí, me gustaría que incluya mi religión"] },
-    { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Algunos meses", "Proceso largo"] },
-    { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Cada semana", "Cada 15 días", "Flexible"] },
-    { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
-    { q: "¿Te gustaría que tu terapeuta tome en cuenta alguno de estos aspectos?", opts: ["Terapia clínica", "Contexto cultural/social", "Creencias espirituales"] },
-    { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche o fines de semana"] },
-    { q: "¿Cuál es tu presupuesto por sesión?", opts: ["Menos de $500 MXN", "$500–$1,000 MXN", "Más de $700 MXN"] },
-    { q: "¿Te importa la experiencia del terapeuta?", opts: ["No mucho", "Algo", "Mucho"] },
-    { q: "¿Qué nivel de formación prefieres en tu terapeuta?", opts: ["Licenciatura", "Maestría", "Doctorado o especialización avanzada"] },
-    { q: "¿Te interesan otras actividades además de terapia individual?", opts: ["No", "Tal vez talleres o grupos", "Sí, ambas"] },
-    { q: "¿Qué tan pronto necesitas empezar terapia?", opts: ["Puedo esperar", "Pronto", "Lo antes posible"] }
+    { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Estrategias para cambiar pensamientos", "Crecimiento personal", "Explorar historia personal"] },
+    { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo", "Colaborativo", "Reflexivo"] },
+    { q: "¿Qué esperas del terapeuta?", opts: ["Herramientas", "Escucha", "Análisis profundo"] },
+    { q: "¿Quieres elementos espirituales?", opts: ["No", "Tal vez", "Sí"] },
+    { q: "¿Cuánto tiempo terapia?", opts: ["Pocas sesiones", "Meses", "Largo"] },
+    { q: "Frecuencia", opts: ["Semanal", "Quincenal", "Flexible"] },
+    { q: "Género terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
+    { q: "Aspectos importantes", opts: ["Clínico", "Cultural", "Espiritual"] },
+    { q: "Horario", opts: ["Mañana", "Tarde", "Noche"] },
+    { q: "Presupuesto", opts: ["< $500", "$500–$1000", "> $700"] },
+    { q: "Experiencia", opts: ["No importa", "Algo", "Mucho"] },
+    { q: "Formación", opts: ["Licenciatura", "Maestría", "Doctorado"] },
+    { q: "Extras", opts: ["No", "Tal vez", "Sí"] },
+    { q: "Inicio", opts: ["Puedo esperar", "Pronto", "Urgente"] }
 ];
-    
 
 let current = 0;
 let respuestas = [];
 
-function startQuiz() {
+// ---------------- REGISTRO + INICIO ----------------
+async function startQuiz() {
     const nombre = document.getElementById("nombre").value;
     const correo = document.getElementById("correo").value;
+    const password = "123456"; // simple por ahora
 
     if (!nombre || !correo) {
         alert("Completa nombre y correo");
         return;
     }
 
-    document.getElementById("step1").style.display = "none";
-    document.getElementById("step2").style.display = "block";
+    try {
+        await auth.createUserWithEmailAndPassword(correo, password);
 
-    showQuestion();
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2").style.display = "block";
+
+        showQuestion();
+
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
+// ---------------- CUESTIONARIO ----------------
 function showQuestion() {
     const q = preguntas[current];
-    document.getElementById("question").innerText = q.q;
+    document.getElementById("question").innerText = (current + 1) + ". " + q.q;
 
     const optionsDiv = document.getElementById("options");
     optionsDiv.innerHTML = "";
 
-    q.opts.forEach((opt, index) => {
+    q.opts.forEach((opt) => {
         const btn = document.createElement("button");
         btn.innerText = opt;
         btn.onclick = () => nextQuestion(opt);
@@ -223,6 +251,7 @@ function prevQuestion() {
     }
 }
 
+// ---------------- FINAL ----------------
 function finish() {
     document.getElementById("step2").style.display = "none";
     document.getElementById("final").style.display = "block";
@@ -231,9 +260,6 @@ function finish() {
 }
 
 function goHome() {
-    location.reload();
+    window.location.href = "dashboard.html";
 }
 </script>
-    
-</body>
-</html>
