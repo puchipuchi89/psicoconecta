@@ -15,7 +15,7 @@
         /* HEADER */
         #header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
 
         #header h1 {
@@ -29,15 +29,43 @@
             margin-top: 10px;
         }
 
-        /* 🔥 BOX PERFECTO */
-        .box {
-            max-width: 420px;
+        /* 🔥 LAYOUT 3 COLUMNAS */
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 420px 1fr;
+            gap: 20px;
+            max-width: 1200px;
             margin: auto;
+            padding: 20px;
+            align-items: start;
+        }
+
+        /* PANEL LATERAL */
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            color: #444;
+        }
+
+        .panel p {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* CENTRO */
+        .box {
             background: white;
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -45,18 +73,16 @@
 
         h2 {
             text-align: center;
-            margin-bottom: 10px;
         }
 
-        /* 🔥 INPUTS UNIFORMES */
+        /* INPUTS */
         input, select, textarea {
             width: 100%;
-            box-sizing: border-box;
             padding: 12px;
             border-radius: 12px;
             border: 1px solid #ddd;
-            outline: none;
             font-size: 14px;
+            box-sizing: border-box;
         }
 
         textarea {
@@ -64,15 +90,14 @@
             height: 80px;
         }
 
-        /* 🔥 BOTONES */
+        /* BOTONES */
         button {
             width: 100%;
             padding: 12px;
-            border: none;
             border-radius: 12px;
-            cursor: pointer;
+            border: none;
             font-weight: bold;
-            font-size: 14px;
+            cursor: pointer;
         }
 
         .primary {
@@ -86,18 +111,9 @@
             color: #6c63ff;
         }
 
-        button:hover {
-            opacity: 0.9;
-        }
-
         /* QUIZ */
         #step2 {
             text-align: center;
-        }
-
-        #question {
-            font-size: 18px;
-            margin-bottom: 15px;
         }
 
         #options {
@@ -117,74 +133,90 @@
             color: white;
         }
 
-        /* FINAL */
-        #final {
-            text-align: center;
+        /* RESPONSIVE */
+        @media (max-width: 1000px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div id="header">
     <h1>PsicoConecta 🧠</h1>
     <p>Encuentra tu mejor enfoque terapéutico</p>
 </div>
 
-<div class="box">
+<div class="layout">
 
-<!-- ================= REGISTRO ================= -->
-<div id="step1">
+    <!-- 🔵 IZQUIERDA -->
+    <div class="panel">
+        <h3>👥 ¿Quiénes somos?</h3>
+        <p>
+            Plataforma enfocada en conectar usuarios con enfoques terapéuticos personalizados.
+            Aquí puedes poner misión, visión o texto del proyecto.
+        </p>
+    </div>
 
-    <h2>Crear perfil</h2>
+    <!-- 🟣 CENTRO -->
+    <div class="box">
 
-    <input type="text" id="nombre" placeholder="Primer nombre" />
-    <input type="text" id="apellido" placeholder="Apellido" />
+        <div id="step1">
+            <h2>Crear perfil</h2>
 
-    <input type="email" id="correo" placeholder="Correo electrónico" />
-    <input type="password" id="password" placeholder="Contraseña" />
+            <input type="text" id="nombre" placeholder="Primer nombre" />
+            <input type="text" id="apellido" placeholder="Apellido" />
 
-    <select id="ubicacion">
-        <option value="">Elige tu estado</option>
-        <option>Puebla</option>
-        <option>Ciudad de México</option>
-        <option>Jalisco</option>
-        <option>Nuevo León</option>
-        <option>Veracruz</option>
-    </select>
+            <input type="email" id="correo" placeholder="Correo electrónico" />
+            <input type="password" id="password" placeholder="Contraseña" />
 
-    <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
+            <select id="ubicacion">
+                <option value="">Elige tu estado</option>
+                <option>Puebla</option>
+                <option>CDMX</option>
+                <option>Jalisco</option>
+                <option>Nuevo León</option>
+            </select>
 
-    <button class="primary" onclick="startQuiz()">Continuar</button>
-    <button class="secondary" onclick="showLogin()">Ya tengo cuenta</button>
-</div>
+            <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
-<!-- ================= LOGIN ================= -->
-<div id="loginBox" style="display:none;">
+            <button class="primary" onclick="startQuiz()">Continuar</button>
+            <button class="secondary" onclick="showLogin()">Ya tengo cuenta</button>
+        </div>
 
-    <h2>Iniciar sesión</h2>
+        <div id="loginBox" style="display:none;">
+            <h2>Iniciar sesión</h2>
 
-    <input type="email" id="loginCorreo" placeholder="Correo electrónico" />
-    <input type="password" id="loginPassword" placeholder="Contraseña" />
+            <input type="email" id="loginCorreo" placeholder="Correo" />
+            <input type="password" id="loginPassword" placeholder="Contraseña" />
 
-    <button class="primary" onclick="loginUser()">Entrar</button>
-    <button class="secondary" onclick="showRegister()">Crear cuenta</button>
-</div>
+            <button class="primary" onclick="loginUser()">Entrar</button>
+            <button class="secondary" onclick="showRegister()">Volver</button>
+        </div>
 
-<!-- ================= QUIZ ================= -->
-<div id="step2" style="display:none;">
-    <h2 id="question"></h2>
-    <div id="options"></div>
-    <button class="secondary" onclick="prevQuestion()">Atrás</button>
-</div>
+        <div id="step2" style="display:none;">
+            <h2 id="question"></h2>
+            <div id="options"></div>
+            <button class="secondary" onclick="prevQuestion()">Atrás</button>
+        </div>
 
-<!-- ================= FINAL ================= -->
-<div id="final" style="display:none;">
-    <h2>✅ Todo listo</h2>
-    <p>Tu perfil fue creado correctamente</p>
-    <button class="primary" onclick="goHome()">Ir al dashboard</button>
-</div>
+        <div id="final" style="display:none;">
+            <h2>✅ Listo</h2>
+            <p>Tu perfil fue creado correctamente</p>
+        </div>
+
+    </div>
+
+    <!-- 🟢 DERECHA -->
+    <div class="panel">
+        <h3>🚀 Sobre el proyecto</h3>
+        <p>
+            Sistema de recomendación de terapia basado en respuestas del usuario.
+            Puedes agregar aquí tecnología, IA, objetivos o equipo.
+        </p>
+    </div>
 
 </div>
 
@@ -201,13 +233,14 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 </script>
 
 <script>
 
-// ================= UI SWITCH =================
+// UI
 function showLogin() {
     document.getElementById("step1").style.display = "none";
     document.getElementById("loginBox").style.display = "block";
@@ -218,7 +251,7 @@ function showRegister() {
     document.getElementById("step1").style.display = "block";
 }
 
-// ================= LOGIN =================
+// LOGIN
 async function loginUser() {
     const email = document.getElementById("loginCorreo").value;
     const pass = document.getElementById("loginPassword").value;
@@ -231,7 +264,7 @@ async function loginUser() {
     }
 }
 
-// ================= REGISTRO =================
+// REGISTRO
 async function startQuiz() {
     const nombre = document.getElementById("nombre").value;
     const apellido = document.getElementById("apellido").value;
@@ -249,30 +282,15 @@ async function startQuiz() {
         document.getElementById("step1").style.display = "none";
         document.getElementById("step2").style.display = "block";
 
-        showQuestion();
+        document.getElementById("question").innerText = "Pregunta demo";
+        document.getElementById("options").innerHTML = "<button>Ejemplo</button>";
 
     } catch (error) {
         alert(error.message);
     }
 }
 
-// ================= QUIZ SIMPLE =================
-let current = 0;
-let respuestas = [];
-
-function showQuestion() {
-    document.getElementById("question").innerText =
-        "Pregunta " + (current + 1);
-}
-
-function prevQuestion() {
-    if (current > 0) current--;
-}
-
-// ================= FINAL =================
-function goHome() {
-    window.location.href = "dashboard.html";
-}
+function prevQuestion() {}
 
 </script>
 
