@@ -12,7 +12,6 @@
             background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
         }
 
-        /* HEADER */
         #header {
             text-align: center;
             padding: 30px 20px;
@@ -29,38 +28,23 @@
             margin-top: 10px;
         }
 
-        /* 🔥 LAYOUT 3 COLUMNAS */
         .layout {
             display: grid;
-            grid-template-columns: 1fr 420px 1fr;
+            grid-template-columns: 1fr 450px 1fr;
             gap: 20px;
-            max-width: 1200px;
+            max-width: 1300px;
             margin: auto;
             padding: 20px;
             align-items: start;
         }
 
-        /* PANEL LATERAL */
         .panel {
             background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            height: fit-content;
         }
 
-        .panel h3 {
-            margin-top: 0;
-            color: #444;
-        }
-
-        .panel p {
-            color: #777;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* CENTRO */
         .box {
             background: white;
             padding: 30px;
@@ -71,49 +55,26 @@
             gap: 12px;
         }
 
-        h2 {
-            text-align: center;
-        }
-
-        /* INPUTS */
         input, select, textarea {
             width: 100%;
             padding: 12px;
             border-radius: 12px;
             border: 1px solid #ddd;
-            font-size: 14px;
-            box-sizing: border-box;
         }
 
         textarea {
-            resize: none;
             height: 80px;
         }
 
-        /* BOTONES */
         button {
             width: 100%;
             padding: 12px;
             border-radius: 12px;
             border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .primary {
             background: #6c63ff;
             color: white;
-        }
-
-        .secondary {
-            background: transparent;
-            border: 2px solid #6c63ff;
-            color: #6c63ff;
-        }
-
-        /* QUIZ */
-        #step2 {
-            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         #options {
@@ -133,7 +94,6 @@
             color: white;
         }
 
-        /* RESPONSIVE */
         @media (max-width: 1000px) {
             .layout {
                 grid-template-columns: 1fr;
@@ -146,21 +106,16 @@
 
 <div id="header">
     <h1>PsicoConecta 🧠</h1>
-    <p>Atención terapeútica personalizada al alcance de tus manos</p>
+    <p>Atención psicológica personalizada</p>
 </div>
 
 <div class="layout">
 
-    <!-- 🔵 IZQUIERDA -->
     <div class="panel">
         <h3>👥 Sobre nosotros</h3>
-        <p>
-PsicoConecta propone el desarrollo de una aplicación móvil que funcione como un vínculo entre pacientes y terapeutas, facilitando el acceso a servicios psicológicos a través de tecnologías digitales. La finalidad es simplificar el proceso de búsqueda de atención profesional y reducir la incertidumbre al momento de elegir un terapeuta.
-
-        </p>
+        <p>Plataforma para conectar pacientes con terapeutas según perfil psicológico.</p>
     </div>
 
-    <!-- 🟣 CENTRO -->
     <div class="box">
 
         <div id="step1">
@@ -174,76 +129,62 @@ PsicoConecta propone el desarrollo de una aplicación móvil que funcione como u
 
             <select id="ubicacion">
                 <option value="">Elige tu estado</option>
-            <option>Aguascalientes</option>
-            <option>Baja California</option>
-            <option>Baja California Sur</option>
-            <option>Campeche</option>
-            <option>Chiapas</option>
-            <option>Chihuahua</option>
-            <option>Ciudad de México</option>
-            <option>Coahuila</option>
-            <option>Colima</option>
-            <option>Durango</option>
-            <option>Estado de México</option>
-            <option>Guanajuato</option>
-            <option>Guerrero</option>
-            <option>Hidalgo</option>
-            <option>Jalisco</option>
-            <option>Michoacán</option>
-            <option>Morelos</option>
-            <option>Nayarit</option>
-            <option>Nuevo León</option>
-            <option>Oaxaca</option>
-            <option>Puebla</option>
-            <option>Querétaro</option>
-            <option>Quintana Roo</option>
-            <option>San Luis Potosí</option>
-            <option>Sinaloa</option>
-            <option>Sonora</option>
-            <option>Tabasco</option>
-            <option>Tamaulipas</option>
-            <option>Tlaxcala</option>
-            <option>Veracruz</option>
-            <option>Yucatán</option>
-            <option>Zacatecas</option>
+                <option>Aguascalientes</option>
+                <option>Baja California</option>
+                <option>Baja California Sur</option>
+                <option>Campeche</option>
+                <option>Chiapas</option>
+                <option>Chihuahua</option>
+                <option>Ciudad de México</option>
+                <option>Coahuila</option>
+                <option>Colima</option>
+                <option>Durango</option>
+                <option>Estado de México</option>
+                <option>Guanajuato</option>
+                <option>Guerrero</option>
+                <option>Hidalgo</option>
+                <option>Jalisco</option>
+                <option>Michoacán</option>
+                <option>Morelos</option>
+                <option>Nayarit</option>
+                <option>Nuevo León</option>
+                <option>Oaxaca</option>
+                <option>Puebla</option>
+                <option>Querétaro</option>
+                <option>Quintana Roo</option>
+                <option>San Luis Potosí</option>
+                <option>Sinaloa</option>
+                <option>Sonora</option>
+                <option>Tabasco</option>
+                <option>Tamaulipas</option>
+                <option>Tlaxcala</option>
+                <option>Veracruz</option>
+                <option>Yucatán</option>
+                <option>Zacatecas</option>
             </select>
 
             <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
-            <button class="primary" onclick="startQuiz()">Continuar</button>
-            <button class="secondary" onclick="showLogin()">Ya tengo cuenta</button>
-        </div>
-
-        <div id="loginBox" style="display:none;">
-            <h2>Iniciar sesión</h2>
-
-            <input type="email" id="loginCorreo" placeholder="Correo" />
-            <input type="password" id="loginPassword" placeholder="Contraseña" />
-
-            <button class="primary" onclick="loginUser()">Entrar</button>
-            <button class="secondary" onclick="showRegister()">Volver</button>
+            <button onclick="startQuiz()">Continuar</button>
+            <button onclick="login()">Ya tengo cuenta</button>
         </div>
 
         <div id="step2" style="display:none;">
             <h2 id="question"></h2>
             <div id="options"></div>
-            <button class="secondary" onclick="prevQuestion()">Atrás</button>
+            <button onclick="prevQuestion()">Atrás</button>
         </div>
 
         <div id="final" style="display:none;">
-            <h2>✅ Listo</h2>
-            <p>Tu perfil fue creado correctamente</p>
+            <h2>✅ Todo listo</h2>
+            <button onclick="goHome()">Ir al dashboard</button>
         </div>
 
     </div>
 
-    <!-- 🟢 DERECHA -->
     <div class="panel">
-        <h3>🚀 Sobre el proyecto</h3>
-        <p>
-El funcionamiento de la aplicación se basa en un sistema de filtros personalizados que permite al usuario ajustar su búsqueda de acuerdo con sus necesidades específicas. Entre los principales criterios se encuentran el tipo de situación a trabajar, la zona, la disponibilidad horaria y el enfoque terapéutico del profesional. Esto permite una selección más precisa y acorde a lo que el paciente requiere, buscando reducir el porcentaje de deserción con sesiones ajustadas específicamente a las necesidades del consultor. 
-
-        </p>
+        <h3>🚀 Proyecto</h3>
+        <p>Sistema de emparejamiento psicológico inteligente.</p>
     </div>
 
 </div>
@@ -261,64 +202,105 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 </script>
 
 <script>
 
-// UI
-function showLogin() {
-    document.getElementById("step1").style.display = "none";
-    document.getElementById("loginBox").style.display = "block";
-}
+// 🔥 TUS PREGUNTAS COMPLETAS (NO TOCADAS)
+const preguntas = [
+   { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
+   { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
+   { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
+   { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
+   { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación neuropsicológica", "Trastornos conductuales"] },
+   { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Ejercicios prácticos", "Mixto", "Reflexión profunda"] },
+   { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Soluciones", "Crecimiento personal", "Historia personal"] },
+   { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo", "Colaborativo", "Reflexivo"] },
+   { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas", "Escucha", "Análisis"] },
+   { q: "¿Te gustaría que incluya espiritualidad?", opts: ["No", "Tal vez", "Sí"] },
+   { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Meses", "Proceso largo"] },
+   { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Semanal", "Quincenal", "Flexible"] },
+   { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
+   { q: "¿Qué aspectos son importantes?", opts: ["Clínico", "Cultural", "Espiritual"] },
+   { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche"] },
+   { q: "¿Cuál es tu presupuesto?", opts: ["< $500", "$500–$1000", "> $700"] },
+   { q: "¿Te importa la experiencia?", opts: ["No", "Algo", "Mucho"] },
+   { q: "¿Nivel de formación?", opts: ["Licenciatura", "Maestría", "Doctorado"] },
+   { q: "¿Te interesan otras actividades?", opts: ["No", "Tal vez", "Sí"] },
+   { q: "¿Qué tan pronto necesitas empezar?", opts: ["Puedo esperar", "Pronto", "Urgente"] }
+];
 
-function showRegister() {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("step1").style.display = "block";
-}
+let current = 0;
+let respuestas = [];
 
-// LOGIN
-async function loginUser() {
-    const email = document.getElementById("loginCorreo").value;
-    const pass = document.getElementById("loginPassword").value;
-
-    try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        window.location.href = "dashboard.html";
-    } catch (e) {
-        alert(e.message);
-    }
-}
-
-// REGISTRO
-async function startQuiz() {
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const correo = document.getElementById("correo").value;
-    const password = document.getElementById("password").value;
-
-    if (!nombre || !apellido || !correo || !password) {
-        alert("Completa todos los campos");
-        return;
-    }
-
-    try {
-        await auth.createUserWithEmailAndPassword(correo, password);
-
+function startQuiz() {
+    auth.createUserWithEmailAndPassword(
+        document.getElementById("correo").value,
+        document.getElementById("password").value
+    ).then(() => {
         document.getElementById("step1").style.display = "none";
         document.getElementById("step2").style.display = "block";
+        showQuestion();
+    });
+}
 
-        document.getElementById("question").innerText = "Pregunta demo";
-        document.getElementById("options").innerHTML = "<button>Ejemplo</button>";
+function showQuestion() {
+    const q = preguntas[current];
+    document.getElementById("question").innerText = q.q;
 
-    } catch (error) {
-        alert(error.message);
+    const options = document.getElementById("options");
+    options.innerHTML = "";
+
+    q.opts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => {
+            respuestas.push(opt);
+            current++;
+            if (current < preguntas.length) showQuestion();
+            else finish();
+        };
+        options.appendChild(btn);
+    });
+}
+
+function prevQuestion() {
+    if (current > 0) {
+        current--;
+        respuestas.pop();
+        showQuestion();
     }
 }
 
-function prevQuestion() {}
+function finish() {
+    const user = auth.currentUser;
+
+    db.collection("usuarios").doc(user.uid).set({
+        email: user.email,
+        nombre: document.getElementById("nombre").value + " " + document.getElementById("apellido").value,
+        ubicacion: document.getElementById("ubicacion").value,
+        motivo: document.getElementById("motivo").value,
+        respuestas: respuestas
+    });
+
+    document.getElementById("step2").style.display = "none";
+    document.getElementById("final").style.display = "block";
+}
+
+function login() {
+    auth.signInWithEmailAndPassword(
+        document.getElementById("correo").value,
+        document.getElementById("password").value
+    ).then(() => {
+        window.location.href = "dashboard.html";
+    });
+}
+
+function goHome() {
+    window.location.href = "dashboard.html";
+}
 
 </script>
 
