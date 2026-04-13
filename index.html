@@ -9,60 +9,47 @@
 
 <body class="is-preload">
 
-<!-- HEADER -->
 <div id="header">
     <h1>Bienvenido a PsicoConecta</h1>
     <p>Crea tu perfil y encuentra tu mejor opción de terapia!!</p>
 </div>
 
-<!-- MAIN -->
 <div id="main">
-
 <div class="box container">
 
-    <!-- PASO 1 -->
-    <div id="step1">
-        <h2>Crear perfil</h2>
+<div id="step1">
+    <h2>Crear perfil</h2>
 
-        <input type="text" id="nombre" placeholder="Nombre completo" />
-        <input type="email" id="correo" placeholder="Correo electrónico" />
-        <input type="password" id="password" placeholder="Contraseña" />
-        <input type="text" id="ubicacion" placeholder="Ciudad" />
-        <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
+    <input type="text" id="nombre" placeholder="Nombre completo" />
+    <input type="email" id="correo" placeholder="Correo electrónico" />
+    <input type="password" id="password" placeholder="Contraseña" />
+    <input type="text" id="ubicacion" placeholder="Ciudad" />
+    <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
-        <button onclick="startQuiz()">Continuar</button>
-        <button onclick="login()" style="margin-top:10px;">Ya tengo cuenta</button>
-    </div>
+    <button onclick="startQuiz()">Continuar</button>
+    <button onclick="login()" style="margin-top:10px;">Ya tengo cuenta</button>
+</div>
 
-    <!-- PASO 2 -->
-    <div id="step2" style="display:none;">
-        <h2 id="question"></h2>
-        <p id="progress"></p>
-        <div id="options"></div>
+<div id="step2" style="display:none;">
+    <h2 id="question"></h2>
+    <p id="progress"></p>
+    <div id="options"></div>
+    <button onclick="prevQuestion()">Atrás</button>
+</div>
 
-        <button onclick="prevQuestion()">Atrás</button>
-    </div>
-
-    <!-- FINAL -->
-    <div id="final" style="display:none;">
-        <h2>✅ Todo listo</h2>
-        <p>Tu perfil ha sido creado correctamente.</p>
-        <button onclick="goHome()">Ir al dashboard</button>
-    </div>
-
+<div id="final" style="display:none;">
+    <h2>✅ Todo listo</h2>
+    <p>Tu perfil ha sido creado correctamente.</p>
+    <button onclick="goHome()">Ir al dashboard</button>
 </div>
 
 </div>
+</div>
 
-<!-- SCRIPTS -->
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/main.js"></script>
-
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
+
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
@@ -76,8 +63,8 @@ const db = firebase.firestore();
 </script>
 
 <script>
-// PREGUNTAS
-// ---------------- PREGUNTAS COMPLETAS ----------------
+
+// ---------------- PREGUNTAS ----------------
 const preguntas = [
    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
    { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
@@ -115,6 +102,8 @@ async function startQuiz() {
         return;
     }
 
+    respuestas = []; // 🔥 reset
+
     try {
         await auth.createUserWithEmailAndPassword(correo, password);
 
@@ -128,8 +117,7 @@ async function startQuiz() {
     }
 }
 
-   // 👇👇👇 AQUÍ PEGAS ESTO 👇👇👇
-
+// ---------------- LOGIN ----------------
 async function login() {
     const correo = document.getElementById("correo").value;
     const password = document.getElementById("password").value;
@@ -145,7 +133,7 @@ async function login() {
     } catch (error) {
         alert("Error: " + error.message);
     }
-} 
+}
 
 // ---------------- MOSTRAR ----------------
 function showQuestion() {
@@ -167,7 +155,7 @@ function showQuestion() {
 
 // ---------------- NEXT ----------------
 function nextQuestion(answer) {
-    respuestas[current] = answer;
+    respuestas.push(answer); // 🔥 más seguro
 
     if (current < preguntas.length - 1) {
         current++;
@@ -181,6 +169,7 @@ function nextQuestion(answer) {
 function prevQuestion() {
     if (current > 0) {
         current--;
+        respuestas.pop(); // 🔥 sincroniza
         showQuestion();
     }
 }
@@ -195,19 +184,17 @@ async function finish() {
     }
 
     try {
-await db.collection("usuarios").doc(user.uid).set({
-    email: user.email,
-    nombre: document.getElementById("nombre").value,
-    ubicacion: document.getElementById("ubicacion").value,
-    motivo: document.getElementById("motivo").value,
-    respuestas: respuestas,
-    fecha: new Date()
-});
+        await db.collection("usuarios").doc(user.uid).set({
+            email: user.email,
+            nombre: document.getElementById("nombre").value,
+            ubicacion: document.getElementById("ubicacion").value,
+            motivo: document.getElementById("motivo").value,
+            respuestas: respuestas,
+            fecha: new Date()
+        });
 
         document.getElementById("step2").style.display = "none";
         document.getElementById("final").style.display = "block";
-
-        console.log("Respuestas guardadas:", respuestas);
 
     } catch (error) {
         alert("Error guardando datos");
@@ -219,14 +206,6 @@ await db.collection("usuarios").doc(user.uid).set({
 function goHome() {
     window.location.href = "dashboard.html";
 }
-
-// 👇👇👇 PEGA AQUÍ 👇👇👇
-
-auth.onAuthStateChanged(user => {
-    if (user) {
-        console.log("Usuario activo:", user.email);
-    }
-});
 
 </script>
 </body>
