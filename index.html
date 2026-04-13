@@ -1,22 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>PsicoConecta</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
+        }
+
+        /* HEADER */
+        #header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        #header h1 {
+            font-size: 40px;
+            margin: 0;
+            color: #333;
+        }
+
+        #header p {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* CONTENEDOR */
+        .box {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        /* BOTONES */
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #6c63ff;
+            color: white;
+        }
+
+        .secondary {
+            background: transparent;
+            border: 2px solid #6c63ff;
+            color: #6c63ff;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* QUIZ */
+        #step2 {
+            text-align: center;
+        }
+
+        #question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        #options button {
+            margin: 5px 0;
+            background: white;
+            border: 2px solid #6c63ff;
+            color: #6c63ff;
+        }
+
+        #options button:hover {
+            background: #6c63ff;
+            color: white;
+        }
+
+        /* FINAL */
+        #final {
+            text-align: center;
+        }
+
+    </style>
+</head>
+
 <body class="is-preload">
 
+<!-- HEADER -->
 <div id="header">
-    <h1>Bienvenido a PsicoConecta</h1>
-    <p>Crea tu perfil o inicia sesión</p>
+    <h1>PsicoConecta 🧠</h1>
+    <p>Encuentra tu mejor enfoque terapéutico</p>
 </div>
 
-<div id="main">
-<div class="box container">
+<div class="box">
 
-<!-- ===================== -->
-<!-- 🟢 REGISTRO + QUIZ -->
-<!-- ===================== -->
+<!-- ================= LOGIN / REGISTRO ================= -->
 <div id="step1">
 
-    <h2>Crear perfil</h2>
+    <h2 style="text-align:center;">Crear perfil</h2>
 
     <input type="text" id="nombre" placeholder="Primer nombre" />
     <input type="text" id="apellido" placeholder="Apellido" />
+
     <input type="email" id="correo" placeholder="Correo electrónico" />
     <input type="password" id="password" placeholder="Contraseña" />
 
@@ -31,52 +141,41 @@
 
     <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
 
-    <button onclick="startQuiz()">Continuar</button>
+    <button class="primary" onclick="startQuiz()">Continuar</button>
+    <button class="secondary" onclick="showLogin()">Ya tengo cuenta</button>
 
-    <!-- 🔁 CAMBIO DE PANTALLA -->
-    <button onclick="showLogin()" style="margin-top:10px;">
-        Ya tengo cuenta
-    </button>
 </div>
 
-<!-- ===================== -->
-<!-- 🔵 LOGIN -->
-<!-- ===================== -->
+<!-- LOGIN -->
 <div id="loginBox" style="display:none;">
 
-    <h2>Iniciar sesión</h2>
+    <h2 style="text-align:center;">Iniciar sesión</h2>
 
     <input type="email" id="loginCorreo" placeholder="Correo electrónico" />
     <input type="password" id="loginPassword" placeholder="Contraseña" />
 
-    <button onclick="loginUser()">Entrar</button>
+    <button class="primary" onclick="loginUser()">Entrar</button>
+    <button class="secondary" onclick="showRegister()">Crear cuenta</button>
 
-    <button onclick="showRegister()" style="margin-top:10px;">
-        Crear cuenta
-    </button>
 </div>
 
-<!-- ===================== -->
-<!-- 🟡 QUIZ -->
-<!-- ===================== -->
+<!-- QUIZ -->
 <div id="step2" style="display:none;">
     <h2 id="question"></h2>
     <div id="options"></div>
-    <button onclick="prevQuestion()">Atrás</button>
+    <button class="secondary" onclick="prevQuestion()">Atrás</button>
 </div>
 
-<!-- ===================== -->
-<!-- ✅ FINAL -->
-<!-- ===================== -->
+<!-- FINAL -->
 <div id="final" style="display:none;">
     <h2>✅ Todo listo</h2>
-    <button onclick="goHome()">Ir al dashboard</button>
+    <p>Tu perfil fue creado correctamente</p>
+    <button class="primary" onclick="goHome()">Ir al dashboard</button>
 </div>
 
 </div>
-</div>
 
-<!-- Firebase -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -95,9 +194,7 @@ const db = firebase.firestore();
 
 <script>
 
-// =====================
-// 🔁 CAMBIO DE PANTALLAS
-// =====================
+// ================= UI NAV =================
 function showLogin() {
     document.getElementById("step1").style.display = "none";
     document.getElementById("loginBox").style.display = "block";
@@ -108,9 +205,7 @@ function showRegister() {
     document.getElementById("step1").style.display = "block";
 }
 
-// =====================
-// 🔐 LOGIN REAL
-// =====================
+// ================= LOGIN =================
 async function loginUser() {
     const email = document.getElementById("loginCorreo").value;
     const pass = document.getElementById("loginPassword").value;
@@ -119,13 +214,11 @@ async function loginUser() {
         await auth.signInWithEmailAndPassword(email, pass);
         window.location.href = "dashboard.html";
     } catch (e) {
-        alert("Error: " + e.message);
+        alert(e.message);
     }
 }
 
-// =====================
-// 🟢 REGISTRO
-// =====================
+// ================= REGISTRO =================
 async function startQuiz() {
     const nombre = document.getElementById("nombre").value;
     const apellido = document.getElementById("apellido").value;
@@ -150,14 +243,24 @@ async function startQuiz() {
     }
 }
 
-// =====================
-// 🔚 FINAL
-// =====================
+// ================= QUIZ (placeholder) =================
+let current = 0;
+let respuestas = [];
+
+function showQuestion() {
+    document.getElementById("question").innerText = "Pregunta " + (current + 1);
+}
+
+function prevQuestion() {
+    if (current > 0) current--;
+}
+
+// ================= FINAL =================
 function goHome() {
     window.location.href = "dashboard.html";
 }
 
-// (tu quiz sigue igual abajo)
 </script>
 
 </body>
+</html>
