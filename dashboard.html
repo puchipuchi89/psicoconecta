@@ -8,10 +8,15 @@
 <h1>Bienvenido 🎉</h1>
 <p id="user"></p>
 
+<h3>Tus respuestas:</h3>
+<ul id="respuestas"></ul>
+
 <button onclick="logout()">Cerrar sesión</button>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -22,15 +27,42 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
-auth.onAuthStateChanged(user => {
+// USUARIO + RESPUESTAS
+auth.onAuthStateChanged(async user => {
     if (user) {
         document.getElementById("user").innerText = user.email;
+
+        try {
+            const doc = await db.collection("usuarios").doc(user.uid).get();
+
+            const lista = document.getElementById("respuestas");
+            lista.innerHTML = "";
+
+            if (doc.exists) {
+                const data = doc.data();
+
+                data.respuestas.forEach((r, i) => {
+                    const li = document.createElement("li");
+                    li.innerText = "Pregunta " + (i + 1) + ": " + r;
+                    lista.appendChild(li);
+                });
+
+            } else {
+                lista.innerHTML = "<li>No hay respuestas guardadas</li>";
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+
     } else {
         window.location.href = "index.html";
     }
 });
 
+// LOGOUT
 function logout() {
     auth.signOut().then(() => {
         window.location.href = "index.html";
