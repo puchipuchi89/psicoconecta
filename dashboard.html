@@ -6,13 +6,12 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
         }
 
         h1 {
             text-align: center;
-            margin-top: 20px;
         }
 
         .container {
@@ -32,6 +31,7 @@
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .tab-buttons button {
@@ -41,15 +41,8 @@
             cursor: pointer;
             background: #6c63ff;
             color: white;
-            transition: 0.2s;
         }
 
-        .tab-buttons button:hover {
-            transform: scale(1.05);
-            background: #5848e5;
-        }
-
-        /* CARDS */
         .tab {
             display: none;
             margin-top: 20px;
@@ -63,12 +56,14 @@
             display: block;
         }
 
-        /* FEED */
         .feed-box {
             text-align: center;
             padding: 40px;
             color: #777;
-            font-size: 18px;
+        }
+
+        .profile-box p {
+            margin: 10px 0;
         }
 
         ul {
@@ -83,13 +78,7 @@
             border-radius: 10px;
             background: #ff4d6d;
             color: white;
-            cursor: pointer;
         }
-
-        button.logout:hover {
-            background: #e63e5c;
-        }
-
     </style>
 </head>
 
@@ -106,7 +95,8 @@
     <div class="tab-buttons">
         <button onclick="openTab('feedTab')">🏠 Feed</button>
         <button onclick="openTab('resultadoTab')">🧠 Resultado</button>
-        <button onclick="openTab('respuestasTab')">📋 Mis respuestas</button>
+        <button onclick="openTab('respuestasTab')">📋 Respuestas</button>
+        <button onclick="openTab('perfilTab')">👤 Ver perfil</button>
     </div>
 
     <!-- FEED -->
@@ -125,6 +115,21 @@
     <div id="respuestasTab" class="tab">
         <h3>Tus respuestas</h3>
         <ul id="respuestas"></ul>
+    </div>
+
+    <!-- PERFIL -->
+    <div id="perfilTab" class="tab profile-box">
+        <h3>👤 Perfil del usuario</h3>
+
+        <p><strong>Nombre:</strong> <span id="p_nombre"></span></p>
+        <p><strong>Correo:</strong> <span id="p_email"></span></p>
+        <p><strong>Ubicación:</strong> <span id="p_ubicacion"></span></p>
+        <p><strong>Motivo:</strong> <span id="p_motivo"></span></p>
+
+        <hr>
+
+        <p><strong>Resultado psicológico:</strong></p>
+        <p id="p_resultado">Analizando...</p>
     </div>
 
 </div>
@@ -159,74 +164,21 @@ function openTab(tabId) {
 // ---------------- ANALISIS ----------------
 function analizarCorriente(respuestas) {
 
-    let score = {
-        psicoanalitica: 0,
-        tcc: 0,
-        humanista: 0,
-        sistemica: 0,
-        gestalt: 0,
-        conductual: 0,
-        familiar: 0,
-        integrativa: 0
-    };
-
     const text = respuestas.join(" ").toLowerCase();
 
-    if (text.includes("historia") || text.includes("pasado") || text.includes("análisis") || text.includes("duelo")) {
-        score.psicoanalitica += 2;
-    }
+    if (text.includes("familia") || text.includes("relación")) return "👥 Sistémica";
+    if (text.includes("soluciones") || text.includes("herramientas")) return "🧩 TCC";
+    if (text.includes("crecimiento") || text.includes("autoestima")) return "🌱 Humanista";
+    if (text.includes("historia") || text.includes("pasado")) return "🧠 Psicoanalítica";
+    if (text.includes("presente") || text.includes("ahora")) return "🎯 Gestalt";
 
-    if (text.includes("soluciones") || text.includes("herramientas") || text.includes("ejercicios prácticos") || text.includes("ansiedad")) {
-        score.tcc += 2;
-    }
-
-    if (text.includes("crecimiento personal") || text.includes("autoestima") || text.includes("emocional")) {
-        score.humanista += 2;
-    }
-
-    if (text.includes("familia") || text.includes("pareja") || text.includes("relación")) {
-        score.sistemica += 2;
-    }
-
-    if (text.includes("presente") || text.includes("aquí") || text.includes("ahora")) {
-        score.gestalt += 2;
-    }
-
-    if (text.includes("conducta") || text.includes("hábitos")) {
-        score.conductual += 2;
-    }
-
-    if (text.includes("crianza") || text.includes("hogar")) {
-        score.familiar += 2;
-    }
-
-    let max = Math.max(...Object.values(score));
-    let top = Object.keys(score).filter(k => score[k] === max);
-
-    if (top.length > 1 || max === 0) {
-        return "🔄 Integrativa: combinación de varios enfoques";
-    }
-
-    const resultados = {
-        psicoanalitica: "🧠 Psicoanalítica",
-        tcc: "🧩 Cognitivo-Conductual",
-        humanista: "🌱 Humanista",
-        sistemica: "👥 Sistémica",
-        gestalt: "🎯 Gestalt",
-        conductual: "⚙️ Conductual",
-        familiar: "🏠 Familiar",
-        integrativa: "🔄 Integrativa"
-    };
-
-    return resultados[top[0]];
+    return "🔄 Integrativa";
 }
 
 // ---------------- AUTH ----------------
 auth.onAuthStateChanged(user => {
 
     const status = document.getElementById("status");
-    const lista = document.getElementById("respuestas");
-    const resultado = document.getElementById("resultado");
 
     if (user) {
 
@@ -238,23 +190,31 @@ auth.onAuthStateChanged(user => {
         unsubscribe = db.collection("usuarios").doc(user.uid)
             .onSnapshot(doc => {
 
+                if (!doc.exists) return;
+
+                const data = doc.data();
+                const respuestas = data.respuestas || [];
+
+                // ---------------- RESPUESTAS ----------------
+                const lista = document.getElementById("respuestas");
                 lista.innerHTML = "";
 
-                if (doc.exists) {
-                    const data = doc.data();
-                    const respuestas = data.respuestas || [];
+                respuestas.forEach((r, i) => {
+                    const li = document.createElement("li");
+                    li.innerText = "Pregunta " + (i + 1) + ": " + r;
+                    lista.appendChild(li);
+                });
 
-                    respuestas.forEach((r, i) => {
-                        const li = document.createElement("li");
-                        li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                        lista.appendChild(li);
-                    });
+                // ---------------- RESULTADO ----------------
+                const resultado = analizarCorriente(respuestas);
+                document.getElementById("resultado").innerText = resultado;
+                document.getElementById("p_resultado").innerText = resultado;
 
-                    resultado.innerText = analizarCorriente(respuestas);
-
-                } else {
-                    lista.innerHTML = "<li>No hay datos</li>";
-                }
+                // ---------------- PERFIL ----------------
+                document.getElementById("p_nombre").innerText = data.nombre || "";
+                document.getElementById("p_email").innerText = data.email || user.email;
+                document.getElementById("p_ubicacion").innerText = data.ubicacion || "";
+                document.getElementById("p_motivo").innerText = data.motivo || "";
 
                 status.innerText = "";
             });
