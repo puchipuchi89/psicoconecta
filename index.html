@@ -1,472 +1,140 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>PsicoConecta</title>
+    <title>Enfoques - Plataforma</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --sage:      #4a7c6f;
-            --sage-light:#6a9e90;
-            --sage-dark: #2f5248;
-            --cream:     #faf8f4;
-            --warm-white:#ffffff;
-            --text:      #1e2d2b;
-            --muted:     #6b7e7a;
-            --border:    #dde8e5;
-            --error:     #c0392b;
-            --shadow:    0 8px 40px rgba(74,124,111,0.12);
-            --shadow-sm: 0 2px 12px rgba(74,124,111,0.08);
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--cream);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 16px 60px;
-            color: var(--text);
-        }
-
-        /* ── HEADER ── */
-        .site-header {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .logo-icon {
-            width: 42px; height: 42px;
-            background: var(--sage);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-        }
-
-        .logo-text {
-            font-family: 'DM Serif Display', serif;
-            font-size: 26px;
-            color: var(--sage-dark);
-            letter-spacing: -0.5px;
-        }
-
-        .site-header p {
-            font-size: 14px;
-            color: var(--muted);
-            font-weight: 300;
-            letter-spacing: 0.3px;
-        }
-
-        /* ── CARD ── */
-        .card {
-            background: var(--warm-white);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            padding: 40px 36px;
-            width: 100%;
-            max-width: 460px;
-            animation: fadeUp 0.4s ease;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .card h2 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 24px;
-            color: var(--sage-dark);
-            margin-bottom: 6px;
-        }
-
-        .card .subtitle {
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 28px;
-            font-weight: 300;
-        }
-
-        /* ── TOGGLE TABS ── */
-        .auth-tabs {
-            display: flex;
-            background: #eef3f2;
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 28px;
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .auth-tab.active {
-            background: var(--warm-white);
-            color: var(--sage-dark);
-            box-shadow: 0 2px 8px rgba(74,124,111,0.12);
-        }
-
-        /* ── INPUTS ── */
-        .field {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--sage-dark);
-            margin-bottom: 6px;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            color: var(--text);
-            background: var(--cream);
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-            appearance: none;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--sage-light);
-            box-shadow: 0 0 0 3px rgba(74,124,111,0.1);
-            background: white;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* ── BUTTONS ── */
-        .btn-primary {
-            width: 100%;
-            padding: 13px;
-            background: var(--sage);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.2s, transform 0.15s;
-            letter-spacing: 0.2px;
-        }
-
-        .btn-primary:hover  { background: var(--sage-dark); transform: translateY(-1px); }
-        .btn-primary:active { transform: translateY(0); }
-
-        .btn-secondary {
-            width: 100%;
-            padding: 11px;
-            background: transparent;
-            color: var(--sage);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: border-color 0.2s, background 0.2s;
-        }
-
-        .btn-secondary:hover { border-color: var(--sage-light); background: #f0f6f4; }
-
-        /* ── QUIZ (STEP 2) ── */
-        #step2 { display: none; }
-
-        .quiz-progress {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--border);
-            border-radius: 99px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--sage);
-            border-radius: 99px;
-            transition: width 0.3s ease;
-        }
-
-        .quiz-question {
-            font-family: 'DM Serif Display', serif;
-            font-size: 20px;
-            color: var(--sage-dark);
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .opt-btn {
-            padding: 13px 16px;
-            background: var(--cream);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            color: var(--text);
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.18s;
-        }
-
-        .opt-btn:hover {
-            border-color: var(--sage-light);
-            background: #f0f6f4;
-            color: var(--sage-dark);
-        }
-
-        /* ── FINAL ── */
-        #final { display: none; text-align: center; }
-
-        .final-icon {
-            font-size: 52px;
-            margin-bottom: 16px;
-        }
-
-        #final h2 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 26px;
-            color: var(--sage-dark);
-            margin-bottom: 8px;
-        }
-
-        #final p {
-            font-size: 14px;
-            color: var(--muted);
-            margin-bottom: 28px;
-        }
-
-        /* ── ERROR MSG ── */
-        .error-msg {
-            font-size: 13px;
-            color: var(--error);
-            margin-top: 10px;
-            text-align: center;
-            min-height: 18px;
-        }
-
-        /* ── DIVIDER ── */
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 18px 0;
-            color: var(--border);
-            font-size: 12px;
-            color: var(--muted);
-        }
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        .footer-note {
-            margin-top: 28px;
-            text-align: center;
-            font-size: 12px;
-            color: var(--muted);
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 
-<body>
+<body class="is-preload">
 
-<!-- ── HEADER ── -->
-<header class="site-header">
-    <div class="logo">
-        <div class="logo-icon">🧠</div>
-        <span class="logo-text">PsicoConecta</span>
-    </div>
-    <p>Encuentra el acompañamiento psicológico que necesitas</p>
-</header>
-
-<!-- ── CARD ── -->
-<div class="card">
-
-    <!-- ================= STEP 1 ================= -->
-    <div id="step1">
-
-        <!-- TOGGLE TABS -->
-        <div class="auth-tabs">
-            <button class="auth-tab active" id="tab-register" onclick="showAuthTab('register')">Crear cuenta</button>
-            <button class="auth-tab" id="tab-login" onclick="showAuthTab('login')">Iniciar sesión</button>
-        </div>
-
-        <!-- ── REGISTRO ── -->
-        <div id="view-register">
-            <h2>Crea tu perfil</h2>
-            <p class="subtitle">Completa tu información para comenzar</p>
-
-            <div class="row-2">
-                <div class="field">
-                    <label>Nombre</label>
-                    <input type="text" id="nombre" placeholder="Ej. María" />
-                </div>
-                <div class="field">
-                    <label>Apellido</label>
-                    <input type="text" id="apellido" placeholder="Ej. García" />
-                </div>
-            </div>
-
-            <div class="field">
-                <label>Correo electrónico</label>
-                <input type="email" id="correo" placeholder="correo@ejemplo.com" />
-            </div>
-
-            <div class="field">
-                <label>Contraseña</label>
-                <input type="password" id="password" placeholder="Mínimo 6 caracteres" />
-            </div>
-
-            <div class="field">
-                <label>Estado</label>
-                <select id="ubicacion">
-                    <option value="">Elige tu estado</option>
-                    <option>Aguascalientes</option>
-                    <option>Baja California</option>
-                    <option>Baja California Sur</option>
-                    <option>Campeche</option>
-                    <option>Chiapas</option>
-                    <option>Chihuahua</option>
-                    <option>Ciudad de México</option>
-                    <option>Coahuila</option>
-                    <option>Colima</option>
-                    <option>Durango</option>
-                    <option>Estado de México</option>
-                    <option>Guanajuato</option>
-                    <option>Guerrero</option>
-                    <option>Hidalgo</option>
-                    <option>Jalisco</option>
-                    <option>Michoacán</option>
-                    <option>Morelos</option>
-                    <option>Nayarit</option>
-                    <option>Nuevo León</option>
-                    <option>Oaxaca</option>
-                    <option>Puebla</option>
-                    <option>Querétaro</option>
-                    <option>Quintana Roo</option>
-                    <option>San Luis Potosí</option>
-                    <option>Sinaloa</option>
-                    <option>Sonora</option>
-                    <option>Tabasco</option>
-                    <option>Tamaulipas</option>
-                    <option>Tlaxcala</option>
-                    <option>Veracruz</option>
-                    <option>Yucatán</option>
-                    <option>Zacatecas</option>
-                </select>
-            </div>
-
-            <div class="field">
-                <label>Motivo de consulta</label>
-                <textarea id="motivo" placeholder="Cuéntanos brevemente qué te trae aquí..."></textarea>
-            </div>
-
-            <button class="btn-primary" onclick="startQuiz()">Continuar →</button>
-            <div class="error-msg" id="register-error"></div>
-        </div>
-
-        <!-- ── LOGIN ── -->
-        <div id="view-login" style="display:none;">
-            <h2>Bienvenido de vuelta</h2>
-            <p class="subtitle">Ingresa con tu cuenta para continuar</p>
-
-            <div class="field">
-                <label>Correo electrónico</label>
-                <input type="email" id="login-correo" placeholder="correo@ejemplo.com" />
-            </div>
-
-            <div class="field">
-                <label>Contraseña</label>
-                <input type="password" id="login-password" placeholder="Tu contraseña" />
-            </div>
-
-            <button class="btn-primary" onclick="login()">Iniciar sesión</button>
-            <div class="error-msg" id="login-error"></div>
-        </div>
-
-    </div>
-    <!-- /step1 -->
-
-    <!-- ================= STEP 2: QUIZ ================= -->
-    <div id="step2">
-        <p class="quiz-progress" id="progress"></p>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <h2 class="quiz-question" id="question"></h2>
-        <div class="options-grid" id="options"></div>
-        <button class="btn-secondary" onclick="prevQuestion()">← Atrás</button>
-    </div>
-
-    <!-- ================= FINAL ================= -->
-    <div id="final">
-        <div class="final-icon">✅</div>
-        <h2>¡Todo listo!</h2>
-        <p>Tu perfil ha sido creado correctamente.<br>Ya puedes explorar tu espacio.</p>
-        <button class="btn-primary" onclick="goHome()">Ir al dashboard →</button>
-    </div>
-
+<div id="header">
+    <h1>Bienvenido a PsicoConecta</h1>
+    <p>Crea tu perfil y encuentra tu mejor opción de terapia!!!</p>
 </div>
 
-<p class="footer-note">Tu información es privada y está protegida.</p>
+<div id="main">
+<div class="box container">
 
-<!-- ── FIREBASE ── -->
+<!-- ================= STEP 1 - PACIENTE ================= -->
+<div id="step1">
+    <h2>Crear perfil</h2>
+
+    <input type="text" id="nombre" placeholder="Primer nombre" />
+    <input type="text" id="apellido" placeholder="Apellido" />
+    <input type="email" id="correo" placeholder="Correo electrónico" />
+    <input type="password" id="password" placeholder="Contraseña" />
+
+    <select id="ubicacion">
+        <option value="">Elige tu estado</option>
+        <option>Aguascalientes</option>
+        <option>Baja California</option>
+        <option>Baja California Sur</option>
+        <option>Campeche</option>
+        <option>Chiapas</option>
+        <option>Chihuahua</option>
+        <option>Ciudad de México</option>
+        <option>Coahuila</option>
+        <option>Colima</option>
+        <option>Durango</option>
+        <option>Estado de México</option>
+        <option>Guanajuato</option>
+        <option>Guerrero</option>
+        <option>Hidalgo</option>
+        <option>Jalisco</option>
+        <option>Michoacán</option>
+        <option>Morelos</option>
+        <option>Nayarit</option>
+        <option>Nuevo León</option>
+        <option>Oaxaca</option>
+        <option>Puebla</option>
+        <option>Querétaro</option>
+        <option>Quintana Roo</option>
+        <option>San Luis Potosí</option>
+        <option>Sinaloa</option>
+        <option>Sonora</option>
+        <option>Tabasco</option>
+        <option>Tamaulipas</option>
+        <option>Tlaxcala</option>
+        <option>Veracruz</option>
+        <option>Yucatán</option>
+        <option>Zacatecas</option>
+    </select>
+
+    <textarea id="motivo" placeholder="Motivo de consulta"></textarea>
+
+    <button onclick="startQuiz()">Continuar</button>
+    <button onclick="showPsiRegistro()" style="margin-top:10px;">Soy psicólogo</button>
+    <button onclick="login()" style="margin-top:10px;">Ya tengo cuenta</button>
+</div>
+
+<!-- ================= STEP 1 - PSICÓLOGO ================= -->
+<div id="step1_psi" style="display:none;">
+    <h2>Registro de psicólogo</h2>
+
+    <input type="text" id="psi_nombre" placeholder="Primer nombre" />
+    <input type="text" id="psi_apellido" placeholder="Apellido" />
+    <input type="email" id="psi_correo" placeholder="Correo electrónico" />
+    <input type="password" id="psi_password" placeholder="Contraseña" />
+    <input type="text" id="psi_cedula" placeholder="Cédula profesional" />
+    <input type="text" id="psi_enfoque" placeholder="Enfoque a trabajar" />
+    <input type="text" id="psi_consultorio" placeholder="Dirección del consultorio" />
+
+    <button onclick="startQuizPsi()">Continuar</button>
+    <button onclick="showStep1()" style="margin-top:10px;">← Regresar</button>
+    <button onclick="loginPsi()" style="margin-top:10px;">Ya tengo cuenta</button>
+</div>
+
+<!-- ================= STEP 2 - PACIENTE ================= -->
+<div id="step2" style="display:none;">
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <div id="religion_sub" style="display:none; margin-top:15px;">
+        <p><strong>¿Cuál tradición o creencia?</strong></p>
+        <select id="religion_select">
+            <option value="Cristianismo">Cristianismo</option>
+            <option value="Judaísmo">Judaísmo</option>
+            <option value="Islam">Islam</option>
+            <option value="Budismo">Budismo</option>
+            <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
+            <option value="Otra">Otra</option>
+        </select>
+        <button onclick="confirmarReligionPaciente()" style="margin-top:10px;">Confirmar</button>
+    </div>
+    <button onclick="prevQuestion()" style="margin-top:15px;">Atrás</button>
+</div>
+
+<!-- ================= STEP 2 - PSICÓLOGO ================= -->
+<div id="step2_psi" style="display:none;">
+    <h2 id="psi_question"></h2>
+    <div id="psi_options"></div>
+    <div id="psi_religion_sub" style="display:none; margin-top:15px;">
+        <p><strong>¿Cuál tradición o creencia?</strong></p>
+        <select id="psi_religion_select">
+            <option value="Cristianismo">Cristianismo</option>
+            <option value="Judaísmo">Judaísmo</option>
+            <option value="Islam">Islam</option>
+            <option value="Budismo">Budismo</option>
+            <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
+            <option value="Otra">Otra</option>
+        </select>
+        <button onclick="confirmarReligionPsi()" style="margin-top:10px;">Confirmar</button>
+    </div>
+    <button onclick="prevPsiQuestion()" style="margin-top:15px;">Atrás</button>
+</div>
+
+<!-- ================= FINAL ================= -->
+<div id="final" style="display:none;">
+    <h2>✅ Todo listo</h2>
+    <p>Tu perfil ha sido creado correctamente.</p>
+    <button onclick="goHome()">Ir al dashboard</button>
+</div>
+
+</div>
+</div>
+
+<!-- ================= FIREBASE ================= -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -477,63 +145,121 @@ const firebaseConfig = {
   authDomain: "psicoconecta-a507d.firebaseapp.com",
   projectId: "psicoconecta-a507d",
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db   = firebase.firestore();
+const db = firebase.firestore();
 </script>
 
 <script>
 
-// ================= TOGGLE AUTH TABS =================
-function showAuthTab(tab) {
-    const isRegister = tab === 'register';
-    document.getElementById('view-register').style.display = isRegister ? 'block' : 'none';
-    document.getElementById('view-login').style.display    = isRegister ? 'none'  : 'block';
-    document.getElementById('tab-register').classList.toggle('active', isRegister);
-    document.getElementById('tab-login').classList.toggle('active', !isRegister);
-}
-
-// ================= PREGUNTAS (INTACTAS) =================
+// ================= PREGUNTAS PACIENTE =================
 const preguntas = [
-   { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
-   { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
-   { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
-   { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
-   { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación neuropsicológica", "Trastornos conductuales"] },
-   { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Ejercicios prácticos", "Mixto", "Reflexión profunda"] },
-   { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Soluciones", "Crecimiento personal", "Historia personal"] },
-   { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo", "Colaborativo", "Reflexivo"] },
-   { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas", "Escucha", "Análisis"] },
-   { q: "¿Te gustaría que incluya espiritualidad?", opts: ["No", "Tal vez", "Sí"] },
-   { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Meses", "Proceso largo"] },
-   { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Semanal", "Quincenal", "Flexible"] },
-   { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
-   { q: "¿Qué aspectos son importantes?", opts: ["Clínico", "Cultural", "Espiritual"] },
-   { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche"] },
-   { q: "¿Cuál es tu presupuesto?", opts: ["< $500", "$500–$1000", "> $700"] },
-   { q: "¿Te importa la experiencia?", opts: ["No", "Algo", "Mucho"] },
-   { q: "¿Nivel de formación?", opts: ["Licenciatura", "Maestría", "Doctorado"] },
-   { q: "¿Te interesan otras actividades?", opts: ["No", "Tal vez", "Sí"] },
-   { q: "¿Qué tan pronto necesitas empezar?", opts: ["Puedo esperar", "Pronto", "Urgente"] }
+    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
+    { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
+    { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
+    { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
+    { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
+    { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Con ejercicios y tareas prácticas", "Mezcla de conversación y herramientas", "Conversación profunda y reflexión"] },
+    { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Que me enseñe estrategias para cambiar pensamientos, hábitos y dinámicas, enfocado en soluciones", "Que me ayude a aumentar la conciencia, la aceptación y el crecimiento personal", "Que exploremos mi historia personal y patrones relacionales"] },
+    { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo y orientado a soluciones", "Colaborativo", "Más reflexivo"] },
+    { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas prácticas", "Escucha y comprensión", "Análisis profundo de mis patrones"] },
+    { q: "¿Te gustaría que tu terapia incluya elementos relacionados con alguna religión o espiritualidad?", opts: ["No, prefiero una terapia sin enfoque religioso", "Podría estar bien si se usan elementos espirituales de forma general", "Sí, me gustaría que la terapia incluya mi religión o creencias espirituales"], special: "religion" },
+    { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Algunos meses", "Proceso largo"] },
+    { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Cada semana", "Cada 15 días", "Flexible"] },
+    { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
+    { q: "¿Te gustaría que tu terapeuta tome en cuenta alguno de estos aspectos?", opts: ["Prefiero una terapia enfocada principalmente en herramientas psicológicas clínicas", "Me gustaría que el terapeuta también considere mi contexto cultural o social", "Me gustaría que el terapeuta pueda integrar mis creencias espirituales o religiosas"] },
+    { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche o fines de semana"] },
+    { q: "¿Cuál es tu presupuesto por sesión?", opts: ["Menos de $500", "$500–$1,000", "Más de $700"] },
+    { q: "¿Te importa la experiencia del terapeuta?", opts: ["No mucho", "Algo", "Mucho"] },
+    { q: "¿Qué nivel de formación prefieres en tu terapeuta?", opts: ["Licenciatura", "Maestría", "Doctorado o especialización avanzada"] },
+    { q: "¿Te interesan otras actividades además de terapia individual?", opts: ["No", "Tal vez talleres o grupos", "Sí, ambas"] },
+    { q: "¿Qué tan pronto necesitas empezar terapia?", opts: ["Puedo esperar", "Pronto", "Lo antes posible"] }
 ];
 
-let current   = 0;
+// ================= PREGUNTAS PSICÓLOGO =================
+const preguntasPsi = [
+    { q: "Modalidad de atención que ofreces principalmente", opts: ["Presencial", "En línea", "Híbrida (ambas)"] },
+    { q: "Ubicación o alcance geográfico", opts: ["Local", "Nacional", "Internacional"] },
+    { q: "Población con la que trabajas principalmente", opts: ["Niños/adolescentes", "Adultos/Adultos mayores", "Todas las edades"] },
+    { q: "Tipo de terapia que ofreces", opts: ["Individual", "Pareja/familiar", "Grupal"] },
+    { q: "Áreas principales de atención", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
+    { q: "Nivel de estructura de tu terapia", opts: ["Muy estructurada con tareas y ejercicios", "Moderadamente estructurada", "Más reflexiva y exploratoria"] },
+    { q: "Enfoque terapéutico predominante", opts: ["TCC, Breve o Sistémica", "Humanista o Contextual (ACT, DBT, FAP, AC, Mindfulness)", "Psicoanálisis o Psicodinámica"] },
+    { q: "Estilo de intervención", opts: ["Directivo (orientación clara y estrategias)", "Colaborativo", "Exploratorio"] },
+    { q: "Rol del terapeuta en sesión", opts: ["Enseñar herramientas prácticas", "Escuchar y reflexionar juntos", "Analizar patrones profundos"] },
+    { q: "¿Tu práctica clínica integra alguna religión o creencia?", opts: ["No, mi práctica es completamente secular", "Sí, integro principios espirituales de manera general cuando el paciente lo solicita", "Sí, mi práctica se basa o se inspira en una tradición religiosa específica"], special: "religion" },
+    { q: "Duración promedio del proceso", opts: ["Corto plazo (1–3 meses)", "Mediano plazo (3–12 meses)", "Largo plazo"] },
+    { q: "Frecuencia recomendada", opts: ["Semanal", "Quincenal", "Flexible"] },
+    { q: "Género de pacientes con los que te especializas", opts: ["Mujeres", "Hombres", "Indistinto"] },
+    { q: "Enfoque cultural o social en tu práctica", opts: ["Enfoque general clínico", "Enfoque con sensibilidad cultural y social", "Enfoque que integra valores religiosos o espirituales"] },
+    { q: "Horarios de atención", opts: ["Mañana", "Tarde", "Noche/fines de semana"] },
+    { q: "Costo por sesión", opts: ["Menos de $500 MXN", "$500–$1,000 MXN", "Más de $1,000 MXN"] },
+    { q: "Experiencia profesional", opts: ["1–3 años", "4–10 años", "Más de 10 años"] },
+    { q: "Nivel de especialización", opts: ["Licenciatura", "Maestría o especialidad", "Doctorado o certificaciones avanzadas"] },
+    { q: "Modalidades adicionales", opts: ["Solo sesiones individuales", "Talleres o grupos", "Ambas"] },
+    { q: "Disponibilidad para nuevos pacientes", opts: ["Limitada", "Moderada", "Alta"] }
+];
+
+// ================= ESTADO PACIENTE =================
+let current = 0;
 let respuestas = [];
 
-// ================= REGISTRO =================
-async function startQuiz() {
-    const nombre   = document.getElementById("nombre").value.trim();
-    const apellido = document.getElementById("apellido").value.trim();
-    const correo   = document.getElementById("correo").value.trim();
+// ================= ESTADO PSICÓLOGO =================
+let currentPsi = 0;
+let respuestasPsi = [];
+
+// ================= NAVEGACIÓN =================
+function showPsiRegistro() {
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("step1_psi").style.display = "block";
+}
+
+function showStep1() {
+    document.getElementById("step1_psi").style.display = "none";
+    document.getElementById("step1").style.display = "block";
+}
+
+// ================= LOGIN PACIENTE =================
+async function login() {
+    const correo   = document.getElementById("correo").value;
     const password = document.getElementById("password").value;
-    const errEl    = document.getElementById("register-error");
+    if (!correo || !password) { alert("Ingresa correo y contraseña"); return; }
+    try {
+        await auth.signInWithEmailAndPassword(correo, password);
+        window.location.href = "dashboard.html";
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
+
+// ================= LOGIN PSICÓLOGO =================
+async function loginPsi() {
+    const correo   = document.getElementById("psi_correo").value;
+    const password = document.getElementById("psi_password").value;
+    if (!correo || !password) { alert("Ingresa correo y contraseña"); return; }
+    try {
+        await auth.signInWithEmailAndPassword(correo, password);
+        window.location.href = "dashboard.html";
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
+
+// ================= REGISTRO PACIENTE =================
+async function startQuiz() {
+    const nombre   = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const correo   = document.getElementById("correo").value;
+    const password = document.getElementById("password").value;
 
     if (!nombre || !apellido || !correo || !password) {
-        errEl.innerText = "Por favor completa todos los campos.";
+        alert("Completa todos los campos");
         return;
     }
-    errEl.innerText = "";
+
     respuestas = [];
+    current    = 0;
 
     try {
         await auth.createUserWithEmailAndPassword(correo, password);
@@ -541,67 +267,43 @@ async function startQuiz() {
         document.getElementById("step2").style.display = "block";
         showQuestion();
     } catch (error) {
-        errEl.innerText = friendlyError(error.code);
+        alert(error.message);
     }
 }
 
-// ================= LOGIN =================
-async function login() {
-    const correo   = document.getElementById("login-correo").value.trim();
-    const password = document.getElementById("login-password").value;
-    const errEl    = document.getElementById("login-error");
-
-    if (!correo || !password) {
-        errEl.innerText = "Ingresa tu correo y contraseña.";
-        return;
-    }
-    errEl.innerText = "";
-
-    try {
-        await auth.signInWithEmailAndPassword(correo, password);
-        window.location.href = "dashboard.html";
-    } catch (error) {
-        errEl.innerText = friendlyError(error.code);
-    }
-}
-
-// ================= ERROR MESSAGES =================
-function friendlyError(code) {
-    const map = {
-        "auth/email-already-in-use":  "Este correo ya está registrado.",
-        "auth/invalid-email":         "El correo no es válido.",
-        "auth/weak-password":         "La contraseña debe tener al menos 6 caracteres.",
-        "auth/user-not-found":        "No encontramos una cuenta con ese correo.",
-        "auth/wrong-password":        "Contraseña incorrecta.",
-        "auth/too-many-requests":     "Demasiados intentos. Intenta más tarde.",
-    };
-    return map[code] || "Ocurrió un error. Intenta de nuevo.";
-}
-
-// ================= QUIZ =================
+// ================= QUIZ PACIENTE =================
 function showQuestion() {
-    const q    = preguntas[current];
-    const pct  = ((current) / preguntas.length) * 100;
-
-    document.getElementById("progress").innerText =
-        "Pregunta " + (current + 1) + " de " + preguntas.length;
-    document.getElementById("progressFill").style.width = pct + "%";
-    document.getElementById("question").innerText = q.q;
+    const q = preguntas[current];
+    document.getElementById("question").innerText = (current + 1) + "/20 - " + q.q;
 
     const optionsDiv = document.getElementById("options");
     optionsDiv.innerHTML = "";
+    document.getElementById("religion_sub").style.display = "none";
 
     q.opts.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "opt-btn";
         btn.innerText = opt;
-        btn.onclick   = () => nextQuestion(opt);
+        btn.style.display = "block";
+        btn.style.marginBottom = "8px";
+        btn.onclick = () => {
+            if (q.special === "religion" && opt === q.opts[2]) {
+                document.getElementById("religion_sub").style.display = "block";
+            } else {
+                nextQuestion(opt);
+            }
+        };
         optionsDiv.appendChild(btn);
     });
 }
 
+function confirmarReligionPaciente() {
+    const religion = document.getElementById("religion_select").value;
+    nextQuestion("Sí, integra creencia: " + religion);
+}
+
 function nextQuestion(answer) {
     respuestas.push(answer);
+    document.getElementById("religion_sub").style.display = "none";
     if (current < preguntas.length - 1) {
         current++;
         showQuestion();
@@ -618,7 +320,84 @@ function prevQuestion() {
     }
 }
 
-// ================= FINAL (FIRESTORE INTACTO) =================
+// ================= REGISTRO PSICÓLOGO =================
+async function startQuizPsi() {
+    const nombre      = document.getElementById("psi_nombre").value;
+    const apellido    = document.getElementById("psi_apellido").value;
+    const correo      = document.getElementById("psi_correo").value;
+    const password    = document.getElementById("psi_password").value;
+    const cedula      = document.getElementById("psi_cedula").value;
+    const enfoque     = document.getElementById("psi_enfoque").value;
+    const consultorio = document.getElementById("psi_consultorio").value;
+
+    if (!nombre || !apellido || !correo || !password || !cedula || !enfoque || !consultorio) {
+        alert("Completa todos los campos");
+        return;
+    }
+
+    respuestasPsi = [];
+    currentPsi    = 0;
+
+    try {
+        await auth.createUserWithEmailAndPassword(correo, password);
+        document.getElementById("step1_psi").style.display = "none";
+        document.getElementById("step2_psi").style.display = "block";
+        showPsiQuestion();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// ================= QUIZ PSICÓLOGO =================
+function showPsiQuestion() {
+    const q = preguntasPsi[currentPsi];
+    document.getElementById("psi_question").innerText = (currentPsi + 1) + "/20 - " + q.q;
+
+    const optionsDiv = document.getElementById("psi_options");
+    optionsDiv.innerHTML = "";
+    document.getElementById("psi_religion_sub").style.display = "none";
+
+    q.opts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.style.display = "block";
+        btn.style.marginBottom = "8px";
+        btn.onclick = () => {
+            if (q.special === "religion" && opt === q.opts[2]) {
+                document.getElementById("psi_religion_sub").style.display = "block";
+            } else {
+                nextPsiQuestion(opt);
+            }
+        };
+        optionsDiv.appendChild(btn);
+    });
+}
+
+function confirmarReligionPsi() {
+    const religion = document.getElementById("psi_religion_select").value;
+    nextPsiQuestion("Sí, práctica basada en tradición: " + religion);
+}
+
+function nextPsiQuestion(answer) {
+    respuestasPsi.push(answer);
+    document.getElementById("psi_religion_sub").style.display = "none";
+    if (currentPsi < preguntasPsi.length - 1) {
+        currentPsi++;
+        showPsiQuestion();
+    } else {
+        finishPsi();
+    }
+}
+
+function prevPsiQuestion() {
+    if (currentPsi > 0) {
+        currentPsi--;
+        respuestasPsi.pop();
+        showPsiQuestion();
+    }
+}
+
+// ================= FINAL PACIENTE =================
 async function finish() {
     const user = auth.currentUser;
     if (!user) return alert("Error: usuario no autenticado");
@@ -629,17 +408,46 @@ async function finish() {
 
     try {
         await db.collection("usuarios").doc(user.uid).set({
-            email:     user.email,
-            nombre:    nombreCompleto,
+            tipo: "paciente",
+            email: user.email,
+            nombre: nombreCompleto,
             ubicacion: document.getElementById("ubicacion").value,
-            motivo:    document.getElementById("motivo").value,
+            motivo: document.getElementById("motivo").value,
             respuestas: respuestas,
-            fecha:     new Date()
+            fecha: new Date()
         });
 
         document.getElementById("step2").style.display = "none";
-        document.getElementById("final").style.display  = "block";
+        document.getElementById("final").style.display = "block";
+    } catch (error) {
+        console.log(error);
+        alert("Error guardando datos");
+    }
+}
 
+// ================= FINAL PSICÓLOGO =================
+async function finishPsi() {
+    const user = auth.currentUser;
+    if (!user) return alert("Error: usuario no autenticado");
+
+    const nombreCompleto =
+        document.getElementById("psi_nombre").value + " " +
+        document.getElementById("psi_apellido").value;
+
+    try {
+        await db.collection("psicologos").doc(user.uid).set({
+            tipo: "psicologo",
+            email: user.email,
+            nombre: nombreCompleto,
+            cedula: document.getElementById("psi_cedula").value,
+            enfoque: document.getElementById("psi_enfoque").value,
+            consultorio: document.getElementById("psi_consultorio").value,
+            respuestas: respuestasPsi,
+            fecha: new Date()
+        });
+
+        document.getElementById("step2_psi").style.display = "none";
+        document.getElementById("final").style.display = "block";
     } catch (error) {
         console.log(error);
         alert("Error guardando datos");
@@ -652,5 +460,6 @@ function goHome() {
 }
 
 </script>
+
 </body>
 </html>
