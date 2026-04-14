@@ -36,521 +36,325 @@
             background: var(--warm-white);
             border-bottom: 1px solid var(--border);
             padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
             box-shadow: var(--shadow-sm);
         }
-
         .logo { display: flex; align-items: center; gap: 8px; }
-
         .logo-icon {
-            width: 36px; height: 36px;
-            background: var(--sage);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
+            width: 36px; height: 36px; background: var(--sage);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-size: 18px;
         }
-
-        .logo-text {
-            font-family: 'DM Serif Display', serif;
-            font-size: 20px;
-            color: var(--sage-dark);
-        }
-
+        .logo-text { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark); }
         .header-right { display: flex; align-items: center; gap: 10px; }
-
         .user-email {
-            font-size: 12px;
-            color: var(--muted);
-            background: var(--cream);
-            padding: 5px 10px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            max-width: 180px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 12px; color: var(--muted); background: var(--cream);
+            padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border);
+            max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-
-        .type-badge {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
+        .type-badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .type-badge.paciente  { background: #e8f4f1; color: var(--sage-dark); }
         .type-badge.psicologo { background: #ede8f4; color: #4a3c7c; }
-
         .btn-logout {
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 5px 12px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.2s;
+            background: transparent; border: 1px solid var(--border); border-radius: 8px;
+            padding: 5px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+            color: var(--muted); cursor: pointer; transition: all 0.2s;
         }
         .btn-logout:hover { border-color: var(--error); color: var(--error); }
 
-        /* ── NAV TABS ── */
+        /* ── NAV ── */
         .nav-tabs {
-            background: var(--warm-white);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            padding: 0 16px;
-            overflow-x: auto;
+            background: var(--warm-white); border-bottom: 1px solid var(--border);
+            display: flex; padding: 0 16px; overflow-x: auto;
         }
-
         .nav-tab {
-            padding: 14px 16px;
-            border: none;
-            background: transparent;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--muted);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            white-space: nowrap;
+            padding: 14px 16px; border: none; background: transparent;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+            color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+            transition: all 0.2s; white-space: nowrap; position: relative;
         }
-
-        .nav-tab.active {
-            color: var(--sage-dark);
-            border-bottom-color: var(--sage);
+        .nav-tab.active { color: var(--sage-dark); border-bottom-color: var(--sage); }
+        .unread-dot {
+            display: inline-block; width: 8px; height: 8px;
+            background: #e74c3c; border-radius: 50%;
+            position: absolute; top: 10px; right: 6px;
         }
 
         /* ── MAIN ── */
-        .main {
-            max-width: 580px;
-            margin: 0 auto;
-            padding: 24px 16px;
-        }
-
+        .main { max-width: 580px; margin: 0 auto; padding: 24px 16px; }
         .tab-section { display: none; }
         .tab-section.active { display: block; }
 
         /* ── LOADING ── */
-        #loading {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--muted);
-        }
-
+        #loading { text-align: center; padding: 80px 20px; color: var(--muted); }
         .spinner {
-            width: 34px; height: 34px;
-            border: 3px solid var(--border);
-            border-top-color: var(--sage);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
+            width: 34px; height: 34px; border: 3px solid var(--border);
+            border-top-color: var(--sage); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 16px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── SECTION HEADER ── */
-        .section-title {
-            font-family: 'DM Serif Display', serif;
-            font-size: 22px;
-            color: var(--sage-dark);
-            margin-bottom: 4px;
-        }
-        .section-sub {
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 24px;
-        }
+        .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--sage-dark); margin-bottom: 4px; }
+        .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
 
-        /* ── EMPTY STATE ── */
-        .empty-state {
-            text-align: center;
-            padding: 48px 20px;
-            color: var(--muted);
-        }
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
         .empty-icon { font-size: 48px; margin-bottom: 14px; }
-        .empty-state h3 {
-            font-family: 'DM Serif Display', serif;
-            color: var(--sage-dark);
-            margin-bottom: 8px;
-        }
+        .empty-state h3 { font-family: 'DM Serif Display', serif; color: var(--sage-dark); margin-bottom: 8px; }
         .empty-state p { font-size: 14px; line-height: 1.6; }
 
-        /* ── MATCH CARDS (FEED) ── */
+        /* ── FEED MATCH CARDS ── */
         .match-card {
-            background: var(--warm-white);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            animation: fadeUp 0.3s ease;
+            background: var(--warm-white); border-radius: 16px; padding: 20px;
+            margin-bottom: 16px; border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm); animation: fadeUp 0.3s ease;
         }
-        @keyframes fadeUp {
-            from { opacity:0; transform: translateY(8px); }
-            to   { opacity:1; transform: translateY(0); }
-        }
-
-        .match-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
+        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .match-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
         .avatar {
-            width: 48px; height: 48px;
-            border-radius: 50%;
+            width: 48px; height: 48px; border-radius: 50%;
             background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
+            font-size: 22px; flex-shrink: 0;
         }
-
-        .match-name {
-            font-family: 'DM Serif Display', serif;
-            font-size: 17px;
-            color: var(--sage-dark);
-            margin-bottom: 3px;
-        }
-
-        .compat-pill {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
+        .match-name { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--sage-dark); margin-bottom: 3px; }
+        .compat-pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .c-high { background: #d4edda; color: #1a6b37; }
         .c-mid  { background: #fff3cd; color: #856404; }
         .c-low  { background: #f8d7da; color: #842029; }
-
-        .match-label {
-            margin-left: auto;
-            font-size: 12px;
-            color: #c0768a;
-            font-weight: 600;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .detail-chip {
-            background: var(--cream);
-            border-radius: 8px;
-            padding: 8px 12px;
-        }
-        .chip-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 2px;
-        }
+        .match-label { margin-left: auto; font-size: 12px; color: #c0768a; font-weight: 600; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .detail-chip { background: var(--cream); border-radius: 8px; padding: 8px 12px; }
+        .chip-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
         .chip-val { font-size: 13px; color: var(--text); }
-
-        .contact-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-            font-size: 13px;
-        }
+        .contact-row { display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; }
         .contact-email { color: var(--sage); font-weight: 500; }
-
-        /* ── SWIPE CARD ── */
-        .swipe-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .btn-chat {
+            margin-left: auto; padding: 7px 16px; background: var(--sage); color: white;
+            border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s;
         }
+        .btn-chat:hover { background: var(--sage-dark); }
 
+        /* ── SWIPE ── */
+        .swipe-wrap { display: flex; flex-direction: column; align-items: center; }
         .swipe-card {
-            background: var(--warm-white);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            padding: 26px 22px;
-            width: 100%;
-            max-width: 420px;
-            margin-bottom: 18px;
+            background: var(--warm-white); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 26px 22px; width: 100%; max-width: 420px; margin-bottom: 18px;
             transition: transform 0.32s ease, opacity 0.32s ease;
-            touch-action: pan-y;
-            cursor: grab;
+            touch-action: pan-y; cursor: grab;
         }
         .swipe-card:active { cursor: grabbing; }
-        .swipe-card.fly-right {
-            transform: translateX(150%) rotate(20deg) !important;
-            opacity: 0;
-        }
-        .swipe-card.fly-left {
-            transform: translateX(-150%) rotate(-20deg) !important;
-            opacity: 0;
-        }
-
-        .sc-top {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 18px;
-        }
-
+        .swipe-card.fly-right { transform: translateX(150%) rotate(20deg) !important; opacity: 0; }
+        .swipe-card.fly-left  { transform: translateX(-150%) rotate(-20deg) !important; opacity: 0; }
+        .sc-top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
         .sc-avatar {
-            width: 62px; height: 62px;
-            border-radius: 50%;
+            width: 62px; height: 62px; border-radius: 50%;
             background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
         }
-
-        .sc-name {
-            font-family: 'DM Serif Display', serif;
-            font-size: 22px;
-            color: var(--sage-dark);
-            margin-bottom: 4px;
-        }
-
+        .sc-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--sage-dark); margin-bottom: 4px; }
         .compat-bar-wrap { margin-bottom: 18px; }
-
-        .compat-bar-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--muted);
-            margin-bottom: 5px;
-        }
+        .compat-bar-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
         .compat-pct { font-weight: 700; font-size: 14px; color: var(--sage-dark); }
-
-        .compat-bar {
-            height: 6px;
-            background: var(--border);
-            border-radius: 99px;
-            overflow: hidden;
-        }
-        .compat-fill {
-            height: 100%;
-            border-radius: 99px;
-            transition: width 0.5s ease;
-        }
-
+        .compat-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+        .compat-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
         .sc-details { margin-bottom: 4px; }
-
-        .sc-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 9px;
-            font-size: 14px;
-        }
-        .sc-icon  { font-size: 15px; flex-shrink: 0; }
-        .sc-lbl   { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-right: 4px; }
-        .sc-val   { color: var(--text); }
-
-        .action-btns {
-            display: flex;
-            gap: 14px;
-            width: 100%;
-            max-width: 420px;
-        }
-
+        .sc-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; font-size: 14px; }
+        .sc-icon { font-size: 15px; flex-shrink: 0; }
+        .sc-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-right: 4px; }
+        .sc-val { color: var(--text); }
+        .action-btns { display: flex; gap: 14px; width: 100%; max-width: 420px; }
         .btn-pass {
-            flex: 1;
-            padding: 14px;
-            background: var(--warm-white);
-            border: 2px solid #ffb3b3;
-            border-radius: 12px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            color: #e05555;
-            cursor: pointer;
-            transition: all 0.2s;
+            flex: 1; padding: 14px; background: var(--warm-white); border: 2px solid #ffb3b3;
+            border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+            font-weight: 600; color: #e05555; cursor: pointer; transition: all 0.2s;
         }
         .btn-pass:hover { background: #fff0f0; }
-
         .btn-like {
-            flex: 1;
-            padding: 14px;
-            background: var(--sage);
-            border: 2px solid var(--sage);
-            border-radius: 12px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
+            flex: 1; padding: 14px; background: var(--sage); border: 2px solid var(--sage);
+            border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+            font-weight: 600; color: white; cursor: pointer; transition: all 0.2s;
         }
         .btn-like:hover { background: var(--sage-dark); border-color: var(--sage-dark); }
+        .swipe-hint { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
 
-        .swipe-hint {
-            font-size: 12px;
-            color: var(--muted);
-            text-align: center;
-            margin-top: 10px;
+        /* ── MENSAJES: LISTA ── */
+        .convo-item {
+            background: var(--warm-white); border-radius: 14px; padding: 16px;
+            margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer;
+            display: flex; align-items: center; gap: 14px;
+            transition: box-shadow 0.2s, border-color 0.2s;
         }
+        .convo-item:hover { box-shadow: var(--shadow-sm); border-color: var(--sage-light); }
+        .convo-av {
+            width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+            position: relative;
+        }
+        .online-dot {
+            width: 11px; height: 11px; background: #2ecc71; border: 2px solid white;
+            border-radius: 50%; position: absolute; bottom: 1px; right: 1px;
+        }
+        .convo-body { flex: 1; min-width: 0; }
+        .convo-name { font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 3px; }
+        .convo-preview { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .convo-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+        .convo-time { font-size: 11px; color: var(--muted); }
+        .unread-badge {
+            background: var(--sage); color: white; border-radius: 50%;
+            width: 20px; height: 20px; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .convo-lastseen { font-size: 11px; color: var(--muted); }
+
+        /* ── MENSAJES: CHAT VIEW ── */
+        #chatView {
+            display: none;
+            flex-direction: column;
+            height: calc(100vh - 130px);
+        }
+        #chatView.open { display: flex; }
+
+        .chat-header {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 12px;
+        }
+        .btn-back {
+            background: transparent; border: 1px solid var(--border); border-radius: 8px;
+            padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+            color: var(--muted); cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+        }
+        .btn-back:hover { border-color: var(--sage); color: var(--sage); }
+        .chat-header-av {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            flex-shrink: 0;
+        }
+        .chat-header-info { flex: 1; }
+        .chat-header-name { font-weight: 600; font-size: 15px; color: var(--text); }
+        .chat-header-seen { font-size: 12px; color: var(--muted); }
+
+        .chat-messages {
+            flex: 1; overflow-y: auto; padding: 4px 0 12px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .msg-row { display: flex; }
+        .msg-row.mine  { justify-content: flex-end; }
+        .msg-row.theirs { justify-content: flex-start; }
+        .msg-bubble {
+            max-width: 72%; padding: 10px 14px; border-radius: 16px;
+            font-size: 14px; line-height: 1.45; position: relative;
+        }
+        .msg-row.mine .msg-bubble {
+            background: var(--sage); color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .msg-row.theirs .msg-bubble {
+            background: var(--warm-white); color: var(--text);
+            border: 1px solid var(--border); border-bottom-left-radius: 4px;
+        }
+        .msg-time {
+            font-size: 10px; opacity: 0.65; margin-top: 4px;
+            display: block; text-align: right;
+        }
+        .msg-row.theirs .msg-time { text-align: left; }
+        .msg-auto-tag {
+            font-size: 10px; background: rgba(255,255,255,0.25);
+            padding: 1px 6px; border-radius: 10px; display: inline-block; margin-bottom: 4px;
+        }
+
+        .chat-input-area {
+            display: flex; gap: 10px; padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .chat-input {
+            flex: 1; padding: 11px 14px; border: 1.5px solid var(--border);
+            border-radius: 22px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+            color: var(--text); background: var(--cream); outline: none; transition: all 0.2s;
+        }
+        .chat-input:focus { border-color: var(--sage-light); background: white; box-shadow: 0 0 0 3px rgba(74,124,111,0.1); }
+        .btn-send {
+            padding: 11px 20px; background: var(--sage); color: white; border: none;
+            border-radius: 22px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+            font-weight: 600; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+        }
+        .btn-send:hover { background: var(--sage-dark); }
 
         /* ── PROFILE TAB ── */
         .profile-card {
-            background: var(--warm-white);
-            border-radius: 16px;
-            padding: 26px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
+            background: var(--warm-white); border-radius: 16px; padding: 26px;
+            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
         }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
+        .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .profile-av {
-            width: 70px; height: 70px;
-            border-radius: 50%;
+            width: 70px; height: 70px; border-radius: 50%;
             background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
             display: flex; align-items: center; justify-content: center;
-            font-size: 30px;
-            flex-shrink: 0;
+            font-size: 30px; flex-shrink: 0;
         }
-
-        .profile-name {
-            font-family: 'DM Serif Display', serif;
-            font-size: 22px;
-            color: var(--sage-dark);
-            margin-bottom: 4px;
-        }
-
+        .profile-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--sage-dark); margin-bottom: 4px; }
         .profile-section { margin-bottom: 22px; }
-
         .ps-title {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--border);
+            font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+            letter-spacing: 0.6px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
         }
-
-        .pf-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: flex-start;
-        }
-        .pf-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--muted);
-            min-width: 130px;
-            flex-shrink: 0;
-            padding-top: 1px;
-        }
+        .pf-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+        .pf-label { font-size: 12px; font-weight: 600; color: var(--muted); min-width: 130px; flex-shrink: 0; padding-top: 1px; }
         .pf-val { font-size: 14px; color: var(--text); }
+        .corriente-tag { display: inline-block; background: #e8f4f1; color: var(--sage-dark); padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; }
 
-        .corriente-tag {
-            display: inline-block;
-            background: #e8f4f1;
-            color: var(--sage-dark);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
+        /* Saludo automático */
+        .field-label {
+            display: block; font-size: 11px; font-weight: 700; color: var(--sage-dark);
+            text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px;
         }
+        .saludo-textarea {
+            width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+            color: var(--text); background: var(--cream); resize: vertical;
+            min-height: 80px; outline: none; transition: all 0.2s;
+        }
+        .saludo-textarea:focus { border-color: var(--sage-light); background: white; box-shadow: 0 0 0 3px rgba(74,124,111,0.1); }
+        .btn-save-saludo {
+            margin-top: 10px; padding: 10px 20px; background: var(--sage); color: white;
+            border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-save-saludo:hover { background: var(--sage-dark); }
+        .save-confirm { font-size: 12px; color: var(--sage); margin-top: 6px; display: none; }
 
-        /* ── RESPUESTAS TAB ── */
-        .resp-item {
-            background: var(--warm-white);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border);
-        }
-        .resp-lbl {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 3px;
-        }
+        /* ── RESPUESTAS ── */
+        .resp-item { background: var(--warm-white); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .resp-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
         .resp-val { font-size: 14px; color: var(--text); }
 
-        /* ── MATCH MODAL ── */
+        /* ── MODAL ── */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            display: none; align-items: center; justify-content: center; z-index: 999;
         }
         .modal-overlay.show { display: flex; }
-
         .modal-box {
-            background: var(--warm-white);
-            border-radius: 24px;
-            padding: 40px 30px;
-            text-align: center;
-            max-width: 340px;
-            width: 90%;
-            animation: popIn 0.3s ease;
+            background: var(--warm-white); border-radius: 24px; padding: 40px 30px;
+            text-align: center; max-width: 340px; width: 90%; animation: popIn 0.3s ease;
         }
-        @keyframes popIn {
-            from { transform: scale(0.75); opacity: 0; }
-            to   { transform: scale(1);    opacity: 1; }
-        }
-
+        @keyframes popIn { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-emoji { font-size: 60px; margin-bottom: 14px; }
-
-        .modal-box h2 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 26px;
-            color: var(--sage-dark);
-            margin-bottom: 8px;
-        }
+        .modal-box h2 { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--sage-dark); margin-bottom: 8px; }
         .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
-
         .btn-modal-primary {
-            width: 100%;
-            padding: 12px;
-            background: var(--sage);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.2s;
+            width: 100%; padding: 12px; background: var(--sage); color: white; border: none;
+            border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+            font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: background 0.2s;
         }
         .btn-modal-primary:hover { background: var(--sage-dark); }
-
         .btn-modal-secondary {
-            width: 100%;
-            padding: 11px;
-            background: transparent;
-            color: var(--muted);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            cursor: pointer;
+            width: 100%; padding: 11px; background: transparent; color: var(--muted);
+            border: 1px solid var(--border); border-radius: 10px;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer;
         }
     </style>
 </head>
@@ -573,6 +377,7 @@
 <!-- ── NAV ── -->
 <nav class="nav-tabs">
     <button class="nav-tab active" id="navFeed"       onclick="openTab('feed')">🏠 Conexiones</button>
+    <button class="nav-tab"        id="navMensajes"   onclick="openTab('mensajes')">💬 Mensajes</button>
     <button class="nav-tab"        id="navExplorar"   onclick="openTab('explorar')">🔍 Explorar</button>
     <button class="nav-tab"        id="navRespuestas" onclick="openTab('respuestas')">📋 Respuestas</button>
     <button class="nav-tab"        id="navPerfil"     onclick="openTab('perfil')">👤 Mi perfil</button>
@@ -581,17 +386,41 @@
 <!-- ── MAIN ── -->
 <div class="main">
 
-    <!-- Loading -->
-    <div id="loading">
-        <div class="spinner"></div>
-        <p>Cargando tu espacio...</p>
-    </div>
+    <div id="loading"><div class="spinner"></div><p>Cargando tu espacio...</p></div>
 
-    <!-- FEED -->
+    <!-- CONEXIONES -->
     <div class="tab-section" id="tab-feed">
         <h2 class="section-title">Mis Conexiones</h2>
         <p class="section-sub">Personas con las que hiciste match</p>
         <div id="feedList"></div>
+    </div>
+
+    <!-- MENSAJES -->
+    <div class="tab-section" id="tab-mensajes">
+        <!-- Lista de conversaciones -->
+        <div id="msgList">
+            <h2 class="section-title">Mensajes</h2>
+            <p class="section-sub">Tus conversaciones activas</p>
+            <div id="convoList"></div>
+        </div>
+        <!-- Vista de chat (se muestra al abrir una convo) -->
+        <div id="chatView">
+            <div class="chat-header">
+                <button class="btn-back" onclick="closeChat()">← Volver</button>
+                <div class="chat-header-av" id="chatAv"></div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="chatName"></div>
+                    <div class="chat-header-seen" id="chatLastSeen"></div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <input class="chat-input" id="chatInput" type="text"
+                    placeholder="Escribe un mensaje..."
+                    onkeydown="if(event.key==='Enter') sendMessage()" />
+                <button class="btn-send" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
     </div>
 
     <!-- EXPLORAR -->
@@ -620,7 +449,6 @@
         <h2 class="section-title">Mi Perfil</h2>
         <div id="perfilContent"></div>
     </div>
-
 </div>
 
 <!-- ── MATCH MODAL ── -->
@@ -628,8 +456,8 @@
     <div class="modal-box">
         <div class="modal-emoji">🎉</div>
         <h2>¡Es un Match!</h2>
-        <p id="matchModalText">Han mostrado interés mutuo. Revisa tus conexiones para ver sus datos de contacto.</p>
-        <button class="btn-modal-primary" onclick="goToFeed()">Ver mis conexiones →</button>
+        <p id="matchModalText">Han mostrado interés mutuo.</p>
+        <button class="btn-modal-primary" onclick="goToMensajes()">💬 Ver mensajes →</button>
         <button class="btn-modal-secondary" onclick="closeModal()">Seguir explorando</button>
     </div>
 </div>
@@ -649,16 +477,19 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
-// ─── GLOBAL STATE ───────────────────────────────────────────────────────────
+// ─── STATE ──────────────────────────────────────────────────────────────────
 let currentUser   = null;
-let userType      = null;   // "paciente" | "psicologo"
+let userType      = null;
 let userData      = null;
 let profilesQueue = [];
 let profileIndex  = 0;
 let likedSet      = new Set();
 let passedSet     = new Set();
+let activeChatId  = null;
+let chatUnsub     = null;    // unsubscribe for onSnapshot
+let lastSeenTimer = null;
 
-// ─── QUESTION ARRAYS (for compatibility scoring) ─────────────────────────────
+// ─── QUESTION ARRAYS ────────────────────────────────────────────────────────
 const qPac = [
     {opts:["Presencial","En línea","Me da igual"]},
     {opts:["Solo en mi ciudad","En cualquier lugar del país","En cualquier parte del mundo"]},
@@ -681,7 +512,6 @@ const qPac = [
     {opts:["No","Tal vez talleres o grupos","Sí, ambas"]},
     {opts:["Puedo esperar","Pronto","Lo antes posible"]}
 ];
-
 const qPsi = [
     {opts:["Presencial","En línea","Híbrida (ambas)"]},
     {opts:["Local","Nacional","Internacional"]},
@@ -704,8 +534,6 @@ const qPsi = [
     {opts:["Solo sesiones individuales","Talleres o grupos","Ambas"]},
     {opts:["Limitada","Moderada","Alta"]}
 ];
-
-// Labels for Respuestas tab
 const lblPac = ["Modalidad preferida","Alcance","Para quién","Tipo de terapia","Motivo principal","Estilo de terapia","Enfoque deseado","Estilo del terapeuta","Expectativa","Espiritualidad","Duración esperada","Frecuencia","Género del terapeuta","Contexto","Horario","Presupuesto","Importancia de la experiencia","Formación preferida","Otras actividades","Urgencia"];
 const lblPsi = ["Modalidad de atención","Alcance geográfico","Población","Tipo de terapia","Áreas de atención","Estructura terapéutica","Enfoque predominante","Estilo de intervención","Rol en sesión","Religión/Espiritualidad","Duración del proceso","Frecuencia","Género de pacientes","Enfoque cultural","Horario","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad"];
 
@@ -714,91 +542,89 @@ auth.onAuthStateChanged(async user => {
     if (!user) { window.location.href = "index.html"; return; }
     currentUser = user;
 
-    // Detect user type
     let doc = await db.collection("usuarios").doc(user.uid).get();
-    if (doc.exists) {
-        userType = "paciente";
-        userData = doc.data();
-    } else {
+    if (doc.exists) { userType = "paciente"; userData = doc.data(); }
+    else {
         doc = await db.collection("psicologos").doc(user.uid).get();
-        if (doc.exists) {
-            userType = "psicologo";
-            userData = doc.data();
-        } else {
-            userType = "paciente";
-            userData = { nombre: user.email, respuestas: [], email: user.email };
-        }
+        if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
+        else { userType = "paciente"; userData = { nombre: user.email, respuestas: [], email: user.email }; }
     }
 
     document.getElementById("headerEmail").innerText = user.email;
     const tb = document.getElementById("typeBadge");
-    tb.innerText   = userType === "paciente" ? "Paciente" : "Psicólogo/a";
-    tb.className   = "type-badge " + userType;
+    tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
+    tb.className = "type-badge " + userType;
+
+    // Update lastSeen on login and every 4 min
+    updateLastSeen();
+    lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
 
     document.getElementById("loading").style.display = "none";
     openTab("feed");
+    checkUnreadMessages(); // dot on Mensajes tab
 });
+
+async function updateLastSeen() {
+    if (!currentUser) return;
+    const coll = userType === "psicologo" ? "psicologos" : "usuarios";
+    try {
+        await db.collection(coll).doc(currentUser.uid).update({ lastSeen: new Date() });
+    } catch(e) {}
+}
+
+// ─── LAST SEEN FORMAT ────────────────────────────────────────────────────────
+function formatLastSeen(ts) {
+    if (!ts) return "Desconectado";
+    const now  = Date.now();
+    const diff = now - (ts.toMillis ? ts.toMillis() : ts);
+    const mins = Math.floor(diff / 60000);
+    if (mins < 2)  return "🟢 En línea";
+    if (mins < 60) return `Última conexión hace ${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24)  return `Última conexión hace ${hrs}h`;
+    const days = Math.floor(hrs / 24);
+    return `Última conexión hace ${days} día${days > 1 ? "s" : ""}`;
+}
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function openTab(id) {
     document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
     document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
-
     document.getElementById("tab-" + id).classList.add("active");
-
-    const navId = "nav" + id.charAt(0).toUpperCase() + id.slice(1);
-    const navEl = document.getElementById(navId);
-    if (navEl) navEl.classList.add("active");
+    const nid = "nav" + id.charAt(0).toUpperCase() + id.slice(1);
+    const nel = document.getElementById(nid);
+    if (nel) nel.classList.add("active");
 
     if (id === "feed")       loadFeed();
+    if (id === "mensajes")   loadConvoList();
     if (id === "explorar")   loadExplorar();
     if (id === "respuestas") renderRespuestas();
     if (id === "perfil")     renderMyProfile();
 }
 
-// ─── COMPATIBILITY ALGORITHM ─────────────────────────────────────────────────
-// Compare each of the 20 parallel questions:
-//   Exact match   → +2 pts
-//   Adjacent opts → +1 pt
-//   No match      → 0
-// Max = 40 pts → percentage = score/40 * 100
-
-function ansIdx(answer, qi, isPsi) {
-    if (!answer) return -1;
+// ─── COMPATIBILITY ───────────────────────────────────────────────────────────
+function ansIdx(ans, qi, isPsi) {
+    if (!ans) return -1;
     const opts = isPsi ? qPsi[qi].opts : qPac[qi].opts;
-    const i = opts.indexOf(answer);
+    const i = opts.indexOf(ans);
     if (i !== -1) return i;
-    // Religion special answers always = option index 2
-    if (answer.startsWith("Sí, integra") || answer.startsWith("Sí, práctica")) return 2;
+    if (ans.startsWith("Sí, integra") || ans.startsWith("Sí, práctica")) return 2;
     return -1;
 }
-
 function calcCompat(rPac, rPsi) {
     if (!rPac || !rPsi || !rPac.length || !rPsi.length) return 0;
     let score = 0;
     const n = Math.min(rPac.length, rPsi.length, 20);
     for (let i = 0; i < n; i++) {
-        const p = ansIdx(rPac[i], i, false);
-        const t = ansIdx(rPsi[i], i, true);
-        if (p === -1 || t === -1) { score += 1; continue; } // partial credit for unknowns
-        if (p === t)               score += 2;
-        else if (Math.abs(p-t) === 1) score += 1;
+        const p = ansIdx(rPac[i], i, false), t = ansIdx(rPsi[i], i, true);
+        if (p === -1 || t === -1) { score += 1; continue; }
+        if (p === t) score += 2;
+        else if (Math.abs(p - t) === 1) score += 1;
     }
     return Math.round((score / (n * 2)) * 100);
 }
-
-function compatClass(pct) {
-    if (pct >= 70) return "c-high";
-    if (pct >= 45) return "c-mid";
-    return "c-low";
-}
-
-function compatColor(pct) {
-    if (pct >= 70) return "#2ecc71";
-    if (pct >= 45) return "#f39c12";
-    return "#e74c3c";
-}
-
+function compatClass(pct) { return pct >= 70 ? "c-high" : pct >= 45 ? "c-mid" : "c-low"; }
+function compatColor(pct) { return pct >= 70 ? "#2ecc71" : pct >= 45 ? "#f39c12" : "#e74c3c"; }
 function getCorriente(resp, isPsi) {
     if (!resp || resp.length < 7) return "🔄 Integrativa";
     const r = resp[6] || "";
@@ -814,268 +640,49 @@ function getCorriente(resp, isPsi) {
     return "🔄 Integrativa";
 }
 
-// ─── EXPLORAR ────────────────────────────────────────────────────────────────
-async function loadExplorar() {
-    const card    = document.getElementById("swipe-card");
-    const buttons = document.getElementById("action-btns");
-    const hint    = document.getElementById("swipe-hint");
-    const sub     = document.getElementById("explorarSub");
-
-    sub.innerText = userType === "paciente"
-        ? "Perfiles de psicólogos ordenados por compatibilidad contigo"
-        : "Perfiles de pacientes ordenados por compatibilidad contigo";
-
-    card.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><div class="spinner" style="margin:0 auto 14px;"></div><p>Cargando perfiles...</p></div>';
-    buttons.style.display = "none";
-    hint.innerText = "";
-
-    const otherColl = userType === "paciente" ? "psicologos" : "usuarios";
-
-    // Load already-interacted UIDs in parallel
-    const [likesSnap, passesSnap] = await Promise.all([
-        db.collection("likes").where("from","==",currentUser.uid).get(),
-        db.collection("passes").where("from","==",currentUser.uid).get()
-    ]);
-
-    likedSet  = new Set(likesSnap.docs.map(d => d.data().to));
-    passedSet = new Set(passesSnap.docs.map(d => d.data().to));
-
-    // Load opposite-type profiles
-    const snap = await db.collection(otherColl).limit(60).get();
-    const profiles = [];
-
-    snap.forEach(doc => {
-        const uid = doc.id;
-        if (uid === currentUser.uid) return;
-        if (likedSet.has(uid) || passedSet.has(uid)) return;
-
-        const data = doc.data();
-        const rPac = userType === "paciente" ? (userData.respuestas || []) : (data.respuestas || []);
-        const rPsi = userType === "paciente" ? (data.respuestas || []) : (userData.respuestas || []);
-        const pct  = calcCompat(rPac, rPsi);
-
-        profiles.push({ uid, data, pct });
-    });
-
-    // Sort highest compatibility first
-    profiles.sort((a,b) => b.pct - a.pct);
-    profilesQueue = profiles;
-    profileIndex  = 0;
-
-    renderSwipeCard();
-}
-
-function renderSwipeCard() {
-    const card    = document.getElementById("swipe-card");
-    const buttons = document.getElementById("action-btns");
-    const hint    = document.getElementById("swipe-hint");
-
-    if (profileIndex >= profilesQueue.length) {
-        card.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">🌿</div>
-                <h3>¡Has visto todos los perfiles!</h3>
-                <p>Vuelve pronto para encontrar nuevas conexiones.</p>
-            </div>`;
-        buttons.style.display = "none";
-        hint.innerText = "";
-        return;
-    }
-
-    const { data: d, pct } = profilesQueue[profileIndex];
-    const cardIsPsi = (userType === "paciente"); // the shown card is a psychologist?
-    const resp = d.respuestas || [];
-
-    const modalidad  = resp[0]  || "—";
-    const horario    = resp[14] || "—";
-    const costo      = resp[15] || "—";
-    const corriente  = getCorriente(resp, cardIsPsi);
-
-    let detailsHTML = "";
-    if (cardIsPsi) {
-        detailsHTML = `
-            <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${corriente}</span></div>
-            <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${modalidad}</span></div>
-            <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${horario}</span></div>
-            <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Costo/sesión</span>${costo}</span></div>
-            <div class="sc-row"><span class="sc-icon">📚</span><span class="sc-val"><span class="sc-lbl">Especialización</span>${resp[17]||"—"}</span></div>
-            <div class="sc-row"><span class="sc-icon">✅</span><span class="sc-val"><span class="sc-lbl">Disponibilidad</span>${resp[19]||"—"}</span></div>
-            ${d.consultorio ? `<div class="sc-row"><span class="sc-icon">📍</span><span class="sc-val"><span class="sc-lbl">Consultorio</span>${d.consultorio}</span></div>` : ""}
-        `;
-    } else {
-        detailsHTML = `
-            <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${corriente}</span></div>
-            <div class="sc-row"><span class="sc-icon">💭</span><span class="sc-val"><span class="sc-lbl">Busca</span>${resp[4]||"—"}</span></div>
-            <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${modalidad}</span></div>
-            <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${horario}</span></div>
-            <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Presupuesto</span>${costo}</span></div>
-            <div class="sc-row"><span class="sc-icon">⚡</span><span class="sc-val"><span class="sc-lbl">Urgencia</span>${resp[19]||"—"}</span></div>
-        `;
-    }
-
-    card.innerHTML = `
-        <div class="sc-top">
-            <div class="sc-avatar">${cardIsPsi ? "🧠" : "👤"}</div>
-            <div>
-                <div class="sc-name">${d.nombre || "Usuario"}</div>
-                <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
-            </div>
-        </div>
-        <div class="compat-bar-wrap">
-            <div class="compat-bar-row">
-                <span>Índice de compatibilidad</span>
-                <span class="compat-pct">${pct}%</span>
-            </div>
-            <div class="compat-bar">
-                <div class="compat-fill" style="width:${pct}%; background:${compatColor(pct)};"></div>
-            </div>
-        </div>
-        <div class="sc-details">${detailsHTML}</div>
-    `;
-
-    buttons.style.display = "flex";
-    hint.innerText = "← Pasar  |  → Me interesa  |  Desliza la tarjeta";
-
-    // Touch swipe
-    let tx = 0;
-    card.ontouchstart = e => { tx = e.touches[0].clientX; };
-    card.ontouchend   = e => {
-        const dx = e.changedTouches[0].clientX - tx;
-        if      (dx >  80) likeProfile();
-        else if (dx < -80) passProfile();
-    };
-
-    // Keyboard
-    document.onkeydown = e => {
-        if (e.key === "ArrowRight") likeProfile();
-        if (e.key === "ArrowLeft")  passProfile();
-    };
-}
-
-async function likeProfile() {
-    if (profileIndex >= profilesQueue.length) return;
-    const { uid: targetUid, data: targetData, pct } = profilesQueue[profileIndex];
-
-    // Animate
-    document.getElementById("swipe-card").classList.add("fly-right");
-
-    // Save like
-    try {
-        await db.collection("likes").doc(currentUser.uid + "_" + targetUid).set({
-            from: currentUser.uid, to: targetUid, fromType: userType, fecha: new Date()
-        });
-        likedSet.add(targetUid);
-
-        // Check mutual match
-        const rev = await db.collection("likes").doc(targetUid + "_" + currentUser.uid).get();
-        if (rev.exists) {
-            const pacUid = userType === "paciente" ? currentUser.uid : targetUid;
-            const psiUid = userType === "psicologo" ? currentUser.uid : targetUid;
-            const matchId = [pacUid, psiUid].sort().join("_");
-
-            await db.collection("matches").doc(matchId).set({
-                paciente: pacUid, psicologo: psiUid, compatibility: pct, fecha: new Date()
-            });
-
-            setTimeout(() => {
-                document.getElementById("matchModalText").innerText =
-                    `Tú y ${targetData.nombre || "este usuario"} han mostrado interés mutuo. Ve a Conexiones para ver sus datos de contacto.`;
-                document.getElementById("matchModal").classList.add("show");
-            }, 340);
-        }
-    } catch(e) { console.error(e); }
-
-    setTimeout(() => {
-        document.getElementById("swipe-card").classList.remove("fly-right");
-        profileIndex++;
-        renderSwipeCard();
-    }, 340);
-}
-
-async function passProfile() {
-    if (profileIndex >= profilesQueue.length) return;
-    const { uid: targetUid } = profilesQueue[profileIndex];
-
-    document.getElementById("swipe-card").classList.add("fly-left");
-
-    try {
-        await db.collection("passes").doc(currentUser.uid + "_" + targetUid).set({
-            from: currentUser.uid, to: targetUid, fecha: new Date()
-        });
-        passedSet.add(targetUid);
-    } catch(e) { console.error(e); }
-
-    setTimeout(() => {
-        document.getElementById("swipe-card").classList.remove("fly-left");
-        profileIndex++;
-        renderSwipeCard();
-    }, 340);
-}
-
 // ─── FEED ────────────────────────────────────────────────────────────────────
 async function loadFeed() {
     const list = document.getElementById("feedList");
     list.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
 
-    const myField    = userType === "paciente" ? "paciente" : "psicologo";
-    const otherField = userType === "paciente" ? "psicologo" : "paciente";
-    const otherColl  = userType === "paciente" ? "psicologos" : "usuarios";
+    const myF   = userType === "paciente" ? "paciente" : "psicologo";
+    const othF  = userType === "paciente" ? "psicologo" : "paciente";
+    const othC  = userType === "paciente" ? "psicologos" : "usuarios";
 
     let snap;
     try {
-        snap = await db.collection("matches")
-            .where(myField, "==", currentUser.uid)
-            .orderBy("fecha", "desc")
-            .get();
+        snap = await db.collection("matches").where(myF,"==",currentUser.uid).orderBy("fecha","desc").get();
     } catch(e) {
-        // index may not exist yet — fallback without orderBy
-        snap = await db.collection("matches")
-            .where(myField, "==", currentUser.uid)
-            .get();
+        snap = await db.collection("matches").where(myF,"==",currentUser.uid).get();
     }
 
     if (!snap || snap.empty) {
-        list.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">🌱</div>
-                <h3>Aún no tienes conexiones</h3>
-                <p>Ve a <strong>Explorar</strong> y haz match con perfiles compatibles contigo.</p>
-            </div>`;
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">🌱</div><h3>Aún no tienes conexiones</h3><p>Ve a <strong>Explorar</strong> para descubrir perfiles.</p></div>`;
         return;
     }
 
     list.innerHTML = "";
-
     for (const doc of snap.docs) {
-        const md       = doc.data();
-        const otherUid = md[otherField];
-        const pct      = md.compatibility || 0;
-
-        const od = await db.collection(otherColl).doc(otherUid).get();
+        const md = doc.data(), pct = md.compatibility || 0;
+        const od = await db.collection(othC).doc(md[othF]).get();
         if (!od.exists) continue;
+        const d = od.data(), resp = d.respuestas || [], cardIsPsi = userType === "paciente";
+        const matchId = doc.id;
+        const otherUid = md[othF];
 
-        const d    = od.data();
-        const resp = d.respuestas || [];
-        const cardIsPsi = userType === "paciente";
-
-        let extraHTML = "";
-        if (cardIsPsi) {
-            extraHTML = `
-                <div class="detail-chip"><div class="chip-label">Enfoque</div><div class="chip-val">${getCorriente(resp, true)}</div></div>
-                <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
-                <div class="detail-chip"><div class="chip-label">Costo/sesión</div><div class="chip-val">${resp[15]||"—"}</div></div>
-                <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
-                ${d.cedula      ? `<div class="detail-chip"><div class="chip-label">Cédula</div><div class="chip-val">${d.cedula}</div></div>` : ""}
-                ${d.consultorio ? `<div class="detail-chip"><div class="chip-label">Consultorio</div><div class="chip-val">${d.consultorio}</div></div>` : ""}
-            `;
-        } else {
-            extraHTML = `
-                <div class="detail-chip"><div class="chip-label">Corriente</div><div class="chip-val">${getCorriente(resp, false)}</div></div>
-                <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
-                <div class="detail-chip"><div class="chip-label">Presupuesto</div><div class="chip-val">${resp[15]||"—"}</div></div>
-                <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
-            `;
-        }
+        let extra = cardIsPsi ? `
+            <div class="detail-chip"><div class="chip-label">Enfoque</div><div class="chip-val">${getCorriente(resp,true)}</div></div>
+            <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Costo/sesión</div><div class="chip-val">${resp[15]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
+            ${d.cedula ? `<div class="detail-chip"><div class="chip-label">Cédula</div><div class="chip-val">${d.cedula}</div></div>` : ""}
+            ${d.consultorio ? `<div class="detail-chip"><div class="chip-label">Consultorio</div><div class="chip-val">${d.consultorio}</div></div>` : ""}
+        ` : `
+            <div class="detail-chip"><div class="chip-label">Corriente</div><div class="chip-val">${getCorriente(resp,false)}</div></div>
+            <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Presupuesto</div><div class="chip-val">${resp[15]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
+        `;
 
         const card = document.createElement("div");
         card.className = "match-card";
@@ -1083,123 +690,490 @@ async function loadFeed() {
             <div class="match-card-header">
                 <div class="avatar">${cardIsPsi ? "🧠" : "👤"}</div>
                 <div>
-                    <div class="match-name">${d.nombre || "Usuario"}</div>
+                    <div class="match-name">${d.nombre||"Usuario"}</div>
                     <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
                 </div>
                 <div class="match-label">❤️ Match</div>
             </div>
-            <div class="detail-grid">${extraHTML}</div>
+            <div class="detail-grid">${extra}</div>
             <div class="contact-row">
                 <span style="color:var(--muted);">📧</span>
-                <span class="contact-email">${d.email || "—"}</span>
+                <span class="contact-email">${d.email||"—"}</span>
+                <button class="btn-chat" onclick="openTab('mensajes'); setTimeout(()=>openChat('${matchId}','${otherUid}','${(d.nombre||'Usuario').replace(/'/g,"\\'")}','${cardIsPsi?"🧠":"👤"}'),200)">
+                    💬 Mensaje
+                </button>
             </div>
         `;
         list.appendChild(card);
     }
 }
 
+// ─── EXPLORAR ────────────────────────────────────────────────────────────────
+async function loadExplorar() {
+    const card = document.getElementById("swipe-card");
+    document.getElementById("action-btns").style.display = "none";
+    document.getElementById("explorarSub").innerText = userType === "paciente"
+        ? "Perfiles de psicólogos ordenados por compatibilidad" : "Perfiles de pacientes ordenados por compatibilidad";
+    card.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><div class="spinner" style="margin:0 auto 14px;"></div><p>Cargando perfiles...</p></div>';
+
+    const othC = userType === "paciente" ? "psicologos" : "usuarios";
+    const [lk, ps] = await Promise.all([
+        db.collection("likes").where("from","==",currentUser.uid).get(),
+        db.collection("passes").where("from","==",currentUser.uid).get()
+    ]);
+    likedSet  = new Set(lk.docs.map(d => d.data().to));
+    passedSet = new Set(ps.docs.map(d => d.data().to));
+
+    const snap = await db.collection(othC).limit(60).get();
+    const profiles = [];
+    snap.forEach(doc => {
+        const uid = doc.id;
+        if (uid === currentUser.uid || likedSet.has(uid) || passedSet.has(uid)) return;
+        const data = doc.data();
+        const rPac = userType === "paciente" ? (userData.respuestas||[]) : (data.respuestas||[]);
+        const rPsi = userType === "paciente" ? (data.respuestas||[]) : (userData.respuestas||[]);
+        profiles.push({ uid, data, pct: calcCompat(rPac, rPsi) });
+    });
+    profiles.sort((a,b) => b.pct - a.pct);
+    profilesQueue = profiles; profileIndex = 0;
+    renderSwipeCard();
+}
+
+function renderSwipeCard() {
+    const card = document.getElementById("swipe-card");
+    const btns = document.getElementById("action-btns");
+    const hint = document.getElementById("swipe-hint");
+
+    if (profileIndex >= profilesQueue.length) {
+        card.innerHTML = `<div class="empty-state"><div class="empty-icon">🌿</div><h3>¡Has visto todos los perfiles!</h3><p>Vuelve más tarde para nuevas conexiones.</p></div>`;
+        btns.style.display = "none"; hint.innerText = ""; return;
+    }
+
+    const { data: d, pct } = profilesQueue[profileIndex];
+    const cardIsPsi = (userType === "paciente");
+    const resp = d.respuestas || [];
+
+    const det = cardIsPsi ? `
+        <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,true)}</span></div>
+        <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${resp[0]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${resp[14]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Costo</span>${resp[15]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">📚</span><span class="sc-val"><span class="sc-lbl">Especialización</span>${resp[17]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">✅</span><span class="sc-val"><span class="sc-lbl">Disponibilidad</span>${resp[19]||"—"}</span></div>
+        ${d.consultorio ? `<div class="sc-row"><span class="sc-icon">📍</span><span class="sc-val"><span class="sc-lbl">Consultorio</span>${d.consultorio}</span></div>` : ""}
+    ` : `
+        <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,false)}</span></div>
+        <div class="sc-row"><span class="sc-icon">💭</span><span class="sc-val"><span class="sc-lbl">Busca</span>${resp[4]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${resp[0]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${resp[14]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Presupuesto</span>${resp[15]||"—"}</span></div>
+    `;
+
+    card.innerHTML = `
+        <div class="sc-top">
+            <div class="sc-avatar">${cardIsPsi?"🧠":"👤"}</div>
+            <div>
+                <div class="sc-name">${d.nombre||"Usuario"}</div>
+                <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
+            </div>
+        </div>
+        <div class="compat-bar-wrap">
+            <div class="compat-bar-row"><span>Compatibilidad</span><span class="compat-pct">${pct}%</span></div>
+            <div class="compat-bar"><div class="compat-fill" style="width:${pct}%;background:${compatColor(pct)};"></div></div>
+        </div>
+        <div class="sc-details">${det}</div>
+    `;
+
+    btns.style.display = "flex";
+    hint.innerText = "← Pasar  |  → Me interesa  |  Desliza la tarjeta";
+
+    let tx = 0;
+    card.ontouchstart = e => { tx = e.touches[0].clientX; };
+    card.ontouchend   = e => { const dx = e.changedTouches[0].clientX - tx; if(dx>80) likeProfile(); else if(dx<-80) passProfile(); };
+    document.onkeydown = e => { if(e.key==="ArrowRight") likeProfile(); if(e.key==="ArrowLeft") passProfile(); };
+}
+
+async function likeProfile() {
+    if (profileIndex >= profilesQueue.length) return;
+    const { uid: targetUid, data: targetData, pct } = profilesQueue[profileIndex];
+    document.getElementById("swipe-card").classList.add("fly-right");
+
+    try {
+        await db.collection("likes").doc(currentUser.uid+"_"+targetUid).set({
+            from: currentUser.uid, to: targetUid, fromType: userType, fecha: new Date()
+        });
+        likedSet.add(targetUid);
+
+        const rev = await db.collection("likes").doc(targetUid+"_"+currentUser.uid).get();
+        if (rev.exists) {
+            // ── MATCH ──
+            const pacUid = userType==="paciente" ? currentUser.uid : targetUid;
+            const psiUid = userType==="psicologo" ? currentUser.uid : targetUid;
+            const matchId = [pacUid, psiUid].sort().join("_");
+
+            await db.collection("matches").doc(matchId).set({
+                paciente: pacUid, psicologo: psiUid, compatibility: pct, fecha: new Date()
+            });
+
+            // ── AUTO-GREETING ──
+            let greetingText = "";
+            if (userType === "psicologo") {
+                greetingText = userData.saludoAutomatico || "";
+            } else {
+                const psiDoc = await db.collection("psicologos").doc(psiUid).get();
+                if (psiDoc.exists) greetingText = psiDoc.data().saludoAutomatico || "";
+            }
+
+            // Init chat document
+            await db.collection("chats").doc(matchId).set({
+                participants: [pacUid, psiUid],
+                lastMessage:  greetingText || "¡Es un match! Ya pueden hablar.",
+                lastMessageTime: new Date(),
+                unread: { [pacUid]: greetingText ? 1 : 0, [psiUid]: 0 }
+            });
+
+            if (greetingText) {
+                await db.collection("chats").doc(matchId).collection("messages").add({
+                    sender:    psiUid,
+                    text:      greetingText,
+                    timestamp: new Date(),
+                    auto:      true
+                });
+            }
+
+            const otherName = targetData.nombre || "tu nueva conexión";
+            setTimeout(() => {
+                document.getElementById("matchModalText").innerText =
+                    `¡Tú y ${otherName} hicieron match! ${greetingText ? "El psicólogo ya te envió un saludo. 💬" : "Ya pueden escribirse."}`;
+                document.getElementById("matchModal").classList.add("show");
+            }, 340);
+        }
+    } catch(e) { console.error(e); }
+
+    setTimeout(() => {
+        document.getElementById("swipe-card").classList.remove("fly-right");
+        profileIndex++; renderSwipeCard();
+    }, 340);
+}
+
+async function passProfile() {
+    if (profileIndex >= profilesQueue.length) return;
+    const { uid: targetUid } = profilesQueue[profileIndex];
+    document.getElementById("swipe-card").classList.add("fly-left");
+    try {
+        await db.collection("passes").doc(currentUser.uid+"_"+targetUid).set({ from: currentUser.uid, to: targetUid, fecha: new Date() });
+        passedSet.add(targetUid);
+    } catch(e) {}
+    setTimeout(() => {
+        document.getElementById("swipe-card").classList.remove("fly-left");
+        profileIndex++; renderSwipeCard();
+    }, 340);
+}
+
+// ─── MENSAJES: LISTA ─────────────────────────────────────────────────────────
+async function loadConvoList() {
+    // Make sure list is visible, chat is hidden
+    document.getElementById("msgList").style.display = "block";
+    document.getElementById("chatView").classList.remove("open");
+
+    const container = document.getElementById("convoList");
+    container.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
+
+    const myF   = userType === "paciente" ? "paciente" : "psicologo";
+    const othF  = userType === "paciente" ? "psicologo" : "paciente";
+    const othC  = userType === "paciente" ? "psicologos" : "usuarios";
+
+    let matchSnap;
+    try {
+        matchSnap = await db.collection("matches").where(myF,"==",currentUser.uid).get();
+    } catch(e) { container.innerHTML = ""; return; }
+
+    if (!matchSnap || matchSnap.empty) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>Sin conversaciones</h3><p>Haz match con alguien en <strong>Explorar</strong> para empezar a chatear.</p></div>`;
+        return;
+    }
+
+    container.innerHTML = "";
+    const rows = [];
+
+    for (const doc of matchSnap.docs) {
+        const md = doc.data(), matchId = doc.id;
+        const otherUid = md[othF];
+        const [od, chatDoc] = await Promise.all([
+            db.collection(othC).doc(otherUid).get(),
+            db.collection("chats").doc(matchId).get()
+        ]);
+        if (!od.exists) continue;
+
+        const d = od.data();
+        const chat = chatDoc.exists ? chatDoc.data() : {};
+        const unread = (chat.unread || {})[currentUser.uid] || 0;
+        const lastMsg = chat.lastMessage || "Inicia la conversación";
+        const lastTime = chat.lastMessageTime ? formatMsgTime(chat.lastMessageTime) : "";
+        const lastSeen = d.lastSeen ? formatLastSeen(d.lastSeen) : "Desconectado";
+        const isOnline = d.lastSeen && (Date.now() - d.lastSeen.toMillis()) < 5 * 60 * 1000;
+        const cardIsPsi = userType === "paciente";
+        const emoji = cardIsPsi ? "🧠" : "👤";
+        const safeName = (d.nombre||"Usuario").replace(/'/g,"\\'");
+
+        rows.push({
+            lastTime: chat.lastMessageTime ? chat.lastMessageTime.toMillis() : 0,
+            html: `
+                <div class="convo-item" onclick="openChat('${matchId}','${otherUid}','${safeName}','${emoji}')">
+                    <div class="convo-av">
+                        ${emoji}
+                        ${isOnline ? '<div class="online-dot"></div>' : ''}
+                    </div>
+                    <div class="convo-body">
+                        <div class="convo-name">${d.nombre||"Usuario"}</div>
+                        <div class="convo-preview">${lastMsg}</div>
+                        <div class="convo-lastseen">${lastSeen}</div>
+                    </div>
+                    <div class="convo-meta">
+                        <div class="convo-time">${lastTime}</div>
+                        ${unread > 0 ? `<div class="unread-badge">${unread}</div>` : ""}
+                    </div>
+                </div>`
+        });
+    }
+
+    // Sort by most recent message
+    rows.sort((a,b) => b.lastTime - a.lastTime);
+    container.innerHTML = rows.map(r => r.html).join("");
+
+    if (!rows.length) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>Sin conversaciones aún</h3><p>Tus matches aparecerán aquí.</p></div>`;
+    }
+}
+
+// ─── MENSAJES: CHAT ──────────────────────────────────────────────────────────
+async function openChat(matchId, otherUid, otherName, emoji) {
+    activeChatId = matchId;
+
+    document.getElementById("msgList").style.display   = "none";
+    document.getElementById("chatView").classList.add("open");
+
+    document.getElementById("chatName").innerText = otherName;
+    document.getElementById("chatAv").innerText   = emoji || "👤";
+    document.getElementById("chatMessages").innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">Cargando mensajes...</div>';
+    document.getElementById("chatLastSeen").innerText = "";
+
+    // Load last seen of other person
+    const othC = userType === "paciente" ? "psicologos" : "usuarios";
+    try {
+        const od = await db.collection(othC).doc(otherUid).get();
+        if (od.exists && od.data().lastSeen) {
+            document.getElementById("chatLastSeen").innerText = formatLastSeen(od.data().lastSeen);
+        }
+    } catch(e) {}
+
+    // Reset unread count for current user
+    try {
+        await db.collection("chats").doc(matchId).update({
+            [`unread.${currentUser.uid}`]: 0
+        });
+    } catch(e) {}
+
+    // Remove dot from nav
+    const dot = document.querySelector("#navMensajes .unread-dot");
+    if (dot) dot.remove();
+
+    // Real-time messages
+    if (chatUnsub) chatUnsub();
+    chatUnsub = db.collection("chats").doc(matchId)
+        .collection("messages")
+        .orderBy("timestamp", "asc")
+        .onSnapshot(snap => {
+            const container = document.getElementById("chatMessages");
+            container.innerHTML = "";
+            snap.forEach(doc => {
+                const m = doc.data();
+                const isMine = m.sender === currentUser.uid;
+                const time   = m.timestamp ? formatMsgTime(m.timestamp) : "";
+                const autoTag = m.auto ? `<div class="msg-auto-tag">✉️ saludo automático</div>` : "";
+                const div = document.createElement("div");
+                div.className = "msg-row " + (isMine ? "mine" : "theirs");
+                div.innerHTML = `
+                    <div class="msg-bubble">
+                        ${!isMine && m.auto ? autoTag : ""}
+                        ${m.text}
+                        <span class="msg-time">${time}</span>
+                    </div>`;
+                container.appendChild(div);
+            });
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        });
+
+    document.getElementById("chatInput").focus();
+}
+
+function closeChat() {
+    if (chatUnsub) { chatUnsub(); chatUnsub = null; }
+    activeChatId = null;
+    document.getElementById("chatView").classList.remove("open");
+    document.getElementById("msgList").style.display = "block";
+    loadConvoList();
+}
+
+async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const text  = input.value.trim();
+    if (!text || !activeChatId) return;
+    input.value = "";
+
+    const msg = { sender: currentUser.uid, text, timestamp: new Date(), auto: false };
+
+    try {
+        await db.collection("chats").doc(activeChatId).collection("messages").add(msg);
+
+        // Update chat metadata + increment unread for the OTHER person
+        const chatDoc = await db.collection("chats").doc(activeChatId).get();
+        const participants = chatDoc.exists ? (chatDoc.data().participants || []) : [];
+        const otherUid = participants.find(uid => uid !== currentUser.uid);
+
+        const update = {
+            lastMessage: text,
+            lastMessageTime: new Date()
+        };
+        if (otherUid) update[`unread.${otherUid}`] = firebase.firestore.FieldValue.increment(1);
+
+        await db.collection("chats").doc(activeChatId).update(update);
+    } catch(e) { console.error(e); input.value = text; }
+}
+
+// ─── UNREAD DOT (NAV) ────────────────────────────────────────────────────────
+async function checkUnreadMessages() {
+    const myF = userType === "paciente" ? "paciente" : "psicologo";
+    try {
+        const matches = await db.collection("matches").where(myF,"==",currentUser.uid).get();
+        let totalUnread = 0;
+        for (const doc of matches.docs) {
+            const chatDoc = await db.collection("chats").doc(doc.id).get();
+            if (chatDoc.exists) totalUnread += (chatDoc.data().unread || {})[currentUser.uid] || 0;
+        }
+        const btn = document.getElementById("navMensajes");
+        if (totalUnread > 0 && !btn.querySelector(".unread-dot")) {
+            const dot = document.createElement("span");
+            dot.className = "unread-dot";
+            btn.appendChild(dot);
+        }
+    } catch(e) {}
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function formatMsgTime(ts) {
+    if (!ts) return "";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) {
+        return d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+    }
+    return d.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+}
+
 // ─── RESPUESTAS ──────────────────────────────────────────────────────────────
 function renderRespuestas() {
-    const list   = document.getElementById("respuestasList");
-    const resp   = userData.respuestas || [];
+    const list = document.getElementById("respuestasList");
+    const resp = userData.respuestas || [];
     const labels = userType === "paciente" ? lblPac : lblPsi;
-
     if (!resp.length) {
         list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3><p>Completa el cuestionario para ver tus respuestas aquí.</p></div>`;
         return;
     }
-
-    list.innerHTML = resp.map((r, i) => `
+    list.innerHTML = resp.map((r,i) => `
         <div class="resp-item">
-            <div class="resp-lbl">${labels[i] || "Pregunta " + (i+1)}</div>
+            <div class="resp-lbl">${labels[i]||"Pregunta "+(i+1)}</div>
             <div class="resp-val">${r}</div>
-        </div>
-    `).join("");
+        </div>`).join("");
 }
 
 // ─── MI PERFIL ───────────────────────────────────────────────────────────────
 function renderMyProfile() {
     const container = document.getElementById("perfilContent");
-    const d    = userData;
-    const resp = d.respuestas || [];
-    const isPsi = userType === "psicologo";
+    const d = userData, resp = d.respuestas || [], isPsi = userType === "psicologo";
     const corriente = getCorriente(resp, isPsi);
 
-    let infoFields = "";
-    if (isPsi) {
-        infoFields = `
-            <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email || currentUser.email}</span></div>
-            <div class="pf-row"><span class="pf-label">Cédula profesional</span><span class="pf-val">${d.cedula || "—"}</span></div>
-            <div class="pf-row"><span class="pf-label">Enfoque declarado</span><span class="pf-val">${d.enfoque || "—"}</span></div>
-            <div class="pf-row"><span class="pf-label">Consultorio</span><span class="pf-val">${d.consultorio || "—"}</span></div>
-        `;
-    } else {
-        infoFields = `
-            <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email || currentUser.email}</span></div>
-            <div class="pf-row"><span class="pf-label">Estado</span><span class="pf-val">${d.ubicacion || "—"}</span></div>
-            <div class="pf-row"><span class="pf-label">Motivo de consulta</span><span class="pf-val">${d.motivo || "—"}</span></div>
-        `;
-    }
+    const infoFields = isPsi ? `
+        <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
+        <div class="pf-row"><span class="pf-label">Cédula profesional</span><span class="pf-val">${d.cedula||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Enfoque declarado</span><span class="pf-val">${d.enfoque||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Consultorio</span><span class="pf-val">${d.consultorio||"—"}</span></div>
+    ` : `
+        <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
+        <div class="pf-row"><span class="pf-label">Estado</span><span class="pf-val">${d.ubicacion||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Motivo de consulta</span><span class="pf-val">${d.motivo||"—"}</span></div>
+    `;
 
-    let quizFields = "";
-    if (resp.length > 0) {
-        if (isPsi) {
-            quizFields = `
-                <div class="pf-row"><span class="pf-label">Modalidad</span><span class="pf-val">${resp[0]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Áreas de atención</span><span class="pf-val">${resp[4]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Enfoque terapéutico</span><span class="pf-val">${resp[6]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Costo/sesión</span><span class="pf-val">${resp[15]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Experiencia</span><span class="pf-val">${resp[16]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Especialización</span><span class="pf-val">${resp[17]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Disponibilidad</span><span class="pf-val">${resp[19]||"—"}</span></div>
-            `;
-        } else {
-            quizFields = `
-                <div class="pf-row"><span class="pf-label">Modalidad preferida</span><span class="pf-val">${resp[0]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Lo que busca</span><span class="pf-val">${resp[4]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Estilo de terapia</span><span class="pf-val">${resp[5]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Horario disponible</span><span class="pf-val">${resp[14]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Presupuesto</span><span class="pf-val">${resp[15]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Frecuencia deseada</span><span class="pf-val">${resp[11]||"—"}</span></div>
-                <div class="pf-row"><span class="pf-label">Urgencia</span><span class="pf-val">${resp[19]||"—"}</span></div>
-            `;
-        }
-    }
+    const quizFields = resp.length === 0 ? "" : isPsi ? `
+        <div class="pf-row"><span class="pf-label">Modalidad</span><span class="pf-val">${resp[0]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Áreas</span><span class="pf-val">${resp[4]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Enfoque terapéutico</span><span class="pf-val">${resp[6]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Costo/sesión</span><span class="pf-val">${resp[15]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Experiencia</span><span class="pf-val">${resp[16]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Especialización</span><span class="pf-val">${resp[17]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Disponibilidad</span><span class="pf-val">${resp[19]||"—"}</span></div>
+    ` : `
+        <div class="pf-row"><span class="pf-label">Modalidad preferida</span><span class="pf-val">${resp[0]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Lo que busca</span><span class="pf-val">${resp[4]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Presupuesto</span><span class="pf-val">${resp[15]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Urgencia</span><span class="pf-val">${resp[19]||"—"}</span></div>
+    `;
+
+    // Saludo automático section (psicólogos only)
+    const saludoSection = isPsi ? `
+        <div class="profile-section">
+            <div class="ps-title">⚙️ Ajustes de mensajería</div>
+            <label class="field-label">Saludo automático al hacer match</label>
+            <textarea class="saludo-textarea" id="saludoInput" placeholder="Ej: Hola, soy el Dr. López. Me da mucho gusto conectar contigo. Estoy aquí para acompañarte en este proceso. ¿Cuándo podríamos tener una primera sesión?">${d.saludoAutomatico||""}</textarea>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px;">Este mensaje se enviará automáticamente cuando hagas match con un paciente.</p>
+            <button class="btn-save-saludo" onclick="saveAutoGreeting()">Guardar saludo</button>
+            <p class="save-confirm" id="saveConfirm">✅ Guardado correctamente</p>
+        </div>
+    ` : "";
 
     container.innerHTML = `
         <div class="profile-card">
             <div class="profile-header">
-                <div class="profile-av">${isPsi ? "🧠" : "👤"}</div>
+                <div class="profile-av">${isPsi?"🧠":"👤"}</div>
                 <div>
-                    <div class="profile-name">${d.nombre || "—"}</div>
-                    <span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi ? "Psicólogo/a" : "Paciente"}</span>
+                    <div class="profile-name">${d.nombre||"—"}</div>
+                    <span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi?"Psicólogo/a":"Paciente"}</span>
                 </div>
             </div>
-
             <div class="profile-section">
-                <div class="ps-title">Información general</div>
-                ${infoFields}
+                <div class="ps-title">Información general</div>${infoFields}
             </div>
-
             <div class="profile-section">
                 <div class="ps-title">Perfil psicológico</div>
-                <div class="pf-row">
-                    <span class="pf-label">Corriente</span>
-                    <span class="pf-val"><span class="corriente-tag">${corriente}</span></span>
-                </div>
+                <div class="pf-row"><span class="pf-label">Corriente</span><span class="pf-val"><span class="corriente-tag">${corriente}</span></span></div>
                 ${quizFields}
             </div>
-        </div>
-    `;
+            ${saludoSection}
+        </div>`;
+}
+
+async function saveAutoGreeting() {
+    const text = document.getElementById("saludoInput").value.trim();
+    try {
+        await db.collection("psicologos").doc(currentUser.uid).update({ saludoAutomatico: text });
+        userData.saludoAutomatico = text;
+        const confirm = document.getElementById("saveConfirm");
+        confirm.style.display = "block";
+        setTimeout(() => { confirm.style.display = "none"; }, 3000);
+    } catch(e) { alert("Error al guardar. Intenta de nuevo."); }
 }
 
 // ─── MODAL ───────────────────────────────────────────────────────────────────
-function closeModal() { document.getElementById("matchModal").classList.remove("show"); }
-function goToFeed()   { closeModal(); openTab("feed"); }
+function closeModal()    { document.getElementById("matchModal").classList.remove("show"); }
+function goToMensajes()  { closeModal(); openTab("mensajes"); }
 
 // ─── LOGOUT ──────────────────────────────────────────────────────────────────
 function logout() {
+    if (lastSeenTimer) clearInterval(lastSeenTimer);
+    if (chatUnsub) chatUnsub();
     auth.signOut().then(() => { window.location.href = "index.html"; });
 }
 </script>
