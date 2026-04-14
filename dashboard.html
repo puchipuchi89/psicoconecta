@@ -1,226 +1,1206 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>PsicoConecta - Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --sage:       #4a7c6f;
+            --sage-light: #6a9e90;
+            --sage-dark:  #2f5248;
+            --cream:      #faf8f4;
+            --warm-white: #ffffff;
+            --text:       #1e2d2b;
+            --muted:      #6b7e7a;
+            --border:     #dde8e5;
+            --error:      #c0392b;
+            --shadow:     0 8px 40px rgba(74,124,111,0.12);
+            --shadow-sm:  0 2px 12px rgba(74,124,111,0.08);
+        }
+
         body {
-            margin: 0;
-            font-family: Arial;
-            background: linear-gradient(135deg, #e0f7ff, #f7f0ff);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            min-height: 100vh;
+            color: var(--text);
+            padding-bottom: 60px;
         }
 
-        h1 {
-            text-align: center;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-        }
-
-        #status, #user {
-            text-align: center;
-            color: #444;
-        }
-
-        /* BOTONES */
-        .tab-buttons {
+        /* ── HEADER ── */
+        .dash-header {
+            background: var(--warm-white);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
 
-        .tab-buttons button {
-            padding: 10px 15px;
-            border: none;
+        .logo { display: flex; align-items: center; gap: 8px; }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: var(--sage);
             border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            color: var(--sage-dark);
+        }
+
+        .header-right { display: flex; align-items: center; gap: 10px; }
+
+        .user-email {
+            font-size: 12px;
+            color: var(--muted);
+            background: var(--cream);
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .type-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .type-badge.paciente  { background: #e8f4f1; color: var(--sage-dark); }
+        .type-badge.psicologo { background: #ede8f4; color: #4a3c7c; }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--muted);
             cursor: pointer;
-            background: #6c63ff;
-            color: white;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+        /* ── NAV TABS ── */
+        .nav-tabs {
+            background: var(--warm-white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            padding: 0 16px;
+            overflow-x: auto;
         }
 
-        .tab {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            background: white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        .nav-tab {
+            padding: 14px 16px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .active {
-            display: block;
+        .nav-tab.active {
+            color: var(--sage-dark);
+            border-bottom-color: var(--sage);
         }
 
-        .feed-box {
+        /* ── MAIN ── */
+        .main {
+            max-width: 580px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .tab-section { display: none; }
+        .tab-section.active { display: block; }
+
+        /* ── LOADING ── */
+        #loading {
             text-align: center;
-            padding: 40px;
-            color: #777;
+            padding: 80px 20px;
+            color: var(--muted);
         }
 
-        .profile-box p {
-            margin: 10px 0;
+        .spinner {
+            width: 34px; height: 34px;
+            border: 3px solid var(--border);
+            border-top-color: var(--sage);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── SECTION HEADER ── */
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--sage-dark);
+            margin-bottom: 4px;
+        }
+        .section-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 24px;
         }
 
-        ul {
-            padding-left: 20px;
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 14px; }
+        .empty-state h3 {
+            font-family: 'DM Serif Display', serif;
+            color: var(--sage-dark);
+            margin-bottom: 8px;
+        }
+        .empty-state p { font-size: 14px; line-height: 1.6; }
+
+        /* ── MATCH CARDS (FEED) ── */
+        .match-card {
+            background: var(--warm-white);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.3s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(8px); }
+            to   { opacity:1; transform: translateY(0); }
         }
 
-        button.logout {
-            display: block;
-            margin: 30px auto;
-            padding: 10px 15px;
+        .match-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .avatar {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .match-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 17px;
+            color: var(--sage-dark);
+            margin-bottom: 3px;
+        }
+
+        .compat-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .c-high { background: #d4edda; color: #1a6b37; }
+        .c-mid  { background: #fff3cd; color: #856404; }
+        .c-low  { background: #f8d7da; color: #842029; }
+
+        .match-label {
+            margin-left: auto;
+            font-size: 12px;
+            color: #c0768a;
+            font-weight: 600;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .detail-chip {
+            background: var(--cream);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        .chip-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 2px;
+        }
+        .chip-val { font-size: 13px; color: var(--text); }
+
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .contact-email { color: var(--sage); font-weight: 500; }
+
+        /* ── SWIPE CARD ── */
+        .swipe-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .swipe-card {
+            background: var(--warm-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 26px 22px;
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 18px;
+            transition: transform 0.32s ease, opacity 0.32s ease;
+            touch-action: pan-y;
+            cursor: grab;
+        }
+        .swipe-card:active { cursor: grabbing; }
+        .swipe-card.fly-right {
+            transform: translateX(150%) rotate(20deg) !important;
+            opacity: 0;
+        }
+        .swipe-card.fly-left {
+            transform: translateX(-150%) rotate(-20deg) !important;
+            opacity: 0;
+        }
+
+        .sc-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .sc-avatar {
+            width: 62px; height: 62px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .sc-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--sage-dark);
+            margin-bottom: 4px;
+        }
+
+        .compat-bar-wrap { margin-bottom: 18px; }
+
+        .compat-bar-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+        .compat-pct { font-weight: 700; font-size: 14px; color: var(--sage-dark); }
+
+        .compat-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .compat-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.5s ease;
+        }
+
+        .sc-details { margin-bottom: 4px; }
+
+        .sc-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 9px;
+            font-size: 14px;
+        }
+        .sc-icon  { font-size: 15px; flex-shrink: 0; }
+        .sc-lbl   { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-right: 4px; }
+        .sc-val   { color: var(--text); }
+
+        .action-btns {
+            display: flex;
+            gap: 14px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .btn-pass {
+            flex: 1;
+            padding: 14px;
+            background: var(--warm-white);
+            border: 2px solid #ffb3b3;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #e05555;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-pass:hover { background: #fff0f0; }
+
+        .btn-like {
+            flex: 1;
+            padding: 14px;
+            background: var(--sage);
+            border: 2px solid var(--sage);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-like:hover { background: var(--sage-dark); border-color: var(--sage-dark); }
+
+        .swipe-hint {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* ── PROFILE TAB ── */
+        .profile-card {
+            background: var(--warm-white);
+            border-radius: 16px;
+            padding: 26px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .profile-av {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+
+        .profile-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--sage-dark);
+            margin-bottom: 4px;
+        }
+
+        .profile-section { margin-bottom: 22px; }
+
+        .ps-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pf-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        .pf-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            min-width: 130px;
+            flex-shrink: 0;
+            padding-top: 1px;
+        }
+        .pf-val { font-size: 14px; color: var(--text); }
+
+        .corriente-tag {
+            display: inline-block;
+            background: #e8f4f1;
+            color: var(--sage-dark);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ── RESPUESTAS TAB ── */
+        .resp-item {
+            background: var(--warm-white);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        .resp-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 3px;
+        }
+        .resp-val { font-size: 14px; color: var(--text); }
+
+        /* ── MATCH MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-overlay.show { display: flex; }
+
+        .modal-box {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 340px;
+            width: 90%;
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.75); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .modal-emoji { font-size: 60px; margin-bottom: 14px; }
+
+        .modal-box h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            color: var(--sage-dark);
+            margin-bottom: 8px;
+        }
+        .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+
+        .btn-modal-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--sage);
+            color: white;
             border: none;
             border-radius: 10px;
-            background: #ff4d6d;
-            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+        .btn-modal-primary:hover { background: var(--sage-dark); }
+
+        .btn-modal-secondary {
+            width: 100%;
+            padding: 11px;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
 
-<h1>Bienvenido 🎉</h1>
+<!-- ── HEADER ── -->
+<header class="dash-header">
+    <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <span class="logo-text">PsicoConecta</span>
+    </div>
+    <div class="header-right">
+        <span class="user-email" id="headerEmail"></span>
+        <span class="type-badge" id="typeBadge"></span>
+        <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+</header>
 
-<p id="status">Cargando sesión...</p>
-<p id="user"></p>
+<!-- ── NAV ── -->
+<nav class="nav-tabs">
+    <button class="nav-tab active" id="navFeed"       onclick="openTab('feed')">🏠 Conexiones</button>
+    <button class="nav-tab"        id="navExplorar"   onclick="openTab('explorar')">🔍 Explorar</button>
+    <button class="nav-tab"        id="navRespuestas" onclick="openTab('respuestas')">📋 Respuestas</button>
+    <button class="nav-tab"        id="navPerfil"     onclick="openTab('perfil')">👤 Mi perfil</button>
+</nav>
 
-<div class="container">
+<!-- ── MAIN ── -->
+<div class="main">
 
-    <!-- BOTONES -->
-    <div class="tab-buttons">
-        <button onclick="openTab('feedTab')">🏠 Feed</button>
-        <button onclick="openTab('respuestasTab')">📋 Respuestas</button>
-        <button onclick="openTab('perfilTab')">👤 Ver perfil</button>
+    <!-- Loading -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Cargando tu espacio...</p>
     </div>
 
     <!-- FEED -->
-    <div id="feedTab" class="tab active">
-        <h3>Feed</h3>
-        <div class="feed-box">📭 Feed vacío</div>
+    <div class="tab-section" id="tab-feed">
+        <h2 class="section-title">Mis Conexiones</h2>
+        <p class="section-sub">Personas con las que hiciste match</p>
+        <div id="feedList"></div>
+    </div>
+
+    <!-- EXPLORAR -->
+    <div class="tab-section" id="tab-explorar">
+        <h2 class="section-title">Explorar</h2>
+        <p class="section-sub" id="explorarSub"></p>
+        <div class="swipe-wrap">
+            <div id="swipe-card" class="swipe-card"></div>
+            <div class="action-btns" id="action-btns" style="display:none;">
+                <button class="btn-pass" onclick="passProfile()">✕ Pasar</button>
+                <button class="btn-like" onclick="likeProfile()">♥ Me interesa</button>
+            </div>
+            <p class="swipe-hint" id="swipe-hint"></p>
+        </div>
     </div>
 
     <!-- RESPUESTAS -->
-    <div id="respuestasTab" class="tab">
-        <h3>Tus respuestas</h3>
-        <ul id="respuestas"></ul>
+    <div class="tab-section" id="tab-respuestas">
+        <h2 class="section-title">Mis Respuestas</h2>
+        <p class="section-sub">Tu cuestionario de compatibilidad</p>
+        <div id="respuestasList"></div>
     </div>
 
     <!-- PERFIL -->
-    <div id="perfilTab" class="tab profile-box">
-        <h3>👤 Perfil del usuario</h3>
-
-        <p><strong>Nombre:</strong> <span id="p_nombre"></span></p>
-        <p><strong>Correo:</strong> <span id="p_email"></span></p>
-        <p><strong>Ubicación:</strong> <span id="p_ubicacion"></span></p>
-        <p><strong>Motivo:</strong> <span id="p_motivo"></span></p>
-
-        <hr>
-
-        <p><strong>Resultado psicológico:</strong></p>
-        <p id="p_resultado">Analizando...</p>
+    <div class="tab-section" id="tab-perfil">
+        <h2 class="section-title">Mi Perfil</h2>
+        <div id="perfilContent"></div>
     </div>
 
 </div>
 
-<button class="logout" onclick="logout()">Cerrar sesión</button>
+<!-- ── MATCH MODAL ── -->
+<div class="modal-overlay" id="matchModal">
+    <div class="modal-box">
+        <div class="modal-emoji">🎉</div>
+        <h2>¡Es un Match!</h2>
+        <p id="matchModalText">Han mostrado interés mutuo. Revisa tus conexiones para ver sus datos de contacto.</p>
+        <button class="btn-modal-primary" onclick="goToFeed()">Ver mis conexiones →</button>
+        <button class="btn-modal-secondary" onclick="closeModal()">Seguir explorando</button>
+    </div>
+</div>
 
-<!-- Firebase -->
+<!-- ── FIREBASE ── -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
-  authDomain: "psicoconecta-a507d.firebaseapp.com",
-  projectId: "psicoconecta-a507d",
+    apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
+    authDomain: "psicoconecta-a507d.firebaseapp.com",
+    projectId: "psicoconecta-a507d",
 };
-
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db   = firebase.firestore();
 
-let unsubscribe = null;
+// ─── GLOBAL STATE ───────────────────────────────────────────────────────────
+let currentUser   = null;
+let userType      = null;   // "paciente" | "psicologo"
+let userData      = null;
+let profilesQueue = [];
+let profileIndex  = 0;
+let likedSet      = new Set();
+let passedSet     = new Set();
 
-// ---------------- TABS ----------------
-function openTab(tabId) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
+// ─── QUESTION ARRAYS (for compatibility scoring) ─────────────────────────────
+const qPac = [
+    {opts:["Presencial","En línea","Me da igual"]},
+    {opts:["Solo en mi ciudad","En cualquier lugar del país","En cualquier parte del mundo"]},
+    {opts:["Niño o adolescente","Adulto o adulto mayor","Grupo de distintas edades"]},
+    {opts:["Individual","Pareja o familiar","Grupal"]},
+    {opts:["Ansiedad, depresión, regulación emocional, duelo","Evaluación y terapia neuropsicológica","Trastornos conductuales o de personalidad"]},
+    {opts:["Con ejercicios y tareas prácticas","Mezcla de conversación y herramientas","Conversación profunda y reflexión"]},
+    {opts:["Que me enseñe estrategias para cambiar pensamientos, hábitos y dinámicas, enfocado en soluciones","Que me ayude a aumentar la conciencia, la aceptación y el crecimiento personal","Que exploremos mi historia personal y patrones relacionales"]},
+    {opts:["Directo y orientado a soluciones","Colaborativo","Más reflexivo"]},
+    {opts:["Herramientas prácticas","Escucha y comprensión","Análisis profundo de mis patrones"]},
+    {opts:["No, prefiero una terapia sin enfoque religioso","Podría estar bien si se usan elementos espirituales de forma general","Sí, me gustaría que la terapia incluya mi religión o creencias espirituales"]},
+    {opts:["Pocas sesiones","Algunos meses","Proceso largo"]},
+    {opts:["Cada semana","Cada 15 días","Flexible"]},
+    {opts:["Mujer","Hombre","Indistinto"]},
+    {opts:["Prefiero una terapia enfocada principalmente en herramientas psicológicas clínicas","Me gustaría que el terapeuta también considere mi contexto cultural o social","Me gustaría que el terapeuta pueda integrar mis creencias espirituales o religiosas"]},
+    {opts:["Mañana","Tarde","Noche o fines de semana"]},
+    {opts:["Menos de $500","$500–$1,000","Más de $700"]},
+    {opts:["No mucho","Algo","Mucho"]},
+    {opts:["Licenciatura","Maestría","Doctorado o especialización avanzada"]},
+    {opts:["No","Tal vez talleres o grupos","Sí, ambas"]},
+    {opts:["Puedo esperar","Pronto","Lo antes posible"]}
+];
+
+const qPsi = [
+    {opts:["Presencial","En línea","Híbrida (ambas)"]},
+    {opts:["Local","Nacional","Internacional"]},
+    {opts:["Niños/adolescentes","Adultos/Adultos mayores","Todas las edades"]},
+    {opts:["Individual","Pareja/familiar","Grupal"]},
+    {opts:["Ansiedad, depresión, regulación emocional, duelo","Evaluación y terapia neuropsicológica","Trastornos conductuales o de personalidad"]},
+    {opts:["Muy estructurada con tareas y ejercicios","Moderadamente estructurada","Más reflexiva y exploratoria"]},
+    {opts:["TCC, Breve o Sistémica","Humanista o Contextual (ACT, DBT, FAP, AC, Mindfulness)","Psicoanálisis o Psicodinámica"]},
+    {opts:["Directivo (orientación clara y estrategias)","Colaborativo","Exploratorio"]},
+    {opts:["Enseñar herramientas prácticas","Escuchar y reflexionar juntos","Analizar patrones profundos"]},
+    {opts:["No, mi práctica es completamente secular","Sí, integro principios espirituales de manera general cuando el paciente lo solicita","Sí, mi práctica se basa o se inspira en una tradición religiosa específica"]},
+    {opts:["Corto plazo (1–3 meses)","Mediano plazo (3–12 meses)","Largo plazo"]},
+    {opts:["Semanal","Quincenal","Flexible"]},
+    {opts:["Mujeres","Hombres","Indistinto"]},
+    {opts:["Enfoque general clínico","Enfoque con sensibilidad cultural y social","Enfoque que integra valores religiosos o espirituales"]},
+    {opts:["Mañana","Tarde","Noche/fines de semana"]},
+    {opts:["Menos de $500 MXN","$500–$1,000 MXN","Más de $1,000 MXN"]},
+    {opts:["1–3 años","4–10 años","Más de 10 años"]},
+    {opts:["Licenciatura","Maestría o especialidad","Doctorado o certificaciones avanzadas"]},
+    {opts:["Solo sesiones individuales","Talleres o grupos","Ambas"]},
+    {opts:["Limitada","Moderada","Alta"]}
+];
+
+// Labels for Respuestas tab
+const lblPac = ["Modalidad preferida","Alcance","Para quién","Tipo de terapia","Motivo principal","Estilo de terapia","Enfoque deseado","Estilo del terapeuta","Expectativa","Espiritualidad","Duración esperada","Frecuencia","Género del terapeuta","Contexto","Horario","Presupuesto","Importancia de la experiencia","Formación preferida","Otras actividades","Urgencia"];
+const lblPsi = ["Modalidad de atención","Alcance geográfico","Población","Tipo de terapia","Áreas de atención","Estructura terapéutica","Enfoque predominante","Estilo de intervención","Rol en sesión","Religión/Espiritualidad","Duración del proceso","Frecuencia","Género de pacientes","Enfoque cultural","Horario","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad"];
+
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+auth.onAuthStateChanged(async user => {
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
+
+    // Detect user type
+    let doc = await db.collection("usuarios").doc(user.uid).get();
+    if (doc.exists) {
+        userType = "paciente";
+        userData = doc.data();
+    } else {
+        doc = await db.collection("psicologos").doc(user.uid).get();
+        if (doc.exists) {
+            userType = "psicologo";
+            userData = doc.data();
+        } else {
+            userType = "paciente";
+            userData = { nombre: user.email, respuestas: [], email: user.email };
+        }
+    }
+
+    document.getElementById("headerEmail").innerText = user.email;
+    const tb = document.getElementById("typeBadge");
+    tb.innerText   = userType === "paciente" ? "Paciente" : "Psicólogo/a";
+    tb.className   = "type-badge " + userType;
+
+    document.getElementById("loading").style.display = "none";
+    openTab("feed");
+});
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function openTab(id) {
+    document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+
+    document.getElementById("tab-" + id).classList.add("active");
+
+    const navId = "nav" + id.charAt(0).toUpperCase() + id.slice(1);
+    const navEl = document.getElementById(navId);
+    if (navEl) navEl.classList.add("active");
+
+    if (id === "feed")       loadFeed();
+    if (id === "explorar")   loadExplorar();
+    if (id === "respuestas") renderRespuestas();
+    if (id === "perfil")     renderMyProfile();
 }
 
-// ---------------- ANALISIS ----------------
-function analizarCorriente(respuestas) {
+// ─── COMPATIBILITY ALGORITHM ─────────────────────────────────────────────────
+// Compare each of the 20 parallel questions:
+//   Exact match   → +2 pts
+//   Adjacent opts → +1 pt
+//   No match      → 0
+// Max = 40 pts → percentage = score/40 * 100
 
-    const text = respuestas.join(" ").toLowerCase();
+function ansIdx(answer, qi, isPsi) {
+    if (!answer) return -1;
+    const opts = isPsi ? qPsi[qi].opts : qPac[qi].opts;
+    const i = opts.indexOf(answer);
+    if (i !== -1) return i;
+    // Religion special answers always = option index 2
+    if (answer.startsWith("Sí, integra") || answer.startsWith("Sí, práctica")) return 2;
+    return -1;
+}
 
-    if (text.includes("familia") || text.includes("relación")) return "👥 Sistémica";
-    if (text.includes("soluciones") || text.includes("herramientas")) return "🧩 TCC";
-    if (text.includes("crecimiento") || text.includes("autoestima")) return "🌱 Humanista";
-    if (text.includes("historia") || text.includes("pasado")) return "🧠 Psicoanalítica";
-    if (text.includes("presente") || text.includes("ahora")) return "🎯 Gestalt";
+function calcCompat(rPac, rPsi) {
+    if (!rPac || !rPsi || !rPac.length || !rPsi.length) return 0;
+    let score = 0;
+    const n = Math.min(rPac.length, rPsi.length, 20);
+    for (let i = 0; i < n; i++) {
+        const p = ansIdx(rPac[i], i, false);
+        const t = ansIdx(rPsi[i], i, true);
+        if (p === -1 || t === -1) { score += 1; continue; } // partial credit for unknowns
+        if (p === t)               score += 2;
+        else if (Math.abs(p-t) === 1) score += 1;
+    }
+    return Math.round((score / (n * 2)) * 100);
+}
 
+function compatClass(pct) {
+    if (pct >= 70) return "c-high";
+    if (pct >= 45) return "c-mid";
+    return "c-low";
+}
+
+function compatColor(pct) {
+    if (pct >= 70) return "#2ecc71";
+    if (pct >= 45) return "#f39c12";
+    return "#e74c3c";
+}
+
+function getCorriente(resp, isPsi) {
+    if (!resp || resp.length < 7) return "🔄 Integrativa";
+    const r = resp[6] || "";
+    if (isPsi) {
+        if (r.includes("TCC"))          return "🧩 TCC / Sistémica";
+        if (r.includes("Humanista"))    return "🌱 Humanista / Contextual";
+        if (r.includes("Psicoanálisis")) return "🧠 Psicoanalítica";
+    } else {
+        if (r.includes("estrategias"))  return "🧩 TCC";
+        if (r.includes("conciencia"))   return "🌱 Humanista";
+        if (r.includes("historia"))     return "🧠 Psicoanalítica";
+    }
     return "🔄 Integrativa";
 }
 
-// ---------------- AUTH ----------------
-auth.onAuthStateChanged(user => {
+// ─── EXPLORAR ────────────────────────────────────────────────────────────────
+async function loadExplorar() {
+    const card    = document.getElementById("swipe-card");
+    const buttons = document.getElementById("action-btns");
+    const hint    = document.getElementById("swipe-hint");
+    const sub     = document.getElementById("explorarSub");
 
-    const status = document.getElementById("status");
+    sub.innerText = userType === "paciente"
+        ? "Perfiles de psicólogos ordenados por compatibilidad contigo"
+        : "Perfiles de pacientes ordenados por compatibilidad contigo";
 
-    if (user) {
+    card.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><div class="spinner" style="margin:0 auto 14px;"></div><p>Cargando perfiles...</p></div>';
+    buttons.style.display = "none";
+    hint.innerText = "";
 
-        status.innerText = "Cargando datos...";
-        document.getElementById("user").innerText = user.email;
+    const otherColl = userType === "paciente" ? "psicologos" : "usuarios";
 
-        if (unsubscribe) unsubscribe();
+    // Load already-interacted UIDs in parallel
+    const [likesSnap, passesSnap] = await Promise.all([
+        db.collection("likes").where("from","==",currentUser.uid).get(),
+        db.collection("passes").where("from","==",currentUser.uid).get()
+    ]);
 
-        unsubscribe = db.collection("usuarios").doc(user.uid)
-            .onSnapshot(doc => {
+    likedSet  = new Set(likesSnap.docs.map(d => d.data().to));
+    passedSet = new Set(passesSnap.docs.map(d => d.data().to));
 
-                if (!doc.exists) return;
+    // Load opposite-type profiles
+    const snap = await db.collection(otherColl).limit(60).get();
+    const profiles = [];
 
-                const data = doc.data();
-                const respuestas = data.respuestas || [];
+    snap.forEach(doc => {
+        const uid = doc.id;
+        if (uid === currentUser.uid) return;
+        if (likedSet.has(uid) || passedSet.has(uid)) return;
 
-                // RESPUESTAS
-                const lista = document.getElementById("respuestas");
-                lista.innerHTML = "";
+        const data = doc.data();
+        const rPac = userType === "paciente" ? (userData.respuestas || []) : (data.respuestas || []);
+        const rPsi = userType === "paciente" ? (data.respuestas || []) : (userData.respuestas || []);
+        const pct  = calcCompat(rPac, rPsi);
 
-                respuestas.forEach((r, i) => {
-                    const li = document.createElement("li");
-                    li.innerText = "Pregunta " + (i + 1) + ": " + r;
-                    lista.appendChild(li);
-                });
+        profiles.push({ uid, data, pct });
+    });
 
-                // PERFIL + RESULTADO
-                const resultado = analizarCorriente(respuestas);
+    // Sort highest compatibility first
+    profiles.sort((a,b) => b.pct - a.pct);
+    profilesQueue = profiles;
+    profileIndex  = 0;
 
-                document.getElementById("p_resultado").innerText = resultado;
+    renderSwipeCard();
+}
 
-                document.getElementById("p_nombre").innerText = data.nombre || "";
-                document.getElementById("p_email").innerText = data.email || user.email;
-                document.getElementById("p_ubicacion").innerText = data.ubicacion || "";
-                document.getElementById("p_motivo").innerText = data.motivo || "";
+function renderSwipeCard() {
+    const card    = document.getElementById("swipe-card");
+    const buttons = document.getElementById("action-btns");
+    const hint    = document.getElementById("swipe-hint");
 
-                status.innerText = "";
+    if (profileIndex >= profilesQueue.length) {
+        card.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🌿</div>
+                <h3>¡Has visto todos los perfiles!</h3>
+                <p>Vuelve pronto para encontrar nuevas conexiones.</p>
+            </div>`;
+        buttons.style.display = "none";
+        hint.innerText = "";
+        return;
+    }
+
+    const { data: d, pct } = profilesQueue[profileIndex];
+    const cardIsPsi = (userType === "paciente"); // the shown card is a psychologist?
+    const resp = d.respuestas || [];
+
+    const modalidad  = resp[0]  || "—";
+    const horario    = resp[14] || "—";
+    const costo      = resp[15] || "—";
+    const corriente  = getCorriente(resp, cardIsPsi);
+
+    let detailsHTML = "";
+    if (cardIsPsi) {
+        detailsHTML = `
+            <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${corriente}</span></div>
+            <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${modalidad}</span></div>
+            <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${horario}</span></div>
+            <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Costo/sesión</span>${costo}</span></div>
+            <div class="sc-row"><span class="sc-icon">📚</span><span class="sc-val"><span class="sc-lbl">Especialización</span>${resp[17]||"—"}</span></div>
+            <div class="sc-row"><span class="sc-icon">✅</span><span class="sc-val"><span class="sc-lbl">Disponibilidad</span>${resp[19]||"—"}</span></div>
+            ${d.consultorio ? `<div class="sc-row"><span class="sc-icon">📍</span><span class="sc-val"><span class="sc-lbl">Consultorio</span>${d.consultorio}</span></div>` : ""}
+        `;
+    } else {
+        detailsHTML = `
+            <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${corriente}</span></div>
+            <div class="sc-row"><span class="sc-icon">💭</span><span class="sc-val"><span class="sc-lbl">Busca</span>${resp[4]||"—"}</span></div>
+            <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${modalidad}</span></div>
+            <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${horario}</span></div>
+            <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Presupuesto</span>${costo}</span></div>
+            <div class="sc-row"><span class="sc-icon">⚡</span><span class="sc-val"><span class="sc-lbl">Urgencia</span>${resp[19]||"—"}</span></div>
+        `;
+    }
+
+    card.innerHTML = `
+        <div class="sc-top">
+            <div class="sc-avatar">${cardIsPsi ? "🧠" : "👤"}</div>
+            <div>
+                <div class="sc-name">${d.nombre || "Usuario"}</div>
+                <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
+            </div>
+        </div>
+        <div class="compat-bar-wrap">
+            <div class="compat-bar-row">
+                <span>Índice de compatibilidad</span>
+                <span class="compat-pct">${pct}%</span>
+            </div>
+            <div class="compat-bar">
+                <div class="compat-fill" style="width:${pct}%; background:${compatColor(pct)};"></div>
+            </div>
+        </div>
+        <div class="sc-details">${detailsHTML}</div>
+    `;
+
+    buttons.style.display = "flex";
+    hint.innerText = "← Pasar  |  → Me interesa  |  Desliza la tarjeta";
+
+    // Touch swipe
+    let tx = 0;
+    card.ontouchstart = e => { tx = e.touches[0].clientX; };
+    card.ontouchend   = e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if      (dx >  80) likeProfile();
+        else if (dx < -80) passProfile();
+    };
+
+    // Keyboard
+    document.onkeydown = e => {
+        if (e.key === "ArrowRight") likeProfile();
+        if (e.key === "ArrowLeft")  passProfile();
+    };
+}
+
+async function likeProfile() {
+    if (profileIndex >= profilesQueue.length) return;
+    const { uid: targetUid, data: targetData, pct } = profilesQueue[profileIndex];
+
+    // Animate
+    document.getElementById("swipe-card").classList.add("fly-right");
+
+    // Save like
+    try {
+        await db.collection("likes").doc(currentUser.uid + "_" + targetUid).set({
+            from: currentUser.uid, to: targetUid, fromType: userType, fecha: new Date()
+        });
+        likedSet.add(targetUid);
+
+        // Check mutual match
+        const rev = await db.collection("likes").doc(targetUid + "_" + currentUser.uid).get();
+        if (rev.exists) {
+            const pacUid = userType === "paciente" ? currentUser.uid : targetUid;
+            const psiUid = userType === "psicologo" ? currentUser.uid : targetUid;
+            const matchId = [pacUid, psiUid].sort().join("_");
+
+            await db.collection("matches").doc(matchId).set({
+                paciente: pacUid, psicologo: psiUid, compatibility: pct, fecha: new Date()
             });
 
-    } else {
-        window.location.href = "index.html";
-    }
-});
+            setTimeout(() => {
+                document.getElementById("matchModalText").innerText =
+                    `Tú y ${targetData.nombre || "este usuario"} han mostrado interés mutuo. Ve a Conexiones para ver sus datos de contacto.`;
+                document.getElementById("matchModal").classList.add("show");
+            }, 340);
+        }
+    } catch(e) { console.error(e); }
 
-// ---------------- LOGOUT ----------------
+    setTimeout(() => {
+        document.getElementById("swipe-card").classList.remove("fly-right");
+        profileIndex++;
+        renderSwipeCard();
+    }, 340);
+}
+
+async function passProfile() {
+    if (profileIndex >= profilesQueue.length) return;
+    const { uid: targetUid } = profilesQueue[profileIndex];
+
+    document.getElementById("swipe-card").classList.add("fly-left");
+
+    try {
+        await db.collection("passes").doc(currentUser.uid + "_" + targetUid).set({
+            from: currentUser.uid, to: targetUid, fecha: new Date()
+        });
+        passedSet.add(targetUid);
+    } catch(e) { console.error(e); }
+
+    setTimeout(() => {
+        document.getElementById("swipe-card").classList.remove("fly-left");
+        profileIndex++;
+        renderSwipeCard();
+    }, 340);
+}
+
+// ─── FEED ────────────────────────────────────────────────────────────────────
+async function loadFeed() {
+    const list = document.getElementById("feedList");
+    list.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
+
+    const myField    = userType === "paciente" ? "paciente" : "psicologo";
+    const otherField = userType === "paciente" ? "psicologo" : "paciente";
+    const otherColl  = userType === "paciente" ? "psicologos" : "usuarios";
+
+    let snap;
+    try {
+        snap = await db.collection("matches")
+            .where(myField, "==", currentUser.uid)
+            .orderBy("fecha", "desc")
+            .get();
+    } catch(e) {
+        // index may not exist yet — fallback without orderBy
+        snap = await db.collection("matches")
+            .where(myField, "==", currentUser.uid)
+            .get();
+    }
+
+    if (!snap || snap.empty) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🌱</div>
+                <h3>Aún no tienes conexiones</h3>
+                <p>Ve a <strong>Explorar</strong> y haz match con perfiles compatibles contigo.</p>
+            </div>`;
+        return;
+    }
+
+    list.innerHTML = "";
+
+    for (const doc of snap.docs) {
+        const md       = doc.data();
+        const otherUid = md[otherField];
+        const pct      = md.compatibility || 0;
+
+        const od = await db.collection(otherColl).doc(otherUid).get();
+        if (!od.exists) continue;
+
+        const d    = od.data();
+        const resp = d.respuestas || [];
+        const cardIsPsi = userType === "paciente";
+
+        let extraHTML = "";
+        if (cardIsPsi) {
+            extraHTML = `
+                <div class="detail-chip"><div class="chip-label">Enfoque</div><div class="chip-val">${getCorriente(resp, true)}</div></div>
+                <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
+                <div class="detail-chip"><div class="chip-label">Costo/sesión</div><div class="chip-val">${resp[15]||"—"}</div></div>
+                <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
+                ${d.cedula      ? `<div class="detail-chip"><div class="chip-label">Cédula</div><div class="chip-val">${d.cedula}</div></div>` : ""}
+                ${d.consultorio ? `<div class="detail-chip"><div class="chip-label">Consultorio</div><div class="chip-val">${d.consultorio}</div></div>` : ""}
+            `;
+        } else {
+            extraHTML = `
+                <div class="detail-chip"><div class="chip-label">Corriente</div><div class="chip-val">${getCorriente(resp, false)}</div></div>
+                <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
+                <div class="detail-chip"><div class="chip-label">Presupuesto</div><div class="chip-val">${resp[15]||"—"}</div></div>
+                <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
+            `;
+        }
+
+        const card = document.createElement("div");
+        card.className = "match-card";
+        card.innerHTML = `
+            <div class="match-card-header">
+                <div class="avatar">${cardIsPsi ? "🧠" : "👤"}</div>
+                <div>
+                    <div class="match-name">${d.nombre || "Usuario"}</div>
+                    <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
+                </div>
+                <div class="match-label">❤️ Match</div>
+            </div>
+            <div class="detail-grid">${extraHTML}</div>
+            <div class="contact-row">
+                <span style="color:var(--muted);">📧</span>
+                <span class="contact-email">${d.email || "—"}</span>
+            </div>
+        `;
+        list.appendChild(card);
+    }
+}
+
+// ─── RESPUESTAS ──────────────────────────────────────────────────────────────
+function renderRespuestas() {
+    const list   = document.getElementById("respuestasList");
+    const resp   = userData.respuestas || [];
+    const labels = userType === "paciente" ? lblPac : lblPsi;
+
+    if (!resp.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3><p>Completa el cuestionario para ver tus respuestas aquí.</p></div>`;
+        return;
+    }
+
+    list.innerHTML = resp.map((r, i) => `
+        <div class="resp-item">
+            <div class="resp-lbl">${labels[i] || "Pregunta " + (i+1)}</div>
+            <div class="resp-val">${r}</div>
+        </div>
+    `).join("");
+}
+
+// ─── MI PERFIL ───────────────────────────────────────────────────────────────
+function renderMyProfile() {
+    const container = document.getElementById("perfilContent");
+    const d    = userData;
+    const resp = d.respuestas || [];
+    const isPsi = userType === "psicologo";
+    const corriente = getCorriente(resp, isPsi);
+
+    let infoFields = "";
+    if (isPsi) {
+        infoFields = `
+            <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email || currentUser.email}</span></div>
+            <div class="pf-row"><span class="pf-label">Cédula profesional</span><span class="pf-val">${d.cedula || "—"}</span></div>
+            <div class="pf-row"><span class="pf-label">Enfoque declarado</span><span class="pf-val">${d.enfoque || "—"}</span></div>
+            <div class="pf-row"><span class="pf-label">Consultorio</span><span class="pf-val">${d.consultorio || "—"}</span></div>
+        `;
+    } else {
+        infoFields = `
+            <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email || currentUser.email}</span></div>
+            <div class="pf-row"><span class="pf-label">Estado</span><span class="pf-val">${d.ubicacion || "—"}</span></div>
+            <div class="pf-row"><span class="pf-label">Motivo de consulta</span><span class="pf-val">${d.motivo || "—"}</span></div>
+        `;
+    }
+
+    let quizFields = "";
+    if (resp.length > 0) {
+        if (isPsi) {
+            quizFields = `
+                <div class="pf-row"><span class="pf-label">Modalidad</span><span class="pf-val">${resp[0]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Áreas de atención</span><span class="pf-val">${resp[4]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Enfoque terapéutico</span><span class="pf-val">${resp[6]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Costo/sesión</span><span class="pf-val">${resp[15]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Experiencia</span><span class="pf-val">${resp[16]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Especialización</span><span class="pf-val">${resp[17]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Disponibilidad</span><span class="pf-val">${resp[19]||"—"}</span></div>
+            `;
+        } else {
+            quizFields = `
+                <div class="pf-row"><span class="pf-label">Modalidad preferida</span><span class="pf-val">${resp[0]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Lo que busca</span><span class="pf-val">${resp[4]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Estilo de terapia</span><span class="pf-val">${resp[5]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Horario disponible</span><span class="pf-val">${resp[14]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Presupuesto</span><span class="pf-val">${resp[15]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Frecuencia deseada</span><span class="pf-val">${resp[11]||"—"}</span></div>
+                <div class="pf-row"><span class="pf-label">Urgencia</span><span class="pf-val">${resp[19]||"—"}</span></div>
+            `;
+        }
+    }
+
+    container.innerHTML = `
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-av">${isPsi ? "🧠" : "👤"}</div>
+                <div>
+                    <div class="profile-name">${d.nombre || "—"}</div>
+                    <span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi ? "Psicólogo/a" : "Paciente"}</span>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="ps-title">Información general</div>
+                ${infoFields}
+            </div>
+
+            <div class="profile-section">
+                <div class="ps-title">Perfil psicológico</div>
+                <div class="pf-row">
+                    <span class="pf-label">Corriente</span>
+                    <span class="pf-val"><span class="corriente-tag">${corriente}</span></span>
+                </div>
+                ${quizFields}
+            </div>
+        </div>
+    `;
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function closeModal() { document.getElementById("matchModal").classList.remove("show"); }
+function goToFeed()   { closeModal(); openTab("feed"); }
+
+// ─── LOGOUT ──────────────────────────────────────────────────────────────────
 function logout() {
-    auth.signOut().then(() => {
-        window.location.href = "index.html";
-    });
+    auth.signOut().then(() => { window.location.href = "index.html"; });
 }
 </script>
 
