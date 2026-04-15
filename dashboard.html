@@ -28,7 +28,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEADERsiy78nkjnk ── */
+        /* ── HEADERtest ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -683,6 +683,11 @@ setTimeout(() => {
     const el = document.getElementById("loading");
     if (el && el.style.display !== "none") {
         el.style.display = "none";
+        // Si Firestore colgó y userType/userData siguen null, asignamos defaults
+        if (currentUser && !userType) {
+            userType = "paciente";
+            userData = userData || { nombre: currentUser.email, respuestas: [], email: currentUser.email };
+        }
         if (currentUser) openTab("feed");
         else window.location.href = "index.html";
     }
@@ -693,13 +698,21 @@ auth.onAuthStateChanged(async user => {
         if (!user) { window.location.href = "index.html"; return; }
         currentUser = user;
 
-        let doc = await db.collection("usuarios").doc(user.uid).get();
-        if (doc.exists) { userType = "paciente"; userData = doc.data(); }
-        else {
-            doc = await db.collection("psicologos").doc(user.uid).get();
-            if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
-            else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
-        }
+        // Promise.race: si Firestore tarda más de 5s, continuamos con defaults
+        const _fetchUserData = async () => {
+            let doc = await db.collection("usuarios").doc(user.uid).get();
+            if (doc.exists) { userType = "paciente"; userData = doc.data(); }
+            else {
+                doc = await db.collection("psicologos").doc(user.uid).get();
+                if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
+                else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
+            }
+        };
+        await Promise.race([
+            _fetchUserData(),
+            new Promise(r => setTimeout(r, 5000))
+        ]);
+        if (!userType) { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
 
         // ── ADMIN CHECK ──
         const emailAdmin = ADMIN_EMAILS.includes(user.email);
@@ -1068,6 +1081,7 @@ function formatMsgTime(ts) {
 
 // ─── RESPUESTAS ──────────────────────────────────────────────────────────────
 function renderRespuestas() {
+    if (!userData) return;
     const list=document.getElementById("respuestasList"), resp=userData.respuestas||[], labels=userType==="paciente"?lblPac:lblPsi;
     const requizBtn = `<button class="btn-requiz" onclick="startReQuiz()">🔄 Volver a contestar el cuestionario</button>`;
     if (!resp.length) {
@@ -1079,6 +1093,7 @@ function renderRespuestas() {
 
 // ─── MI PERFIL ───────────────────────────────────────────────────────────────
 function renderMyProfile() {
+    if (!userData) return;
     const container=document.getElementById("perfilContent"), d=userData, resp=d.respuestas||[], isPsi=userType==="psicologo", corriente=getCorriente(resp,isPsi);
 
     // ── Editable info section ──
