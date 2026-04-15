@@ -589,8 +589,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <!-- Leaflet (mapa libre, sin API key) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- El JS de Leaflet se carga de forma lazy cuando el usuario busca una dirección -->
 
 <script>
 const firebaseConfig = {
@@ -1651,9 +1650,28 @@ window._editConsultorioLat = null;
 window._editConsultorioLng = null;
 let _editLeafletMap    = null;
 let _editLeafletMarker = null;
+let _leafletLoaded     = false;
 
-function initDashboardMaps() { /* no-op, no longer needed */ }
-function initEditMaps()      { /* no-op, Nominatim is on-demand */ }
+function initDashboardMaps() { /* no-op */ }
+function initEditMaps()      { /* no-op */ }
+
+// Carga Leaflet de forma lazy (solo cuando el usuario busca una dirección)
+function loadLeafletIfNeeded() {
+    return new Promise((resolve) => {
+        if (window.L) { resolve(); return; }
+        if (_leafletLoaded) {
+            // Ya se está cargando, espera
+            const check = setInterval(() => { if (window.L) { clearInterval(check); resolve(); } }, 100);
+            return;
+        }
+        _leafletLoaded = true;
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.onload = resolve;
+        script.onerror = resolve; // si falla, continúa sin mapa
+        document.head.appendChild(script);
+    });
+}
 
 async function buscarDireccionEdit() {
     const input  = document.getElementById("edit_consultorio").value.trim();
@@ -1695,7 +1713,7 @@ async function buscarDireccionEdit() {
     btn.disabled  = false;
 }
 
-function seleccionarDireccionEdit(lugar) {
+async function seleccionarDireccionEdit(lugar) {
     const lat = parseFloat(lugar.lat);
     const lng = parseFloat(lugar.lon);
     window._editConsultorioLat = lat;
@@ -1707,6 +1725,10 @@ function seleccionarDireccionEdit(lugar) {
 
     const preview = document.getElementById("editMapPreview");
     preview.style.display = "block";
+
+    // Carga Leaflet solo ahora que se necesita
+    await loadLeafletIfNeeded();
+    if (!window.L) return; // Leaflet no disponible, no muestra mapa
 
     if (!_editLeafletMap) {
         _editLeafletMap = L.map("editMapMini", { zoomControl: true }).setView([lat, lng], 16);
@@ -1776,3 +1798,4 @@ async function loadAdminDesconexiones() {
 
 </body>
 </html>
+
