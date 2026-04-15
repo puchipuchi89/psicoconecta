@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,7 +27,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEADERtest ── */
+        /* ── H888EADER ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -275,50 +274,6 @@
 
         /* Admin sanction modal */
         .rfield textarea.sanc-textarea { min-height:60px; }
-
-        /* ── EDIT PROFILE FORM ── */
-        .edit-field { margin-bottom:14px; }
-        .edit-field label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
-        .edit-field input, .edit-field select, .edit-field textarea {
-            width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px;
-            font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text);
-            background:var(--cream); outline:none; transition:all 0.2s;
-        }
-        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color:var(--sage-light); background:white; }
-        .edit-field textarea { min-height:72px; resize:vertical; }
-        .btn-save-edit {
-            padding:10px 22px; background:var(--sage); color:white; border:none;
-            border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px;
-            font-weight:600; cursor:pointer; transition:background 0.2s; margin-top:4px;
-        }
-        .btn-save-edit:hover { background:var(--sage-dark); }
-
-        /* ── RE-QUIZ BUTTON ── */
-        .btn-requiz {
-            width:100%; padding:11px; background:transparent; color:var(--sage);
-            border:1.5px solid var(--border); border-radius:10px;
-            font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500;
-            cursor:pointer; margin-top:10px; transition:all 0.2s;
-        }
-        .btn-requiz:hover { border-color:var(--sage); background:#f0f6f4; }
-
-        /* ── BREAK MATCH BUTTON ── */
-        .btn-break {
-            padding:6px 12px; background:transparent; border:1px solid #ffb3b3;
-            color:#e05555; border-radius:8px; font-family:'DM Sans',sans-serif;
-            font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s;
-        }
-        .btn-break:hover { background:#fff0f0; }
-
-        /* ── MAPS PREVIEW ── */
-        .map-preview { display:none; margin-top:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); }
-        .map-mini    { height:160px; width:100%; }
-        .map-address { font-size:12px; color:var(--muted); padding:6px 10px; background:var(--cream); }
-
-        /* ── ADMIN: DESCONEXIONES ── */
-        .disc-row { background:var(--warm-white); border-radius:10px; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); font-size:13px; }
-        .disc-row strong { color:var(--text); }
-        .disc-row span   { color:var(--muted); }
     </style>
 </head>
 
@@ -422,7 +377,6 @@
             <button class="admin-subbtn"        onclick="openAdminSub('cedulas')">🔍 Cédulas pendientes</button>
             <button class="admin-subbtn"        onclick="openAdminSub('usuarios')">👥 Usuarios</button>
             <button class="admin-subbtn"        onclick="openAdminSub('reportes')">🚨 Reportes</button>
-            <button class="admin-subbtn"        onclick="openAdminSub('desconexiones')">💔 Desconexiones</button>
         </div>
 
         <!-- Estadísticas -->
@@ -460,11 +414,6 @@
                 <button class="admin-subbtn"        id="rfilterAll"      onclick="filterReports('all')">Todos</button>
             </div>
             <div id="reportesList"><div class="spinner" style="margin:30px auto;"></div></div>
-        </div>
-
-        <!-- Desconexiones -->
-        <div class="admin-sub" id="asub-desconexiones">
-            <div id="desconexionesList"><div class="spinner" style="margin:30px auto;"></div></div>
         </div>
     </div>
 
@@ -531,65 +480,10 @@
     </div>
 </div>
 
-<!-- ── BREAK MATCH MODAL ── -->
-<div class="modal-overlay" id="breakModal">
-    <div class="modal-box wide">
-        <h2 style="margin-bottom:6px;">💔 Romper conexión</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Con: <strong id="breakTargetName"></strong></p>
-        <input type="hidden" id="breakMatchId" />
-        <input type="hidden" id="breakOtherUid" />
-        <div class="rfield">
-            <label>¿Por qué deseas romper esta conexión?</label>
-            <select id="breakReason" onchange="checkBreakReason()">
-                <option value="">Elige una razón...</option>
-                <option value="ya_no_necesito">Ya no necesito el servicio</option>
-                <option value="encontre_algo_mejor">Encontré algo mejor</option>
-                <option value="muy_lejos">El psicólogo está muy lejos</option>
-                <option value="informacion_no_precisa">La información no es precisa</option>
-                <option value="problema_psicologo">Tuve un problema con el psicólogo</option>
-            </select>
-        </div>
-        <div id="breakReportNote" style="display:none;background:#fff3cd;border-radius:8px;padding:10px 12px;font-size:13px;color:#856404;margin-bottom:14px;">
-            ⚠️ Al confirmar, también se abrirá el formulario de reporte para que puedas detallar el problema.
-        </div>
-        <button class="btn-submit-report" onclick="confirmBreakMatch()">Confirmar</button>
-        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeBreakModal()">Cancelar</button>
-    </div>
-</div>
-
-<!-- ── RE-QUIZ MODAL ── -->
-<div class="modal-overlay" id="requizModal">
-    <div class="modal-box" style="max-width:480px;text-align:left;">
-        <h2 style="margin-bottom:6px;font-size:20px;">🔄 Actualizar respuestas</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;" id="requizSubtitle"></p>
-        <p class="quiz-progress" id="rq_progress" style="font-size:12px;color:var(--muted);margin-bottom:6px;"></p>
-        <div style="height:4px;background:var(--border);border-radius:99px;margin-bottom:20px;overflow:hidden;">
-            <div id="rq_fill" style="height:100%;background:var(--sage);border-radius:99px;transition:width 0.3s ease;width:0%;"></div>
-        </div>
-        <h3 id="rq_question" style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--sage-dark);margin-bottom:16px;line-height:1.4;"></h3>
-        <div id="rq_options" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
-        <div id="rq_religion_sub" style="display:none;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;">
-            <p style="font-size:13px;margin-bottom:8px;font-weight:600;">¿Cuál tradición o creencia?</p>
-            <select id="rq_religion_select" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:white;outline:none;">
-                <option value="Cristianismo">Cristianismo</option>
-                <option value="Judaísmo">Judaísmo</option>
-                <option value="Islam">Islam</option>
-                <option value="Budismo">Budismo</option>
-                <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
-                <option value="Otra">Otra</option>
-            </select>
-            <button onclick="rqConfirmReligion()" style="margin-top:10px;padding:9px 18px;background:var(--sage);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Confirmar →</button>
-        </div>
-        <button class="btn-modal-secondary" onclick="rqPrev()">← Atrás</button>
-    </div>
-</div>
-
 <!-- ── FIREBASE ── -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<!-- Leaflet (mapa libre, sin API key) -->
-<!-- El JS de Leaflet se carga de forma lazy cuando el usuario busca una dirección -->
 
 <script>
 const firebaseConfig = {
@@ -678,76 +572,44 @@ const lblPac = ["Modalidad preferida","Alcance","Para quién","Tipo de terapia",
 const lblPsi = ["Modalidad de atención","Alcance geográfico","Población","Tipo de terapia","Áreas de atención","Estructura terapéutica","Enfoque predominante","Estilo de intervención","Rol en sesión","Religión/Espiritualidad","Duración del proceso","Frecuencia","Género de pacientes","Enfoque cultural","Horario","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad"];
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
-// Timeout de seguridad: si en 8s el loading sigue visible, lo oculta
-setTimeout(() => {
-    const el = document.getElementById("loading");
-    if (el && el.style.display !== "none") {
-        el.style.display = "none";
-        // Si Firestore colgó y userType/userData siguen null, asignamos defaults
-        if (currentUser && !userType) {
-            userType = "paciente";
-            userData = userData || { nombre: currentUser.email, respuestas: [], email: currentUser.email };
-        }
-        if (currentUser) openTab("feed");
-        else window.location.href = "index.html";
-    }
-}, 8000);
-
 auth.onAuthStateChanged(async user => {
-    try {
-        if (!user) { window.location.href = "index.html"; return; }
-        currentUser = user;
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
 
-        // Promise.race: si Firestore tarda más de 5s, continuamos con defaults
-        const _fetchUserData = async () => {
-            let doc = await db.collection("usuarios").doc(user.uid).get();
-            if (doc.exists) { userType = "paciente"; userData = doc.data(); }
-            else {
-                doc = await db.collection("psicologos").doc(user.uid).get();
-                if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
-                else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
-            }
-        };
-        await Promise.race([
-            _fetchUserData(),
-            new Promise(r => setTimeout(r, 5000))
-        ]);
-        if (!userType) { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
-
-        // ── ADMIN CHECK ──
-        const emailAdmin = ADMIN_EMAILS.includes(user.email);
-        let firestoreAdmin = false;
-        try {
-            const adminDoc = await db.collection("admins").doc(user.uid).get();
-            firestoreAdmin = adminDoc.exists;
-        } catch(e) {}
-        isAdmin = emailAdmin || firestoreAdmin;
-
-        document.getElementById("headerEmail").innerText = user.email;
-        const tb = document.getElementById("typeBadge");
-        if (isAdmin) {
-            tb.innerText = "Administrador";
-            tb.className = "type-badge admin";
-            document.getElementById("navAdmin").style.display = "block";
-            document.getElementById("mainContainer").classList.add("wide");
-        } else {
-            tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
-            tb.className = "type-badge " + userType;
-        }
-
-        updateLastSeen();
-        lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
-        document.getElementById("loading").style.display = "none";
-        openTab("feed");
-        checkUnreadMessages();
-
-    } catch(e) {
-        console.error("Error al cargar el dashboard:", e);
-        // Aunque algo falle, esconde el loader y muestra el dashboard
-        document.getElementById("loading").style.display = "none";
-        if (currentUser) openTab("feed");
-        else window.location.href = "index.html";
+    let doc = await db.collection("usuarios").doc(user.uid).get();
+    if (doc.exists) { userType = "paciente"; userData = doc.data(); }
+    else {
+        doc = await db.collection("psicologos").doc(user.uid).get();
+        if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
+        else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
     }
+
+    // ── ADMIN CHECK ──
+    const emailAdmin = ADMIN_EMAILS.includes(user.email);
+    let firestoreAdmin = false;
+    try {
+        const adminDoc = await db.collection("admins").doc(user.uid).get();
+        firestoreAdmin = adminDoc.exists;
+    } catch(e) {}
+    isAdmin = emailAdmin || firestoreAdmin;
+
+    document.getElementById("headerEmail").innerText = user.email;
+    const tb = document.getElementById("typeBadge");
+    if (isAdmin) {
+        tb.innerText = "Administrador";
+        tb.className = "type-badge admin";
+        document.getElementById("navAdmin").style.display = "block";
+        document.getElementById("mainContainer").classList.add("wide");
+    } else {
+        tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
+        tb.className = "type-badge " + userType;
+    }
+
+    updateLastSeen();
+    lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
+    document.getElementById("loading").style.display = "none";
+    openTab("feed");
+    checkUnreadMessages();
 });
 
 async function updateLastSeen() {
@@ -869,7 +731,6 @@ async function loadFeed() {
                 <span class="contact-email">${d.email||"—"}</span>
                 <button class="btn-chat" onclick="openTab('mensajes');setTimeout(()=>openChat('${matchId}','${otherUid}','${safeName}','${cardIsPsi?"🧠":"👤"}'),200)">💬 Mensaje</button>
                 <button class="btn-report-sm" onclick="openReport('${otherUid}','${safeName}')">⚑ Reportar</button>
-                <button class="btn-break" onclick="openBreakModal('${matchId}','${otherUid}','${safeName}')">💔 Romper</button>
             </div>`;
         list.appendChild(card);
     }
@@ -1081,68 +942,14 @@ function formatMsgTime(ts) {
 
 // ─── RESPUESTAS ──────────────────────────────────────────────────────────────
 function renderRespuestas() {
-    if (!userData) return;
     const list=document.getElementById("respuestasList"), resp=userData.respuestas||[], labels=userType==="paciente"?lblPac:lblPsi;
-    const requizBtn = `<button class="btn-requiz" onclick="startReQuiz()">🔄 Volver a contestar el cuestionario</button>`;
-    if (!resp.length) {
-        list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3></div>${requizBtn}`;
-        return;
-    }
-    list.innerHTML = resp.map((r,i)=>`<div class="resp-item"><div class="resp-lbl">${labels[i]||"Pregunta "+(i+1)}</div><div class="resp-val">${r}</div></div>`).join("") + requizBtn;
+    if (!resp.length) { list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3></div>`; return; }
+    list.innerHTML=resp.map((r,i)=>`<div class="resp-item"><div class="resp-lbl">${labels[i]||"Pregunta "+(i+1)}</div><div class="resp-val">${r}</div></div>`).join("");
 }
 
 // ─── MI PERFIL ───────────────────────────────────────────────────────────────
 function renderMyProfile() {
-    if (!userData) return;
     const container=document.getElementById("perfilContent"), d=userData, resp=d.respuestas||[], isPsi=userType==="psicologo", corriente=getCorriente(resp,isPsi);
-
-    // ── Editable info section ──
-    const editSection = isPsi ? `
-        <div class="profile-section">
-            <div class="ps-title">✏️ Editar información</div>
-            <div class="edit-field">
-                <label>Enfoque a trabajar</label>
-                <input type="text" id="edit_enfoque" value="${(d.enfoque||"").replace(/"/g,"&quot;")}" placeholder="Ej. TCC, Humanista..." />
-            </div>
-            <div class="edit-field">
-                <label>Dirección del consultorio</label>
-                <div style="display:flex;gap:8px;">
-                    <input type="text" id="edit_consultorio" value="${(d.consultorio||"").replace(/"/g,"&quot;")}"
-                        placeholder="Escribe la dirección..." autocomplete="off"
-                        onkeydown="if(event.key==='Enter'){event.preventDefault();buscarDireccionEdit();}" style="flex:1;" />
-                    <button type="button" onclick="buscarDireccionEdit()" id="btnBuscarEdit"
-                        style="padding:10px 12px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--sage-dark);cursor:pointer;white-space:nowrap;flex-shrink:0;">
-                        🔍
-                    </button>
-                </div>
-                <div id="editDirResultados" style="display:none;background:white;border:1.5px solid var(--border);border-radius:10px;margin-top:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);"></div>
-                <div class="map-preview" id="editMapPreview">
-                    <div class="map-mini" id="editMapMini"></div>
-                    <div class="map-address" id="editMapAddress"></div>
-                </div>
-            </div>
-            <button class="btn-save-edit" onclick="saveEditInfo()">Guardar cambios</button>
-            <p class="save-confirm" id="editInfoConfirm">✅ Guardado</p>
-        </div>
-    ` : `
-        <div class="profile-section">
-            <div class="ps-title">✏️ Editar información</div>
-            <div class="edit-field">
-                <label>Estado</label>
-                <select id="edit_ubicacion">
-                    ${["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Ciudad de México","Coahuila","Colima","Durango","Estado de México","Guanajuato","Guerrero","Hidalgo","Jalisco","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"]
-                    .map(s=>`<option${d.ubicacion===s?" selected":""}>${s}</option>`).join("")}
-                </select>
-            </div>
-            <div class="edit-field">
-                <label>Motivo de consulta</label>
-                <textarea id="edit_motivo" placeholder="Actualiza tu motivo de consulta...">${d.motivo||""}</textarea>
-            </div>
-            <button class="btn-save-edit" onclick="saveEditInfo()">Guardar cambios</button>
-            <p class="save-confirm" id="editInfoConfirm">✅ Guardado</p>
-        </div>
-    `;
-
     const infoFields = isPsi ? `
         <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
         <div class="pf-row"><span class="pf-label">Cédula profesional</span><span class="pf-val">${d.cedula||"—"}</span></div>
@@ -1192,14 +999,9 @@ function renderMyProfile() {
                 <div><div class="profile-name">${d.nombre||"—"}</div><span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
             </div>
             <div class="profile-section"><div class="ps-title">Información general</div>${infoFields}</div>
-            ${editSection}
             <div class="profile-section"><div class="ps-title">Perfil psicológico</div><div class="pf-row"><span class="pf-label">Corriente</span><span class="pf-val"><span class="corriente-tag">${corriente}</span></span></div>${quizFields}</div>
             ${saludoSection}
         </div>`;
-
-    // Init Maps autocomplete for consultorio edit field (psicólogo)
-    if (isPsi) setTimeout(() => initEditMaps(), 200);
-}
 }
 
 async function saveAutoGreeting() {
@@ -1266,7 +1068,6 @@ function openAdminSub(id) {
     if (id==="cedulas")  loadCedulasPendientes();
     if (id==="usuarios") loadAdminUsers("all");
     if (id==="reportes") loadAdminReports("pending");
-    if (id==="desconexiones") loadAdminDesconexiones();
 }
 
 async function loadAdminPanel() {
@@ -1488,326 +1289,6 @@ function logout() {
     if (lastSeenTimer) clearInterval(lastSeenTimer);
     if (chatUnsub) chatUnsub();
     auth.signOut().then(() => { window.location.href = "index.html"; });
-}
-
-// ══════════════════════════════════════════════════════
-//  BREAK MATCH
-// ══════════════════════════════════════════════════════
-let _breakMatchId  = null;
-let _breakOtherUid = null;
-let _breakOtherName = "";
-
-function openBreakModal(matchId, otherUid, otherName) {
-    _breakMatchId   = matchId;
-    _breakOtherUid  = otherUid;
-    _breakOtherName = otherName;
-    document.getElementById("breakTargetName").innerText = otherName;
-    document.getElementById("breakReason").value = "";
-    document.getElementById("breakReportNote").style.display = "none";
-    document.getElementById("breakModal").classList.add("show");
-}
-
-function closeBreakModal() { document.getElementById("breakModal").classList.remove("show"); }
-
-function checkBreakReason() {
-    const val = document.getElementById("breakReason").value;
-    document.getElementById("breakReportNote").style.display =
-        val === "problema_psicologo" ? "block" : "none";
-}
-
-async function confirmBreakMatch() {
-    const reason = document.getElementById("breakReason").value;
-    if (!reason) { alert("Por favor elige una razón."); return; }
-    if (!_breakMatchId) return;
-
-    try {
-        // Save disconnection reason to Firestore
-        await db.collection("disconnections").add({
-            matchId:    _breakMatchId,
-            initiator:  currentUser.uid,
-            otherUid:   _breakOtherUid,
-            otherName:  _breakOtherName,
-            userType:   userType,
-            reason,
-            timestamp:  new Date()
-        });
-
-        // Delete the match document
-        await db.collection("matches").doc(_breakMatchId).delete();
-
-        // Also clean up chat
-        try { await db.collection("chats").doc(_breakMatchId).delete(); } catch(e) {}
-
-        closeBreakModal();
-
-        // If problem with psicólogo → open report modal
-        if (reason === "problema_psicologo") {
-            openReport(_breakOtherUid, _breakOtherName);
-        } else {
-            loadFeed();
-        }
-    } catch(e) { alert("Error al romper la conexión. Intenta de nuevo."); console.error(e); }
-}
-
-// ══════════════════════════════════════════════════════
-//  SAVE EDIT INFO
-// ══════════════════════════════════════════════════════
-async function saveEditInfo() {
-    const isPsi = userType === "psicologo";
-    const coll  = isPsi ? "psicologos" : "usuarios";
-    let update  = {};
-
-    if (isPsi) {
-        update.enfoque    = document.getElementById("edit_enfoque").value.trim();
-        update.consultorio = document.getElementById("edit_consultorio").value.trim();
-        if (window._editConsultorioLat) update.consultorioLat = window._editConsultorioLat;
-        if (window._editConsultorioLng) update.consultorioLng = window._editConsultorioLng;
-    } else {
-        const sel = document.getElementById("edit_ubicacion");
-        update.ubicacion = sel ? sel.value : userData.ubicacion;
-        update.motivo    = document.getElementById("edit_motivo").value.trim();
-    }
-
-    try {
-        await db.collection(coll).doc(currentUser.uid).update(update);
-        Object.assign(userData, update);
-        const c = document.getElementById("editInfoConfirm");
-        c.style.display = "block";
-        setTimeout(() => { c.style.display = "none"; renderMyProfile(); }, 2000);
-    } catch(e) { alert("Error al guardar."); }
-}
-
-// ══════════════════════════════════════════════════════
-//  RE-QUIZ
-// ══════════════════════════════════════════════════════
-let rqCurrent   = 0;
-let rqRespuestas = [];
-let rqQuestions  = [];
-
-function startReQuiz() {
-    rqCurrent    = 0;
-    rqRespuestas = [];
-    rqQuestions  = userType === "paciente" ? qPac : qPsi;
-
-    const labels = userType === "paciente" ? lblPac : lblPsi;
-    document.getElementById("requizSubtitle").innerText =
-        `Actualizando tu cuestionario de ${userType === "paciente" ? "preferencias" : "perfil profesional"} (${rqQuestions.length} preguntas)`;
-    document.getElementById("requizModal").classList.add("show");
-    rqShow();
-}
-
-function rqShow() {
-    const q   = rqQuestions[rqCurrent];
-    const pct = (rqCurrent / rqQuestions.length) * 100;
-    document.getElementById("rq_progress").innerText = `Pregunta ${rqCurrent+1} de ${rqQuestions.length}`;
-    document.getElementById("rq_fill").style.width   = pct + "%";
-    document.getElementById("rq_question").innerText = q.q || q;
-    document.getElementById("rq_religion_sub").style.display = "none";
-
-    const opts = q.opts || q;
-    const container = document.getElementById("rq_options");
-    container.innerHTML = "";
-    opts.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.innerText  = opt;
-        btn.style.cssText = "padding:11px 14px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);cursor:pointer;text-align:left;transition:all 0.18s;width:100%;";
-        btn.onmouseover = () => { btn.style.borderColor="var(--sage-light)"; btn.style.background="#f0f6f4"; };
-        btn.onmouseout  = () => { btn.style.borderColor="var(--border)";     btn.style.background="var(--cream)"; };
-        btn.onclick = () => {
-            if (q.special === "religion" && opt === opts[2]) {
-                document.getElementById("rq_religion_sub").style.display = "block";
-            } else {
-                rqNext(opt);
-            }
-        };
-        container.appendChild(btn);
-    });
-}
-
-function rqConfirmReligion() {
-    const val = document.getElementById("rq_religion_select").value;
-    rqNext(rqCurrent < rqQuestions.length/2
-        ? "Sí, integra creencia: " + val
-        : "Sí, práctica basada en tradición: " + val);
-}
-
-function rqNext(answer) {
-    rqRespuestas.push(answer);
-    document.getElementById("rq_religion_sub").style.display = "none";
-    if (rqCurrent < rqQuestions.length - 1) {
-        rqCurrent++;
-        rqShow();
-    } else {
-        rqSave();
-    }
-}
-
-function rqPrev() {
-    if (rqCurrent > 0) { rqCurrent--; rqRespuestas.pop(); rqShow(); }
-    else { document.getElementById("requizModal").classList.remove("show"); }
-}
-
-async function rqSave() {
-    const coll = userType === "paciente" ? "usuarios" : "psicologos";
-    try {
-        await db.collection(coll).doc(currentUser.uid).update({ respuestas: rqRespuestas });
-        userData.respuestas = rqRespuestas;
-        document.getElementById("requizModal").classList.remove("show");
-        renderRespuestas();
-        alert("✅ ¡Cuestionario actualizado! Tu perfil de compatibilidad ha sido recalculado.");
-    } catch(e) { alert("Error al guardar. Intenta de nuevo."); }
-}
-
-// ══════════════════════════════════════════════════════
-//  NOMINATIM + LEAFLET – DASHBOARD (sin API key)
-// ══════════════════════════════════════════════════════
-window._editConsultorioLat = null;
-window._editConsultorioLng = null;
-let _editLeafletMap    = null;
-let _editLeafletMarker = null;
-let _leafletLoaded     = false;
-
-function initDashboardMaps() { /* no-op */ }
-function initEditMaps()      { /* no-op */ }
-
-// Carga Leaflet de forma lazy (solo cuando el usuario busca una dirección)
-function loadLeafletIfNeeded() {
-    return new Promise((resolve) => {
-        if (window.L) { resolve(); return; }
-        if (_leafletLoaded) {
-            // Ya se está cargando, espera
-            const check = setInterval(() => { if (window.L) { clearInterval(check); resolve(); } }, 100);
-            return;
-        }
-        _leafletLoaded = true;
-        const script = document.createElement("script");
-        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-        script.onload = resolve;
-        script.onerror = resolve; // si falla, continúa sin mapa
-        document.head.appendChild(script);
-    });
-}
-
-async function buscarDireccionEdit() {
-    const input  = document.getElementById("edit_consultorio").value.trim();
-    const btn    = document.getElementById("btnBuscarEdit");
-    const resDiv = document.getElementById("editDirResultados");
-    if (!input) return;
-
-    btn.innerText = "...";
-    btn.disabled  = true;
-    resDiv.style.display = "none";
-    resDiv.innerHTML = "";
-
-    try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}&countrycodes=mx&limit=5&addressdetails=1`;
-        const res  = await fetch(url, { headers: { "Accept-Language": "es" } });
-        const data = await res.json();
-
-        if (!data.length) {
-            resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--muted);">No se encontraron resultados.</div>`;
-            resDiv.style.display = "block";
-        } else {
-            resDiv.style.display = "block";
-            data.forEach(r => {
-                const item = document.createElement("div");
-                item.style.cssText = "padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s;";
-                item.innerText = r.display_name;
-                item.onmouseover = () => item.style.background = "#f0f6f4";
-                item.onmouseout  = () => item.style.background = "white";
-                item.onclick = () => seleccionarDireccionEdit(r);
-                resDiv.appendChild(item);
-            });
-        }
-    } catch(e) {
-        resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--error);">Error de conexión.</div>`;
-        resDiv.style.display = "block";
-    }
-
-    btn.innerText = "🔍";
-    btn.disabled  = false;
-}
-
-async function seleccionarDireccionEdit(lugar) {
-    const lat = parseFloat(lugar.lat);
-    const lng = parseFloat(lugar.lon);
-    window._editConsultorioLat = lat;
-    window._editConsultorioLng = lng;
-
-    document.getElementById("edit_consultorio").value = lugar.display_name;
-    document.getElementById("editDirResultados").style.display = "none";
-    document.getElementById("editMapAddress").innerText = lugar.display_name;
-
-    const preview = document.getElementById("editMapPreview");
-    preview.style.display = "block";
-
-    // Carga Leaflet solo ahora que se necesita
-    await loadLeafletIfNeeded();
-    if (!window.L) return; // Leaflet no disponible, no muestra mapa
-
-    if (!_editLeafletMap) {
-        _editLeafletMap = L.map("editMapMini", { zoomControl: true }).setView([lat, lng], 16);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: "© OpenStreetMap"
-        }).addTo(_editLeafletMap);
-        _editLeafletMarker = L.marker([lat, lng]).addTo(_editLeafletMap);
-    } else {
-        _editLeafletMap.setView([lat, lng], 16);
-        _editLeafletMarker.setLatLng([lat, lng]);
-    }
-    setTimeout(() => _editLeafletMap.invalidateSize(), 100);
-}
-
-// ══════════════════════════════════════════════════════
-//  ADMIN: DESCONEXIONES
-// ══════════════════════════════════════════════════════
-async function loadAdminDesconexiones() {
-    const container = document.getElementById("desconexionesList");
-    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
-
-    const reasonLabels = {
-        ya_no_necesito:       "Ya no necesito el servicio",
-        encontre_algo_mejor:  "Encontró algo mejor",
-        muy_lejos:            "El psicólogo está muy lejos",
-        informacion_no_precisa: "La información no es precisa",
-        problema_psicologo:   "Tuvo un problema con el psicólogo"
-    };
-
-    try {
-        let snap;
-        try { snap = await db.collection("disconnections").orderBy("timestamp","desc").limit(80).get(); }
-        catch(e) { snap = await db.collection("disconnections").limit(80).get(); }
-
-        if (snap.empty) {
-            container.innerHTML=`<div class="empty-state"><div class="empty-icon">💔</div><h3>Sin desconexiones registradas</h3><p>Aquí aparecerán las razones por las que los usuarios rompieron conexiones.</p></div>`;
-            return;
-        }
-
-        // Group by reason
-        const counts = {};
-        snap.forEach(doc => {
-            const r = doc.data().reason || "otro";
-            counts[r] = (counts[r]||0) + 1;
-        });
-
-        let html = `<div class="stat-grid" style="margin-bottom:20px;">`;
-        Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([r,n]) => {
-            html += `<div class="stat-box"><div class="stat-num">${n}</div><div class="stat-lbl">${reasonLabels[r]||r}</div></div>`;
-        });
-        html += `</div><h4 style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Registros recientes</h4>`;
-
-        container.innerHTML = html;
-
-        snap.forEach(doc => {
-            const d   = doc.data();
-            const ts  = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}) : "—";
-            const row = document.createElement("div");
-            row.className = "disc-row";
-            row.innerHTML = `<strong>${d.userType==="paciente"?"Paciente":"Psicólogo"}</strong> rompió conexión con <strong>${d.otherName||d.otherUid||"—"}</strong><br>
-                <span>Razón: ${reasonLabels[d.reason]||d.reason||"—"} · ${ts}</span>`;
-            container.appendChild(row);
-        });
-    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; console.error(e); }
 }
 </script>
 
