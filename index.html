@@ -384,6 +384,114 @@
             .steps-grid { grid-template-columns: 1fr; gap: 24px; }
             .nav-links { display: none; }
         }
+
+        /* ══════════════════════════════════════════
+           SLIDESHOW DE PSICÓLOGOS (hero-left)
+        ══════════════════════════════════════════ */
+        .psi-slideshow {
+            margin-top: 32px;
+            background: var(--warm-white);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .slideshow-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 20px 0;
+        }
+        .slideshow-eyebrow {
+            font-size: 10px; font-weight: 700; color: var(--sage);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .slideshow-counter {
+            font-size: 11px; color: var(--muted); font-weight: 500;
+        }
+
+        .slide-card {
+            display: none;
+            padding: 16px 20px 6px;
+            animation: slideIn 0.4s ease;
+        }
+        .slide-card.active { display: block; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Reuse existing .psi-card-top, .psi-av, .psi-name, .psi-tag,
+           .psi-chips, .psi-chip, .psi-verified, .psi-footer inside slide-card */
+        .slide-card .psi-card-top { margin-bottom: 12px; }
+        .slide-card .psi-chips    { gap: 5px; margin-bottom: 10px; }
+        .slide-card .psi-footer   { margin-bottom: 4px; }
+        .slide-card .psi-verified {
+            position: static; display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .slideshow-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .slideshow-dots { display: flex; gap: 6px; }
+        .slideshow-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--border); cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            border: none; padding: 0;
+        }
+        .slideshow-dot.active { background: var(--sage); transform: scale(1.25); }
+
+        .slideshow-nav { display: flex; gap: 6px; }
+        .slideshow-btn {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--cream); border: 1px solid var(--border);
+            color: var(--muted); font-size: 13px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .slideshow-btn:hover { background: var(--sage); color: white; border-color: var(--sage); }
+
+        .slideshow-loading {
+            padding: 32px 20px; text-align: center;
+            color: var(--muted); font-size: 13px;
+        }
+
+        /* ══ AVISO DE PRIVACIDAD ══ */
+        .privacy-section { background: var(--text); border-top: 1px solid rgba(255,255,255,0.07); }
+        .privacy-toggle {
+            width: 100%; display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 32px; background: none; border: none; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+            color: rgba(255,255,255,0.55); text-align: left; transition: color 0.2s; gap: 12px;
+        }
+        .privacy-toggle:hover { color: rgba(255,255,255,0.85); }
+        .privacy-arrow { font-size: 16px; transition: transform 0.3s ease; flex-shrink: 0; line-height: 1; }
+        .privacy-toggle.open .privacy-arrow { transform: rotate(180deg); }
+        .privacy-body { max-height: 0; overflow: hidden; transition: max-height 0.45s ease; }
+        .privacy-body.open { max-height: 5000px; }
+        .privacy-inner {
+            max-width: 820px; margin: 0 auto; padding: 4px 32px 40px;
+            color: rgba(255,255,255,0.58); font-size: 13px; line-height: 1.8;
+        }
+        .privacy-inner h3 {
+            font-family: 'DM Serif Display', serif; font-size: 15px;
+            color: rgba(255,255,255,0.82); margin: 22px 0 8px; font-weight: 400;
+        }
+        .privacy-inner h3:first-child { margin-top: 0; }
+        .privacy-inner p  { margin-bottom: 10px; }
+        .privacy-inner ul { padding-left: 18px; margin-bottom: 10px; }
+        .privacy-inner li { margin-bottom: 5px; }
+        .privacy-inner strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+        .footer-priv-btn {
+            background: none; border: none; color: rgba(255,255,255,0.4);
+            font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
+            text-decoration: underline; transition: color 0.2s;
+        }
+        .footer-priv-btn:hover { color: rgba(255,255,255,0.75); }
     </style>
 </head>
 
@@ -397,7 +505,6 @@
     </a>
     <div class="nav-links">
         <a href="#como-funciona">Cómo funciona</a>
-        <a href="#psicologos">Psicólogos</a>
         <a href="#quienes-somos">Quiénes somos</a>
     </div>
     <a class="nav-cta" href="#registro" onclick="document.getElementById('registro').scrollIntoView({behavior:'smooth'})">Comenzar</a>
@@ -437,6 +544,27 @@
         <div class="hero-trust">
             <span class="trust-icon">🔒</span>
             Tu información es privada y está protegida. Solo tu match puede ver tu contacto.
+        </div>
+
+        <!-- SLIDESHOW DE PSICÓLOGOS -->
+        <div class="psi-slideshow" id="psiSlideshow">
+            <div class="slideshow-header">
+                <span class="slideshow-eyebrow">🧠 Psicólogos verificados</span>
+                <span class="slideshow-counter" id="slideCounter"></span>
+            </div>
+            <div id="slideshowTrack">
+                <div class="slideshow-loading">
+                    <div class="psi-spinner"></div>
+                    Cargando perfiles...
+                </div>
+            </div>
+            <div class="slideshow-footer">
+                <div class="slideshow-dots" id="slideshowDots"></div>
+                <div class="slideshow-nav">
+                    <button class="slideshow-btn" onclick="slidePrev()">‹</button>
+                    <button class="slideshow-btn" onclick="slideNext()">›</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -636,21 +764,6 @@
 
 </section>
 
-<!-- ══ PSICÓLOGOS EN LA PLATAFORMA ══════════════════════════════════ -->
-<section class="section-psi" id="psicologos">
-    <div class="section-inner">
-        <div class="section-eyebrow">Nuestra red</div>
-        <h2 class="section-heading">Psicólogos verificados<br>en la plataforma</h2>
-        <p class="section-desc">Todos nuestros psicólogos pasan por verificación de cédula profesional ante la SEP. Conoce algunos de los perfiles disponibles.</p>
-        <div class="psi-grid" id="psiGrid">
-            <div class="psi-loading">
-                <div class="psi-spinner"></div>
-                Cargando perfiles...
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- ══ CÓMO FUNCIONA ════════════════════════════════════════════════ -->
 <section class="section-how" id="como-funciona">
     <div class="section-inner">
@@ -722,9 +835,75 @@
 <!-- ══ FOOTER ════════════════════════════════════════════════════════ -->
 <footer>
     <strong>PsicoConecta</strong> · Tu información es privada y está protegida · México 🇲🇽
+    &nbsp;·&nbsp;
+    <button class="footer-priv-btn" onclick="togglePrivacy()">Aviso de Privacidad</button>
 </footer>
 
-<!-- ── FIREBASE ── -->
+<!-- ══ AVISO DE PRIVACIDAD ════════════════════════════════════════════ -->
+<div class="privacy-section">
+    <button class="privacy-toggle" id="privacyToggle" onclick="togglePrivacy()">
+        🔒 Aviso de Privacidad de Clientes — PsicoConecta
+        <span class="privacy-arrow">⌄</span>
+    </button>
+    <div class="privacy-body" id="privacyBody">
+        <div class="privacy-inner">
+
+            <h3>Identidad y Domicilio del Responsable</h3>
+            <p>PsicoConecta, con domicilio ubicado en <strong>Av. Camino Real a San Andrés Cholula 4002, Emiliano Zapata, 72810 San Andrés Cholula, Pue.</strong>, es responsable del tratamiento y protección de sus datos personales, garantizando el buen uso, protección y confidencialidad de los mismos. Nos comprometemos a brindarle toda la información necesaria para que usted tenga pleno control sobre el tratamiento de sus datos personales.</p>
+
+            <h3>Servicios</h3>
+            <p>La principal finalidad para la cual PsicoConecta trata sus datos personales es brindarle servicios y productos de calidad relacionados con la salud mental, ofreciendo un espacio donde los profesionales de la salud mental puedan presentar sus servicios y generar una vinculación con las necesidades específicas de los pacientes que buscan apoyo psicológico, considerando distintos enfoques terapéuticos y especialidades óptimas para cada caso.</p>
+
+            <h3>Datos Personales Tratados</h3>
+            <p>Para el funcionamiento de la aplicación y la prestación de los servicios ofrecidos, se recabarán las siguientes categorías de datos personales:</p>
+            <ul>
+                <li><strong>Datos de identificación:</strong> nombre completo, fecha de nacimiento (edad), sexo, ubicación geográfica.</li>
+                <li><strong>Datos de contacto:</strong> dirección de correo electrónico, número telefónico.</li>
+                <li><strong>Datos de perfil y preferencias:</strong> motivo de consulta, áreas de interés terapéutico, preferencias de tipo de terapia y modalidad de consulta, creencias.</li>
+                <li><strong>Datos de profesionales registrados:</strong> cédula profesional, formación académica y experiencia, especialidades clínicas, enfoque terapéutico, estilos de intervención, modalidad de consulta, duración promedio del proceso, costos y disponibilidad.</li>
+                <li><strong>Datos técnicos y de uso:</strong> dirección IP, identificadores de dispositivo, sistema operativo, historial de navegación dentro de la app e interacciones con la plataforma.</li>
+            </ul>
+
+            <h3>Finalidades Necesarias y Minimización de Datos</h3>
+            <p>PsicoConecta, en cumplimiento a los principios de proporcionalidad y minimización, únicamente recaba y hace uso legítimo de los datos personales adecuados, necesarios y relevantes para la prestación de los servicios, así como para cumplir con las finalidades del tratamiento informadas en el presente Aviso de Privacidad. Por ningún motivo tratará los datos para finalidades distintas o incompatibles con las aquí descritas.</p>
+
+            <h3>¿Cómo Usa PsicoConecta sus Datos Personales?</h3>
+            <ul>
+                <li>Crear y administrar la cuenta del usuario dentro de la app.</li>
+                <li>Permitir el acceso y uso de los servicios disponibles en la plataforma.</li>
+                <li>Facilitar la búsqueda y conexión entre usuarios y profesionales de la psicología.</li>
+                <li>Generar recomendaciones de terapeutas con base en las necesidades y preferencias del usuario.</li>
+                <li>Permitir la comunicación y coordinación de consultas entre usuarios y profesionales.</li>
+                <li>Verificar la identidad y credenciales profesionales de los psicólogos registrados.</li>
+                <li>Garantizar el correcto funcionamiento y seguridad de la plataforma, realizando análisis estadísticos y desarrollando nuevas funcionalidades.</li>
+            </ul>
+
+            <h3>Uso de Cookies y Tecnologías Similares</h3>
+            <p>Recopilamos automáticamente información técnica básica de todos los usuarios, como su dirección IP, a través de cookies y herramientas de recopilación automática, con el propósito de recordar preferencias, facilitar el inicio de sesión y mejorar la funcionalidad de la plataforma. El usuario puede configurar su dispositivo o navegador para rechazar o limitar el uso de cookies, aunque algunas funcionalidades podrían verse afectadas.</p>
+
+            <h3>Seguridad</h3>
+            <p>PsicoConecta toma medidas técnicas, legales y organizativas razonables para proteger los datos personales en nuestra posesión, incluyendo: cifrado de información durante su transmisión, uso de protocolos seguros (HTTPS), almacenamiento en servidores protegidos, políticas internas de confidencialidad y controles de acceso restringido. Sin perjuicio de lo anterior, el usuario reconoce que ningún sistema tecnológico es completamente infalible.</p>
+
+            <h3>Actualizaciones a este Aviso</h3>
+            <p>De vez en cuando evaluamos nuestras políticas y procedimientos de privacidad. Si realizamos cambios sustanciales, le notificaremos mediante un aviso destacado en el sitio web antes de que el cambio entre en vigencia.</p>
+
+            <h3>Consentimiento</h3>
+            <p>El uso de la aplicación, así como el registro de una cuenta dentro de la misma, implica que el usuario ha leído, comprendido y aceptado el presente Aviso de Privacidad, otorgando su consentimiento para el tratamiento de sus datos personales conforme a lo aquí establecido.</p>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePrivacy() {
+    const toggle = document.getElementById("privacyToggle");
+    const body   = document.getElementById("privacyBody");
+    const isOpen = body.classList.contains("open");
+    body.classList.toggle("open", !isOpen);
+    toggle.classList.toggle("open", !isOpen);
+    if (!isOpen) toggle.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+</script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -768,17 +947,30 @@ function getCorriente(resp) {
     return "🔄 Integrativa";
 }
 
+// ══════════════════════════════════════════════════════
+//  SLIDESHOW DE PSICÓLOGOS (hero-left)
+// ══════════════════════════════════════════════════════
+let slideIndex   = 0;
+let slideTotal   = 0;
+let slideTimer   = null;
+
 (async function loadPsiPerfiles() {
-    const grid = document.getElementById("psiGrid");
+    const track  = document.getElementById("slideshowTrack");
+    const dots   = document.getElementById("slideshowDots");
+    const counter = document.getElementById("slideCounter");
+
     try {
-        const snap = await db.collection("psicologos").limit(6).get();
+        const snap = await db.collection("psicologos").limit(8).get();
+
         if (snap.empty) {
-            grid.innerHTML = `<p style="color:var(--muted);font-size:14px;grid-column:1/-1;text-align:center;padding:32px 0;">
-                Pronto habrá psicólogos disponibles. ¡Regístrate y sé el primero!</p>`;
+            track.innerHTML = `<div class="slideshow-loading">Pronto habrá psicólogos disponibles.<br>¡Regístrate y sé el primero!</div>`;
             return;
         }
 
-        grid.innerHTML = "";
+        track.innerHTML = "";
+        dots.innerHTML  = "";
+        let idx = 0;
+
         snap.forEach(doc => {
             const d    = doc.data();
             const resp = d.respuestas || [];
@@ -790,12 +982,14 @@ function getCorriente(resp) {
             const experiencia = resp[16] || "—";
             const disp        = resp[19] || "—";
             const isVerified  = d.cedulaVerificada === true;
-            // Anonymize last name for privacy
-            const nombre = d.nombre ? d.nombre.split(" ").map((w,i) => i === 0 ? w : w[0]+".").join(" ") : "Psicólogo/a";
+            const nombre      = d.nombre
+                ? d.nombre.split(" ").map((w,i) => i === 0 ? w : w[0]+".").join(" ")
+                : "Psicólogo/a";
 
-            const card = document.createElement("div");
-            card.className = "psi-card";
-            card.innerHTML = `
+            // Slide card
+            const slide = document.createElement("div");
+            slide.className = "slide-card" + (idx === 0 ? " active" : "");
+            slide.innerHTML = `
                 ${isVerified ? '<div class="psi-verified">✓ Cédula verificada</div>' : ''}
                 <div class="psi-card-top">
                     <div class="psi-av">🧠</div>
@@ -808,19 +1002,60 @@ function getCorriente(resp) {
                     <div class="psi-chip"><span>Modalidad</span>${modalidad}</div>
                     <div class="psi-chip"><span>Horario</span>${horario}</div>
                     <div class="psi-chip"><span>Experiencia</span>${experiencia}</div>
-                    <div class="psi-chip" style="grid-column:1/-1"><span>Áreas</span>${areas}</div>
+                    <div class="psi-chip"><span>Áreas</span>${areas}</div>
                 </div>
                 <div class="psi-footer">
                     <span class="psi-costo">${costo}</span>
                     <span class="psi-disp">Disponibilidad: ${disp}</span>
                 </div>`;
-            grid.appendChild(card);
+            track.appendChild(slide);
+
+            // Dot
+            const dot = document.createElement("button");
+            dot.className = "slideshow-dot" + (idx === 0 ? " active" : "");
+            dot.onclick = () => goToSlide(idx);
+            dots.appendChild(dot);
+
+            idx++;
         });
+
+        slideTotal = idx;
+        slideIndex = 0;
+        updateSlideCounter();
+        startSlideTimer();
+
     } catch(e) {
-        grid.innerHTML = `<p style="color:var(--muted);font-size:14px;grid-column:1/-1;text-align:center;padding:32px 0;">
-            Los perfiles estarán disponibles pronto.</p>`;
+        track.innerHTML = `<div class="slideshow-loading">Los perfiles estarán disponibles pronto.</div>`;
     }
 })();
+
+function goToSlide(n) {
+    const slides = document.querySelectorAll(".slide-card");
+    const dotEls = document.querySelectorAll(".slideshow-dot");
+    if (!slides.length) return;
+
+    slides[slideIndex].classList.remove("active");
+    dotEls[slideIndex].classList.remove("active");
+
+    slideIndex = (n + slideTotal) % slideTotal;
+
+    slides[slideIndex].classList.add("active");
+    dotEls[slideIndex].classList.add("active");
+    updateSlideCounter();
+}
+
+function slideNext() { clearTimeout(slideTimer); goToSlide(slideIndex + 1); startSlideTimer(); }
+function slidePrev() { clearTimeout(slideTimer); goToSlide(slideIndex - 1); startSlideTimer(); }
+
+function updateSlideCounter() {
+    const el = document.getElementById("slideCounter");
+    if (el && slideTotal > 0) el.innerText = (slideIndex + 1) + " / " + slideTotal;
+}
+
+function startSlideTimer() {
+    clearTimeout(slideTimer);
+    slideTimer = setTimeout(() => { goToSlide(slideIndex + 1); startSlideTimer(); }, 4000);
+}
 
 // ══════════════════════════════════════════════════════
 //  VERIFICACIÓN DE CÉDULA SEP
@@ -1121,3 +1356,4 @@ function goHome() { window.location.href = "dashboard.html"; }
 </script>
 </body>
 </html>
+
