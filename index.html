@@ -26,57 +26,100 @@
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--cream);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 16px 60px;
             color: var(--text);
         }
 
-        /* ── HEADER ── */
-        .site-header {
-            text-align: center;
-            margin-bottom: 36px;
+        /* ══════════════════════════════════════════
+           STICKY NAV
+        ══════════════════════════════════════════ */
+        .top-nav {
+            position: sticky; top: 0; z-index: 200;
+            background: rgba(250,248,244,0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 32px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo-icon {
+            width: 34px; height: 34px; background: var(--sage);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px;
+        }
+        .nav-logo-text { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark); }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a {
+            font-size: 14px; color: var(--muted); text-decoration: none;
+            font-weight: 500; transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--sage-dark); }
+        .nav-cta {
+            padding: 8px 20px; background: var(--sage); color: white;
+            border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            text-decoration: none;
+        }
+        .nav-cta:hover { background: var(--sage-dark); }
+
+        /* ══════════════════════════════════════════
+           HERO (two-column)
+        ══════════════════════════════════════════ */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 60px;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 70px 32px 60px;
+            align-items: start;
         }
 
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
+        .hero-left { padding-top: 20px; }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: #e8f4f1; color: var(--sage-dark);
+            padding: 5px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+            margin-bottom: 22px; letter-spacing: 0.3px;
         }
 
-        .logo-icon {
-            width: 42px; height: 42px;
-            background: var(--sage);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-        }
-
-        .logo-text {
+        .hero-title {
             font-family: 'DM Serif Display', serif;
-            font-size: 26px;
+            font-size: clamp(36px, 5vw, 52px);
             color: var(--sage-dark);
-            letter-spacing: -0.5px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+        .hero-title em { color: var(--sage); font-style: italic; }
+
+        .hero-desc {
+            font-size: 16px; color: var(--muted); line-height: 1.7;
+            margin-bottom: 36px; max-width: 440px; font-weight: 300;
         }
 
-        .site-header p {
-            font-size: 14px;
-            color: var(--muted);
-            font-weight: 300;
-            letter-spacing: 0.3px;
+        .hero-stats {
+            display: flex; gap: 32px; margin-bottom: 40px; flex-wrap: wrap;
         }
+        .stat-item { }
+        .stat-num {
+            font-family: 'DM Serif Display', serif;
+            font-size: 28px; color: var(--sage-dark); margin-bottom: 2px;
+        }
+        .stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
 
-        /* ── CARD ── */
+        .hero-trust {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: var(--muted);
+        }
+        .trust-icon { font-size: 16px; }
+
+        /* ── CARD (unchanged) ── */
         .card {
             background: var(--warm-white);
             border-radius: 20px;
             box-shadow: var(--shadow);
             padding: 40px 36px;
             width: 100%;
-            max-width: 460px;
             animation: fadeUp 0.4s ease;
         }
 
@@ -87,467 +130,593 @@
 
         .card h2 {
             font-family: 'DM Serif Display', serif;
-            font-size: 24px;
-            color: var(--sage-dark);
-            margin-bottom: 6px;
+            font-size: 24px; color: var(--sage-dark); margin-bottom: 6px;
         }
-
         .card .subtitle {
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 28px;
-            font-weight: 300;
+            font-size: 13px; color: var(--muted); margin-bottom: 28px; font-weight: 300;
         }
-
-        /* ── AUTH TABS (3 tabs) ── */
         .auth-tabs {
-            display: flex;
-            background: #eef3f2;
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 28px;
-            gap: 2px;
+            display: flex; background: #eef3f2; border-radius: 10px;
+            padding: 4px; margin-bottom: 28px; gap: 2px;
         }
-
         .auth-tab {
-            flex: 1;
-            padding: 8px 6px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            flex: 1; padding: 8px 6px; border: none; background: transparent;
+            border-radius: 8px; font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
-
         .auth-tab.active {
-            background: var(--warm-white);
-            color: var(--sage-dark);
+            background: var(--warm-white); color: var(--sage-dark);
             box-shadow: 0 2px 8px rgba(74,124,111,0.12);
         }
-
-        /* ── INPUTS ── */
-        .field {
-            margin-bottom: 16px;
-        }
-
+        .field { margin-bottom: 16px; }
         label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--sage-dark);
-            margin-bottom: 6px;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
+            display: block; font-size: 12px; font-weight: 600;
+            color: var(--sage-dark); margin-bottom: 6px;
+            letter-spacing: 0.4px; text-transform: uppercase;
         }
-
         input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            color: var(--text);
-            background: var(--cream);
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-            appearance: none;
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif;
+            font-size: 14px; color: var(--text); background: var(--cream);
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none; appearance: none;
         }
-
         input:focus, select:focus, textarea:focus {
             border-color: var(--sage-light);
             box-shadow: 0 0 0 3px rgba(74,124,111,0.1);
             background: white;
         }
-
-        textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* ── BUTTONS ── */
+        textarea { resize: vertical; min-height: 90px; }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .btn-primary {
-            width: 100%;
-            padding: 13px;
-            background: var(--sage);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.2s, transform 0.15s;
-            letter-spacing: 0.2px;
+            width: 100%; padding: 13px; background: var(--sage); color: white;
+            border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px;
+            transition: background 0.2s, transform 0.15s; letter-spacing: 0.2px;
         }
-
         .btn-primary:hover  { background: var(--sage-dark); transform: translateY(-1px); }
         .btn-primary:active { transform: translateY(0); }
-
         .btn-secondary {
-            width: 100%;
-            padding: 11px;
-            background: transparent;
-            color: var(--sage);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: border-color 0.2s, background 0.2s;
+            width: 100%; padding: 11px; background: transparent; color: var(--sage);
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+            cursor: pointer; margin-top: 10px; transition: border-color 0.2s, background 0.2s;
         }
-
         .btn-secondary:hover { border-color: var(--sage-light); background: #f0f6f4; }
 
-        /* ── QUIZ (STEP 2) ── */
+        /* QUIZ */
         #step2, #step2_psi { display: none; }
-
-        .quiz-progress {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--border);
-            border-radius: 99px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--sage);
-            border-radius: 99px;
-            transition: width 0.3s ease;
-        }
-
-        .quiz-question {
-            font-family: 'DM Serif Display', serif;
-            font-size: 20px;
-            color: var(--sage-dark);
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        .quiz-progress { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+        .progress-bar { height: 4px; background: var(--border); border-radius: 99px; margin-bottom: 24px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--sage); border-radius: 99px; transition: width 0.3s ease; }
+        .quiz-question { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark); margin-bottom: 20px; line-height: 1.4; }
+        .options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .opt-btn {
-            padding: 13px 16px;
-            background: var(--cream);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            color: var(--text);
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.18s;
+            padding: 13px 16px; background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+            color: var(--text); cursor: pointer; text-align: left; transition: all 0.18s;
         }
-
-        .opt-btn:hover {
-            border-color: var(--sage-light);
-            background: #f0f6f4;
-            color: var(--sage-dark);
-        }
-
-        /* ── RELIGION SUB ── */
+        .opt-btn:hover { border-color: var(--sage-light); background: #f0f6f4; color: var(--sage-dark); }
         .religion-box {
-            background: var(--cream);
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: none;
+            background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 12px; padding: 16px; margin-bottom: 12px; display: none;
         }
-
-        .religion-box label {
-            text-transform: none;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        /* ── FINAL ── */
+        .religion-box label { text-transform: none; font-size: 13px; margin-bottom: 10px; }
         #final { display: none; text-align: center; }
+        .final-icon { font-size: 52px; margin-bottom: 16px; }
+        #final h2 { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--sage-dark); margin-bottom: 8px; }
+        #final p { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+        .error-msg { font-size: 13px; color: var(--error); margin-top: 10px; text-align: center; min-height: 18px; }
 
-        .final-icon {
-            font-size: 52px;
-            margin-bottom: 16px;
+        /* ── CÉDULA VERIFICACIÓN ── */
+        .cedula-row { display: flex; gap: 8px; align-items: flex-end; }
+        .cedula-row input { flex: 1; }
+        .btn-verify-cedula {
+            padding: 12px 14px; background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+            font-weight: 600; color: var(--sage-dark); cursor: pointer;
+            white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+        }
+        .btn-verify-cedula:hover { border-color: var(--sage-light); background: #f0f6f4; }
+        .btn-verify-cedula:disabled { opacity: 0.5; cursor: default; }
+        .cedula-status {
+            font-size: 12px; margin-top: 6px; padding: 6px 12px;
+            border-radius: 8px; display: none;
+        }
+        .cedula-status.ok  { display: block; background: #d4edda; color: #1a6b37; }
+        .cedula-status.err { display: block; background: #f8d7da; color: #842029; }
+        .cedula-status.pending { display: block; background: #fff3cd; color: #856404; }
+
+        /* ══════════════════════════════════════════
+           SECCIÓN: PSICÓLOGOS EN LA PLATAFORMA
+        ══════════════════════════════════════════ */
+        .section-psi {
+            background: var(--warm-white);
+            padding: 72px 32px;
+            border-top: 1px solid var(--border);
+        }
+        .section-inner { max-width: 1120px; margin: 0 auto; }
+        .section-eyebrow {
+            font-size: 11px; font-weight: 700; color: var(--sage);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+        }
+        .section-heading {
+            font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 38px);
+            color: var(--sage-dark); margin-bottom: 10px; line-height: 1.2;
+        }
+        .section-desc {
+            font-size: 15px; color: var(--muted); margin-bottom: 44px;
+            max-width: 520px; line-height: 1.65; font-weight: 300;
         }
 
-        #final h2 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 26px;
-            color: var(--sage-dark);
-            margin-bottom: 8px;
+        .psi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
         }
 
-        #final p {
-            font-size: 14px;
-            color: var(--muted);
-            margin-bottom: 28px;
+        .psi-card {
+            background: var(--cream);
+            border-radius: 18px; padding: 24px;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
+        }
+        .psi-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+
+        .psi-card-top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .psi-av {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; flex-shrink: 0;
+        }
+        .psi-name { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--sage-dark); margin-bottom: 4px; }
+        .psi-tag {
+            display: inline-block; background: #ede8f4; color: #4a3c7c;
+            padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        }
+        .psi-verified {
+            position: absolute; top: 16px; right: 16px;
+            background: #d4edda; color: #1a6b37;
+            font-size: 10px; font-weight: 700; padding: 3px 8px;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px;
         }
 
-        /* ── ERROR MSG ── */
-        .error-msg {
+        .psi-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .psi-chip {
+            background: var(--warm-white); border: 1px solid var(--border);
+            border-radius: 8px; padding: 4px 10px; font-size: 12px; color: var(--text);
+        }
+        .psi-chip span { color: var(--muted); font-size: 11px; display: block; margin-bottom: 1px; }
+
+        .psi-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 14px; border-top: 1px solid var(--border);
             font-size: 13px;
-            color: var(--error);
-            margin-top: 10px;
-            text-align: center;
-            min-height: 18px;
         }
+        .psi-costo { color: var(--sage-dark); font-weight: 600; }
+        .psi-disp { color: var(--muted); font-size: 12px; }
 
-        .footer-note {
-            margin-top: 28px;
-            text-align: center;
-            font-size: 12px;
-            color: var(--muted);
+        .psi-loading { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+        .psi-spinner {
+            width: 28px; height: 28px; border: 3px solid var(--border);
+            border-top-color: var(--sage); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ══════════════════════════════════════════
+           SECCIÓN: CÓMO FUNCIONA
+        ══════════════════════════════════════════ */
+        .section-how { padding: 72px 32px; background: var(--cream); border-top: 1px solid var(--border); }
+
+        .steps-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 44px;
+        }
+        .step-item { text-align: center; }
+        .step-num {
+            width: 52px; height: 52px; border-radius: 50%; background: var(--sage);
+            color: white; font-family: 'DM Serif Display', serif; font-size: 22px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+        }
+        .step-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--sage-dark); margin-bottom: 10px; }
+        .step-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+        /* ══════════════════════════════════════════
+           SECCIÓN: QUIÉNES SOMOS
+        ══════════════════════════════════════════ */
+        .section-about {
+            background: var(--sage-dark); color: white;
+            padding: 72px 32px; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .section-about .section-eyebrow { color: var(--sage-light); }
+        .section-about .section-heading { color: white; }
+        .section-about .section-desc    { color: rgba(255,255,255,0.7); }
+
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-values { display: flex; flex-direction: column; gap: 22px; }
+        .about-val {
+            display: flex; gap: 16px; align-items: flex-start;
+        }
+        .about-val-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(255,255,255,0.1); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 19px;
+        }
+        .about-val-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .about-val-desc  { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+        .about-quote-block {
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 32px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .about-quote {
+            font-family: 'DM Serif Display', serif; font-size: 22px;
+            line-height: 1.45; margin-bottom: 20px; color: rgba(255,255,255,0.9);
+        }
+        .about-quote-author { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+        /* ══════════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════════ */
+        footer {
+            background: var(--text); color: rgba(255,255,255,0.5);
+            padding: 32px; text-align: center; font-size: 13px;
+        }
+        footer strong { color: rgba(255,255,255,0.8); }
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 20px; }
+            .hero-left { padding-top: 0; }
+            .about-grid { grid-template-columns: 1fr; gap: 32px; }
+            .steps-grid { grid-template-columns: 1fr; gap: 24px; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
 
 <body>
 
-<!-- ── HEADER ── -->
-<header class="site-header">
-    <div class="logo">
-        <div class="logo-icon">🧠</div>
-        <span class="logo-text">PsicoConecta</span>
+<!-- ══ NAV ══════════════════════════════════════════════════════════ -->
+<nav class="top-nav">
+    <a class="nav-logo" href="#">
+        <div class="nav-logo-icon">🧠</div>
+        <span class="nav-logo-text">PsicoConecta</span>
+    </a>
+    <div class="nav-links">
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#psicologos">Psicólogos</a>
+        <a href="#quienes-somos">Quiénes somos</a>
     </div>
-    <p>Encuentra el acompañamiento psicológico que necesitas</p>
-</header>
+    <a class="nav-cta" href="#registro" onclick="document.getElementById('registro').scrollIntoView({behavior:'smooth'})">Comenzar</a>
+</nav>
 
-<!-- ── CARD ── -->
-<div class="card">
+<!-- ══ HERO ═════════════════════════════════════════════════════════ -->
+<section class="hero" id="registro">
 
-    <!-- ================= STEP 1 ================= -->
-    <div id="step1">
+    <!-- IZQUIERDA: copy -->
+    <div class="hero-left">
+        <div class="hero-badge">🇲🇽 Plataforma mexicana de salud mental</div>
 
-        <!-- TABS: 3 opciones -->
-        <div class="auth-tabs">
-            <button class="auth-tab active" id="tab-paciente"  onclick="showAuthTab('paciente')">Crear perfil</button>
-            <button class="auth-tab"        id="tab-psicologo" onclick="showAuthTab('psicologo')">Soy psicólogo</button>
-            <button class="auth-tab"        id="tab-login"     onclick="showAuthTab('login')">Iniciar sesión</button>
+        <h1 class="hero-title">
+            Encuentra tu psicólogo<br>
+            <em>ideal para ti</em>
+        </h1>
+
+        <p class="hero-desc">
+            PsicoConecta usa un algoritmo de compatibilidad para conectarte con el terapeuta cuyo enfoque, estilo y disponibilidad se alinean con lo que necesitas. Sin adivinar. Sin perder tiempo.
+        </p>
+
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-num" id="statPsi">—</div>
+                <div class="stat-lbl">Psicólogos verificados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" id="statPac">—</div>
+                <div class="stat-lbl">Pacientes activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">20</div>
+                <div class="stat-lbl">Preguntas de compatibilidad</div>
+            </div>
         </div>
 
-        <!-- ── REGISTRO PACIENTE ── -->
-        <div id="view-paciente">
-            <h2>Crea tu perfil</h2>
-            <p class="subtitle">Completa tu información para comenzar</p>
+        <div class="hero-trust">
+            <span class="trust-icon">🔒</span>
+            Tu información es privada y está protegida. Solo tu match puede ver tu contacto.
+        </div>
+    </div>
 
-            <div class="row-2">
-                <div class="field">
-                    <label>Nombre</label>
-                    <input type="text" id="nombre" placeholder="Ej. María" />
+    <!-- DERECHA: card de registro (INTACTO) -->
+    <div class="card">
+
+        <div id="step1">
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-paciente"  onclick="showAuthTab('paciente')">Crear perfil</button>
+                <button class="auth-tab"        id="tab-psicologo" onclick="showAuthTab('psicologo')">Soy psicólogo</button>
+                <button class="auth-tab"        id="tab-login"     onclick="showAuthTab('login')">Iniciar sesión</button>
+            </div>
+
+            <!-- ── REGISTRO PACIENTE ── -->
+            <div id="view-paciente">
+                <h2>Crea tu perfil</h2>
+                <p class="subtitle">Completa tu información para comenzar</p>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label>Nombre</label>
+                        <input type="text" id="nombre" placeholder="Ej. María" />
+                    </div>
+                    <div class="field">
+                        <label>Apellido</label>
+                        <input type="text" id="apellido" placeholder="Ej. García" />
+                    </div>
                 </div>
+
                 <div class="field">
-                    <label>Apellido</label>
-                    <input type="text" id="apellido" placeholder="Ej. García" />
+                    <label>Correo electrónico</label>
+                    <input type="email" id="correo" placeholder="correo@ejemplo.com" />
                 </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres" />
+                </div>
+
+                <div class="field">
+                    <label>Estado</label>
+                    <select id="ubicacion">
+                        <option value="">Elige tu estado</option>
+                        <option>Aguascalientes</option><option>Baja California</option>
+                        <option>Baja California Sur</option><option>Campeche</option>
+                        <option>Chiapas</option><option>Chihuahua</option>
+                        <option>Ciudad de México</option><option>Coahuila</option>
+                        <option>Colima</option><option>Durango</option>
+                        <option>Estado de México</option><option>Guanajuato</option>
+                        <option>Guerrero</option><option>Hidalgo</option>
+                        <option>Jalisco</option><option>Michoacán</option>
+                        <option>Morelos</option><option>Nayarit</option>
+                        <option>Nuevo León</option><option>Oaxaca</option>
+                        <option>Puebla</option><option>Querétaro</option>
+                        <option>Quintana Roo</option><option>San Luis Potosí</option>
+                        <option>Sinaloa</option><option>Sonora</option>
+                        <option>Tabasco</option><option>Tamaulipas</option>
+                        <option>Tlaxcala</option><option>Veracruz</option>
+                        <option>Yucatán</option><option>Zacatecas</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Motivo de consulta</label>
+                    <textarea id="motivo" placeholder="Cuéntanos brevemente qué te trae aquí..."></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="startQuiz()">Continuar →</button>
+                <div class="error-msg" id="paciente-error"></div>
             </div>
 
-            <div class="field">
-                <label>Correo electrónico</label>
-                <input type="email" id="correo" placeholder="correo@ejemplo.com" />
+            <!-- ── REGISTRO PSICÓLOGO ── -->
+            <div id="view-psicologo" style="display:none;">
+                <h2>Registro de psicólogo</h2>
+                <p class="subtitle">Ingresa tus datos profesionales</p>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label>Nombre</label>
+                        <input type="text" id="psi_nombre" placeholder="Ej. Carlos" />
+                    </div>
+                    <div class="field">
+                        <label>Apellido</label>
+                        <input type="text" id="psi_apellido" placeholder="Ej. López" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="psi_correo" placeholder="correo@ejemplo.com" />
+                </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="psi_password" placeholder="Mínimo 6 caracteres" />
+                </div>
+
+                <!-- CÉDULA + VERIFICACIÓN -->
+                <div class="field">
+                    <label>Cédula profesional</label>
+                    <div class="cedula-row">
+                        <input type="text" id="psi_cedula" placeholder="Ej. 12345678"
+                            maxlength="10" oninput="resetCedulaStatus()" />
+                        <button class="btn-verify-cedula" onclick="verificarCedula()" id="btnVerify">
+                            🔍 Verificar
+                        </button>
+                    </div>
+                    <div class="cedula-status" id="cedulaStatus"></div>
+                </div>
+
+                <div class="field">
+                    <label>Enfoque a trabajar</label>
+                    <input type="text" id="psi_enfoque" placeholder="Ej. TCC, Humanista, Sistémica..." />
+                </div>
+
+                <div class="field">
+                    <label>Dirección del consultorio</label>
+                    <input type="text" id="psi_consultorio" placeholder="Calle, colonia, ciudad..." />
+                </div>
+
+                <button class="btn-primary" onclick="startQuizPsi()">Continuar →</button>
+                <div class="error-msg" id="psicologo-error"></div>
             </div>
 
-            <div class="field">
-                <label>Contraseña</label>
-                <input type="password" id="password" placeholder="Mínimo 6 caracteres" />
-            </div>
+            <!-- ── INICIAR SESIÓN ── -->
+            <div id="view-login" style="display:none;">
+                <h2>Bienvenido de vuelta</h2>
+                <p class="subtitle">Ingresa con tu cuenta para continuar</p>
 
-            <div class="field">
-                <label>Estado</label>
-                <select id="ubicacion">
-                    <option value="">Elige tu estado</option>
-                    <option>Aguascalientes</option>
-                    <option>Baja California</option>
-                    <option>Baja California Sur</option>
-                    <option>Campeche</option>
-                    <option>Chiapas</option>
-                    <option>Chihuahua</option>
-                    <option>Ciudad de México</option>
-                    <option>Coahuila</option>
-                    <option>Colima</option>
-                    <option>Durango</option>
-                    <option>Estado de México</option>
-                    <option>Guanajuato</option>
-                    <option>Guerrero</option>
-                    <option>Hidalgo</option>
-                    <option>Jalisco</option>
-                    <option>Michoacán</option>
-                    <option>Morelos</option>
-                    <option>Nayarit</option>
-                    <option>Nuevo León</option>
-                    <option>Oaxaca</option>
-                    <option>Puebla</option>
-                    <option>Querétaro</option>
-                    <option>Quintana Roo</option>
-                    <option>San Luis Potosí</option>
-                    <option>Sinaloa</option>
-                    <option>Sonora</option>
-                    <option>Tabasco</option>
-                    <option>Tamaulipas</option>
-                    <option>Tlaxcala</option>
-                    <option>Veracruz</option>
-                    <option>Yucatán</option>
-                    <option>Zacatecas</option>
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="login-correo" placeholder="correo@ejemplo.com" />
+                </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" placeholder="Tu contraseña" />
+                </div>
+
+                <button class="btn-primary" onclick="login()">Iniciar sesión</button>
+                <div class="error-msg" id="login-error"></div>
+            </div>
+        </div>
+
+        <!-- QUIZ PACIENTE -->
+        <div id="step2">
+            <p class="quiz-progress" id="progress"></p>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <h2 class="quiz-question" id="question"></h2>
+            <div class="options-grid" id="options"></div>
+            <div class="religion-box" id="religion_sub">
+                <label>¿Cuál tradición o creencia?</label>
+                <select id="religion_select">
+                    <option value="Cristianismo">Cristianismo</option>
+                    <option value="Judaísmo">Judaísmo</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Budismo">Budismo</option>
+                    <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
+                    <option value="Otra">Otra</option>
                 </select>
+                <button class="btn-primary" onclick="confirmarReligionPaciente()">Confirmar →</button>
             </div>
-
-            <div class="field">
-                <label>Motivo de consulta</label>
-                <textarea id="motivo" placeholder="Cuéntanos brevemente qué te trae aquí..."></textarea>
-            </div>
-
-            <button class="btn-primary" onclick="startQuiz()">Continuar →</button>
-            <div class="error-msg" id="paciente-error"></div>
+            <button class="btn-secondary" onclick="prevQuestion()">← Atrás</button>
         </div>
 
-        <!-- ── REGISTRO PSICÓLOGO ── -->
-        <div id="view-psicologo" style="display:none;">
-            <h2>Registro de psicólogo</h2>
-            <p class="subtitle">Ingresa tus datos profesionales</p>
+        <!-- QUIZ PSICÓLOGO -->
+        <div id="step2_psi">
+            <p class="quiz-progress" id="psi_progress"></p>
+            <div class="progress-bar"><div class="progress-fill" id="psi_progressFill"></div></div>
+            <h2 class="quiz-question" id="psi_question"></h2>
+            <div class="options-grid" id="psi_options"></div>
+            <div class="religion-box" id="psi_religion_sub">
+                <label>¿Cuál tradición o creencia?</label>
+                <select id="psi_religion_select">
+                    <option value="Cristianismo">Cristianismo</option>
+                    <option value="Judaísmo">Judaísmo</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Budismo">Budismo</option>
+                    <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
+                    <option value="Otra">Otra</option>
+                </select>
+                <button class="btn-primary" onclick="confirmarReligionPsi()">Confirmar →</button>
+            </div>
+            <button class="btn-secondary" onclick="prevPsiQuestion()">← Atrás</button>
+        </div>
 
-            <div class="row-2">
-                <div class="field">
-                    <label>Nombre</label>
-                    <input type="text" id="psi_nombre" placeholder="Ej. Carlos" />
+        <!-- FINAL -->
+        <div id="final">
+            <div class="final-icon">✅</div>
+            <h2>¡Todo listo!</h2>
+            <p>Tu perfil ha sido creado correctamente.<br>Ya puedes explorar tu espacio.</p>
+            <button class="btn-primary" onclick="goHome()">Ir al dashboard →</button>
+        </div>
+
+    </div>
+    <!-- /card -->
+
+</section>
+
+<!-- ══ PSICÓLOGOS EN LA PLATAFORMA ══════════════════════════════════ -->
+<section class="section-psi" id="psicologos">
+    <div class="section-inner">
+        <div class="section-eyebrow">Nuestra red</div>
+        <h2 class="section-heading">Psicólogos verificados<br>en la plataforma</h2>
+        <p class="section-desc">Todos nuestros psicólogos pasan por verificación de cédula profesional ante la SEP. Conoce algunos de los perfiles disponibles.</p>
+        <div class="psi-grid" id="psiGrid">
+            <div class="psi-loading">
+                <div class="psi-spinner"></div>
+                Cargando perfiles...
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CÓMO FUNCIONA ════════════════════════════════════════════════ -->
+<section class="section-how" id="como-funciona">
+    <div class="section-inner">
+        <div class="section-eyebrow">El proceso</div>
+        <h2 class="section-heading">¿Cómo funciona<br>PsicoConecta?</h2>
+        <p class="section-desc">Tres pasos sencillos para encontrar al psicólogo que mejor se adapta a ti.</p>
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-title">Crea tu perfil</div>
+                <p class="step-desc">Registra tus datos básicos. Sin formularios interminables — solo lo esencial para empezar.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-title">Responde 20 preguntas</div>
+                <p class="step-desc">Nuestro cuestionario evalúa tus preferencias de modalidad, enfoque, horario, presupuesto y más. Tarda menos de 3 minutos.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-title">Haz match y conecta</div>
+                <p class="step-desc">Explora perfiles ordenados por porcentaje de compatibilidad. Cuando haya interés mutuo, se abre el chat directamente.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ QUIÉNES SOMOS ════════════════════════════════════════════════ -->
+<section class="section-about" id="quienes-somos">
+    <div class="section-inner">
+        <div class="about-grid">
+            <div>
+                <div class="section-eyebrow">Quiénes somos</div>
+                <h2 class="section-heading">Salud mental accesible,<br>transparente y personalizada</h2>
+                <p class="section-desc">PsicoConecta nació de la convicción de que encontrar el psicólogo correcto no debería ser tan difícil. Combinamos tecnología de compatibilidad con una red de profesionales verificados para que el primer paso hacia el bienestar sea sencillo.</p>
+                <div class="about-values">
+                    <div class="about-val">
+                        <div class="about-val-icon">🔍</div>
+                        <div>
+                            <div class="about-val-title">Transparencia profesional</div>
+                            <div class="about-val-desc">Verificamos la cédula de cada psicólogo ante la SEP antes de que aparezca en la plataforma.</div>
+                        </div>
+                    </div>
+                    <div class="about-val">
+                        <div class="about-val-icon">🤝</div>
+                        <div>
+                            <div class="about-val-title">Compatibilidad real</div>
+                            <div class="about-val-desc">No es un directorio. Es un algoritmo que evalúa 20 dimensiones para encontrar afinidad genuina entre paciente y terapeuta.</div>
+                        </div>
+                    </div>
+                    <div class="about-val">
+                        <div class="about-val-icon">🔒</div>
+                        <div>
+                            <div class="about-val-title">Privacidad primero</div>
+                            <div class="about-val-desc">Tu información personal solo es visible para las conexiones que tú confirmas. Nunca se comparte con terceros.</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="field">
-                    <label>Apellido</label>
-                    <input type="text" id="psi_apellido" placeholder="Ej. López" />
+            </div>
+            <div>
+                <div class="about-quote-block">
+                    <div class="about-quote">"El primer paso para pedir ayuda no debería ser el más difícil. PsicoConecta existe para que ese paso sea claro, seguro y humano."</div>
+                    <div class="about-quote-author">— Equipo PsicoConecta</div>
                 </div>
             </div>
-
-            <div class="field">
-                <label>Correo electrónico</label>
-                <input type="email" id="psi_correo" placeholder="correo@ejemplo.com" />
-            </div>
-
-            <div class="field">
-                <label>Contraseña</label>
-                <input type="password" id="psi_password" placeholder="Mínimo 6 caracteres" />
-            </div>
-
-            <div class="field">
-                <label>Cédula profesional</label>
-                <input type="text" id="psi_cedula" placeholder="Ej. 12345678" />
-            </div>
-
-            <div class="field">
-                <label>Enfoque a trabajar</label>
-                <input type="text" id="psi_enfoque" placeholder="Ej. TCC, Humanista, Sistémica..." />
-            </div>
-
-            <div class="field">
-                <label>Dirección del consultorio</label>
-                <input type="text" id="psi_consultorio" placeholder="Calle, colonia, ciudad..." />
-            </div>
-
-            <button class="btn-primary" onclick="startQuizPsi()">Continuar →</button>
-            <div class="error-msg" id="psicologo-error"></div>
         </div>
-
-        <!-- ── INICIAR SESIÓN ── -->
-        <div id="view-login" style="display:none;">
-            <h2>Bienvenido de vuelta</h2>
-            <p class="subtitle">Ingresa con tu cuenta para continuar</p>
-
-            <div class="field">
-                <label>Correo electrónico</label>
-                <input type="email" id="login-correo" placeholder="correo@ejemplo.com" />
-            </div>
-
-            <div class="field">
-                <label>Contraseña</label>
-                <input type="password" id="login-password" placeholder="Tu contraseña" />
-            </div>
-
-            <button class="btn-primary" onclick="login()">Iniciar sesión</button>
-            <div class="error-msg" id="login-error"></div>
-        </div>
-
     </div>
-    <!-- /step1 -->
+</section>
 
-    <!-- ================= STEP 2: QUIZ PACIENTE ================= -->
-    <div id="step2">
-        <p class="quiz-progress" id="progress"></p>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <h2 class="quiz-question" id="question"></h2>
-        <div class="options-grid" id="options"></div>
-        <!-- Sub-pregunta religión paciente -->
-        <div class="religion-box" id="religion_sub">
-            <label>¿Cuál tradición o creencia?</label>
-            <select id="religion_select">
-                <option value="Cristianismo">Cristianismo</option>
-                <option value="Judaísmo">Judaísmo</option>
-                <option value="Islam">Islam</option>
-                <option value="Budismo">Budismo</option>
-                <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
-                <option value="Otra">Otra</option>
-            </select>
-            <button class="btn-primary" onclick="confirmarReligionPaciente()">Confirmar →</button>
-        </div>
-        <button class="btn-secondary" onclick="prevQuestion()">← Atrás</button>
-    </div>
-
-    <!-- ================= STEP 2: QUIZ PSICÓLOGO ================= -->
-    <div id="step2_psi">
-        <p class="quiz-progress" id="psi_progress"></p>
-        <div class="progress-bar"><div class="progress-fill" id="psi_progressFill"></div></div>
-        <h2 class="quiz-question" id="psi_question"></h2>
-        <div class="options-grid" id="psi_options"></div>
-        <!-- Sub-pregunta religión psicólogo -->
-        <div class="religion-box" id="psi_religion_sub">
-            <label>¿Cuál tradición o creencia?</label>
-            <select id="psi_religion_select">
-                <option value="Cristianismo">Cristianismo</option>
-                <option value="Judaísmo">Judaísmo</option>
-                <option value="Islam">Islam</option>
-                <option value="Budismo">Budismo</option>
-                <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
-                <option value="Otra">Otra</option>
-            </select>
-            <button class="btn-primary" onclick="confirmarReligionPsi()">Confirmar →</button>
-        </div>
-        <button class="btn-secondary" onclick="prevPsiQuestion()">← Atrás</button>
-    </div>
-
-    <!-- ================= FINAL ================= -->
-    <div id="final">
-        <div class="final-icon">✅</div>
-        <h2>¡Todo listo!</h2>
-        <p>Tu perfil ha sido creado correctamente.<br>Ya puedes explorar tu espacio.</p>
-        <button class="btn-primary" onclick="goHome()">Ir al dashboard →</button>
-    </div>
-
-</div>
-<!-- /card -->
-
-<p class="footer-note">Tu información es privada y está protegida.</p>
+<!-- ══ FOOTER ════════════════════════════════════════════════════════ -->
+<footer>
+    <strong>PsicoConecta</strong> · Tu información es privada y está protegida · México 🇲🇽
+</footer>
 
 <!-- ── FIREBASE ── -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -556,9 +725,9 @@
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
-  authDomain: "psicoconecta-a507d.firebaseapp.com",
-  projectId: "psicoconecta-a507d",
+    apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
+    authDomain: "psicoconecta-a507d.firebaseapp.com",
+    projectId: "psicoconecta-a507d",
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -567,7 +736,155 @@ const db   = firebase.firestore();
 
 <script>
 
-// ================= TOGGLE TABS =================
+// ══════════════════════════════════════════════════════
+//  ESTADÍSTICAS LANDING
+// ══════════════════════════════════════════════════════
+(async function loadStats() {
+    try {
+        const [psiSnap, pacSnap] = await Promise.all([
+            db.collection("psicologos").get(),
+            db.collection("usuarios").get()
+        ]);
+        document.getElementById("statPsi").innerText = psiSnap.size || "0";
+        document.getElementById("statPac").innerText = pacSnap.size || "0";
+    } catch(e) {}
+})();
+
+// ══════════════════════════════════════════════════════
+//  PERFILES PSICÓLOGOS EN LANDING (desde Firestore)
+// ══════════════════════════════════════════════════════
+function getCorriente(resp) {
+    if (!resp || resp.length < 7) return "🔄 Integrativa";
+    const r = resp[6] || "";
+    if (r.includes("TCC"))           return "🧩 TCC / Sistémica";
+    if (r.includes("Humanista"))     return "🌱 Humanista / Contextual";
+    if (r.includes("Psicoanálisis")) return "🧠 Psicoanalítica";
+    return "🔄 Integrativa";
+}
+
+(async function loadPsiPerfiles() {
+    const grid = document.getElementById("psiGrid");
+    try {
+        const snap = await db.collection("psicologos").limit(6).get();
+        if (snap.empty) {
+            grid.innerHTML = `<p style="color:var(--muted);font-size:14px;grid-column:1/-1;text-align:center;padding:32px 0;">
+                Pronto habrá psicólogos disponibles. ¡Regístrate y sé el primero!</p>`;
+            return;
+        }
+
+        grid.innerHTML = "";
+        snap.forEach(doc => {
+            const d    = doc.data();
+            const resp = d.respuestas || [];
+            const corriente   = getCorriente(resp);
+            const modalidad   = resp[0]  || "—";
+            const areas       = resp[4]  || "—";
+            const horario     = resp[14] || "—";
+            const costo       = resp[15] || "—";
+            const experiencia = resp[16] || "—";
+            const disp        = resp[19] || "—";
+            const isVerified  = d.cedulaVerificada === true;
+            // Anonymize last name for privacy
+            const nombre = d.nombre ? d.nombre.split(" ").map((w,i) => i === 0 ? w : w[0]+".").join(" ") : "Psicólogo/a";
+
+            const card = document.createElement("div");
+            card.className = "psi-card";
+            card.innerHTML = `
+                ${isVerified ? '<div class="psi-verified">✓ Cédula verificada</div>' : ''}
+                <div class="psi-card-top">
+                    <div class="psi-av">🧠</div>
+                    <div>
+                        <div class="psi-name">${nombre}</div>
+                        <span class="psi-tag">${corriente}</span>
+                    </div>
+                </div>
+                <div class="psi-chips">
+                    <div class="psi-chip"><span>Modalidad</span>${modalidad}</div>
+                    <div class="psi-chip"><span>Horario</span>${horario}</div>
+                    <div class="psi-chip"><span>Experiencia</span>${experiencia}</div>
+                    <div class="psi-chip" style="grid-column:1/-1"><span>Áreas</span>${areas}</div>
+                </div>
+                <div class="psi-footer">
+                    <span class="psi-costo">${costo}</span>
+                    <span class="psi-disp">Disponibilidad: ${disp}</span>
+                </div>`;
+            grid.appendChild(card);
+        });
+    } catch(e) {
+        grid.innerHTML = `<p style="color:var(--muted);font-size:14px;grid-column:1/-1;text-align:center;padding:32px 0;">
+            Los perfiles estarán disponibles pronto.</p>`;
+    }
+})();
+
+// ══════════════════════════════════════════════════════
+//  VERIFICACIÓN DE CÉDULA SEP
+// ══════════════════════════════════════════════════════
+let cedulaVerificada = false;
+
+function resetCedulaStatus() {
+    cedulaVerificada = false;
+    const s = document.getElementById("cedulaStatus");
+    s.className = "cedula-status"; s.innerText = "";
+}
+
+async function verificarCedula() {
+    const cedula = document.getElementById("psi_cedula").value.trim();
+    const btn    = document.getElementById("btnVerify");
+    const status = document.getElementById("cedulaStatus");
+
+    if (!cedula) {
+        status.className = "cedula-status err";
+        status.innerText = "Ingresa tu número de cédula primero.";
+        return;
+    }
+    if (!/^\d{7,10}$/.test(cedula)) {
+        status.className = "cedula-status err";
+        status.innerText = "La cédula debe tener entre 7 y 10 dígitos.";
+        return;
+    }
+
+    btn.disabled  = true;
+    btn.innerText = "Verificando...";
+    status.className = "cedula-status pending";
+    status.innerText = "🔍 Consultando el registro de la SEP...";
+
+    try {
+        // API pública de Buho Legal que consume el webservice de la SEP
+        const res = await fetch(
+            `https://www.buholegal.com/api/cedula/${cedula}`,
+            { mode: "cors", headers: { "Accept": "application/json" } }
+        );
+
+        if (res.ok) {
+            const data = await res.json();
+            // Response has array of results when found
+            if (data && ((Array.isArray(data) && data.length > 0) || data.nombre)) {
+                const nombre = Array.isArray(data) ? data[0].nombre : data.nombre;
+                status.className = "cedula-status ok";
+                status.innerText = `✅ Cédula válida — ${nombre || "Profesional verificado"}`;
+                cedulaVerificada = true;
+            } else {
+                status.className = "cedula-status err";
+                status.innerText = "❌ No se encontró esta cédula en el registro SEP. Verifica el número.";
+                cedulaVerificada = false;
+            }
+        } else {
+            throw new Error("HTTP " + res.status);
+        }
+    } catch(e) {
+        // CORS or network error — fallback: mark as pending manual review
+        status.className = "cedula-status pending";
+        status.innerText = "⏳ No pudimos conectar con la SEP en este momento. Tu cédula quedará como pendiente de verificación manual por nuestro equipo (máx. 24 h).";
+        cedulaVerificada = "pendiente";
+    }
+
+    btn.disabled  = false;
+    btn.innerText = "🔍 Verificar";
+}
+
+// ══════════════════════════════════════════════════════
+//  AUTH TABS
+// ══════════════════════════════════════════════════════
 function showAuthTab(tab) {
     document.getElementById('view-paciente').style.display  = tab === 'paciente'  ? 'block' : 'none';
     document.getElementById('view-psicologo').style.display = tab === 'psicologo' ? 'block' : 'none';
@@ -577,7 +894,9 @@ function showAuthTab(tab) {
     document.getElementById('tab-login').classList.toggle('active',     tab === 'login');
 }
 
-// ================= PREGUNTAS PACIENTE =================
+// ══════════════════════════════════════════════════════
+//  PREGUNTAS
+// ══════════════════════════════════════════════════════
 const preguntas = [
     { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
     { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
@@ -601,7 +920,6 @@ const preguntas = [
     { q: "¿Qué tan pronto necesitas empezar terapia?", opts: ["Puedo esperar", "Pronto", "Lo antes posible"] }
 ];
 
-// ================= PREGUNTAS PSICÓLOGO =================
 const preguntasPsi = [
     { q: "Modalidad de atención que ofreces principalmente", opts: ["Presencial", "En línea", "Híbrida (ambas)"] },
     { q: "Ubicación o alcance geográfico", opts: ["Local", "Nacional", "Internacional"] },
@@ -625,26 +943,21 @@ const preguntasPsi = [
     { q: "Disponibilidad para nuevos pacientes", opts: ["Limitada", "Moderada", "Alta"] }
 ];
 
-// ================= ESTADO =================
-let current    = 0;
-let respuestas = [];
-let currentPsi    = 0;
-let respuestasPsi = [];
+let current = 0, respuestas = [];
+let currentPsi = 0, respuestasPsi = [];
 
-// ================= ERRORES AMIGABLES =================
 function friendlyError(code) {
     const map = {
-        "auth/email-already-in-use":  "Este correo ya está registrado.",
-        "auth/invalid-email":         "El correo no es válido.",
-        "auth/weak-password":         "La contraseña debe tener al menos 6 caracteres.",
-        "auth/user-not-found":        "No encontramos una cuenta con ese correo.",
-        "auth/wrong-password":        "Contraseña incorrecta.",
-        "auth/too-many-requests":     "Demasiados intentos. Intenta más tarde.",
+        "auth/email-already-in-use": "Este correo ya está registrado.",
+        "auth/invalid-email":        "El correo no es válido.",
+        "auth/weak-password":        "La contraseña debe tener al menos 6 caracteres.",
+        "auth/user-not-found":       "No encontramos una cuenta con ese correo.",
+        "auth/wrong-password":       "Contraseña incorrecta.",
+        "auth/too-many-requests":    "Demasiados intentos. Intenta más tarde.",
     };
     return map[code] || "Ocurrió un error. Intenta de nuevo.";
 }
 
-// ================= LOGIN =================
 async function login() {
     const correo   = document.getElementById("login-correo").value.trim();
     const password = document.getElementById("login-password").value;
@@ -654,90 +967,57 @@ async function login() {
     try {
         await auth.signInWithEmailAndPassword(correo, password);
         window.location.href = "dashboard.html";
-    } catch (error) {
-        errEl.innerText = friendlyError(error.code);
-    }
+    } catch(e) { errEl.innerText = friendlyError(e.code); }
 }
 
-// ================= REGISTRO PACIENTE =================
 async function startQuiz() {
     const nombre   = document.getElementById("nombre").value.trim();
     const apellido = document.getElementById("apellido").value.trim();
     const correo   = document.getElementById("correo").value.trim();
     const password = document.getElementById("password").value;
     const errEl    = document.getElementById("paciente-error");
-
-    if (!nombre || !apellido || !correo || !password) {
-        errEl.innerText = "Por favor completa todos los campos.";
-        return;
-    }
-    errEl.innerText = "";
-    respuestas = [];
-    current    = 0;
-
+    if (!nombre || !apellido || !correo || !password) { errEl.innerText = "Por favor completa todos los campos."; return; }
+    errEl.innerText = ""; respuestas = []; current = 0;
     try {
         await auth.createUserWithEmailAndPassword(correo, password);
         document.getElementById("step1").style.display = "none";
         document.getElementById("step2").style.display = "block";
         showQuestion();
-    } catch (error) {
-        errEl.innerText = friendlyError(error.code);
-    }
+    } catch(e) { errEl.innerText = friendlyError(e.code); }
 }
 
-// ================= QUIZ PACIENTE =================
 function showQuestion() {
-    const q   = preguntas[current];
+    const q = preguntas[current];
     const pct = (current / preguntas.length) * 100;
-
-    document.getElementById("progress").innerText = "Pregunta " + (current + 1) + " de " + preguntas.length;
+    document.getElementById("progress").innerText = "Pregunta " + (current+1) + " de " + preguntas.length;
     document.getElementById("progressFill").style.width = pct + "%";
     document.getElementById("question").innerText = q.q;
-
-    const optionsDiv = document.getElementById("options");
-    optionsDiv.innerHTML = "";
+    const d = document.getElementById("options"); d.innerHTML = "";
     document.getElementById("religion_sub").style.display = "none";
-
     q.opts.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "opt-btn";
-        btn.innerText = opt;
+        btn.className = "opt-btn"; btn.innerText = opt;
         btn.onclick = () => {
             if (q.special === "religion" && opt === q.opts[2]) {
                 document.getElementById("religion_sub").style.display = "block";
-            } else {
-                nextQuestion(opt);
-            }
+            } else { nextQuestion(opt); }
         };
-        optionsDiv.appendChild(btn);
+        d.appendChild(btn);
     });
 }
 
 function confirmarReligionPaciente() {
-    const religion = document.getElementById("religion_select").value;
-    nextQuestion("Sí, integra creencia: " + religion);
+    nextQuestion("Sí, integra creencia: " + document.getElementById("religion_select").value);
 }
-
 function nextQuestion(answer) {
     respuestas.push(answer);
     document.getElementById("religion_sub").style.display = "none";
-    if (current < preguntas.length - 1) {
-        current++;
-        showQuestion();
-    } else {
-        finish();
-    }
+    if (current < preguntas.length - 1) { current++; showQuestion(); } else { finish(); }
 }
-
 function prevQuestion() {
-    if (current > 0) {
-        current--;
-        respuestas.pop();
-        showQuestion();
-    }
+    if (current > 0) { current--; respuestas.pop(); showQuestion(); }
 }
 
-// ================= REGISTRO PSICÓLOGO =================
 async function startQuizPsi() {
     const nombre      = document.getElementById("psi_nombre").value.trim();
     const apellido    = document.getElementById("psi_apellido").value.trim();
@@ -749,134 +1029,88 @@ async function startQuizPsi() {
     const errEl       = document.getElementById("psicologo-error");
 
     if (!nombre || !apellido || !correo || !password || !cedula || !enfoque || !consultorio) {
-        errEl.innerText = "Por favor completa todos los campos.";
-        return;
+        errEl.innerText = "Por favor completa todos los campos."; return;
     }
-    errEl.innerText = "";
-    respuestasPsi = [];
-    currentPsi    = 0;
+    if (!cedulaVerificada) {
+        errEl.innerText = "Por favor verifica tu cédula profesional antes de continuar."; return;
+    }
 
+    errEl.innerText = ""; respuestasPsi = []; currentPsi = 0;
     try {
         await auth.createUserWithEmailAndPassword(correo, password);
         document.getElementById("step1").style.display = "none";
         document.getElementById("step2_psi").style.display = "block";
         showPsiQuestion();
-    } catch (error) {
-        errEl.innerText = friendlyError(error.code);
-    }
+    } catch(e) { errEl.innerText = friendlyError(e.code); }
 }
 
-// ================= QUIZ PSICÓLOGO =================
 function showPsiQuestion() {
-    const q   = preguntasPsi[currentPsi];
+    const q = preguntasPsi[currentPsi];
     const pct = (currentPsi / preguntasPsi.length) * 100;
-
-    document.getElementById("psi_progress").innerText = "Pregunta " + (currentPsi + 1) + " de " + preguntasPsi.length;
+    document.getElementById("psi_progress").innerText = "Pregunta " + (currentPsi+1) + " de " + preguntasPsi.length;
     document.getElementById("psi_progressFill").style.width = pct + "%";
     document.getElementById("psi_question").innerText = q.q;
-
-    const optionsDiv = document.getElementById("psi_options");
-    optionsDiv.innerHTML = "";
+    const d = document.getElementById("psi_options"); d.innerHTML = "";
     document.getElementById("psi_religion_sub").style.display = "none";
-
     q.opts.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "opt-btn";
-        btn.innerText = opt;
+        btn.className = "opt-btn"; btn.innerText = opt;
         btn.onclick = () => {
             if (q.special === "religion" && opt === q.opts[2]) {
                 document.getElementById("psi_religion_sub").style.display = "block";
-            } else {
-                nextPsiQuestion(opt);
-            }
+            } else { nextPsiQuestion(opt); }
         };
-        optionsDiv.appendChild(btn);
+        d.appendChild(btn);
     });
 }
 
 function confirmarReligionPsi() {
-    const religion = document.getElementById("psi_religion_select").value;
-    nextPsiQuestion("Sí, práctica basada en tradición: " + religion);
+    nextPsiQuestion("Sí, práctica basada en tradición: " + document.getElementById("psi_religion_select").value);
 }
-
 function nextPsiQuestion(answer) {
     respuestasPsi.push(answer);
     document.getElementById("psi_religion_sub").style.display = "none";
-    if (currentPsi < preguntasPsi.length - 1) {
-        currentPsi++;
-        showPsiQuestion();
-    } else {
-        finishPsi();
-    }
+    if (currentPsi < preguntasPsi.length - 1) { currentPsi++; showPsiQuestion(); } else { finishPsi(); }
 }
-
 function prevPsiQuestion() {
-    if (currentPsi > 0) {
-        currentPsi--;
-        respuestasPsi.pop();
-        showPsiQuestion();
-    }
+    if (currentPsi > 0) { currentPsi--; respuestasPsi.pop(); showPsiQuestion(); }
 }
 
-// ================= FINAL PACIENTE =================
 async function finish() {
     const user = auth.currentUser;
     if (!user) return alert("Error: usuario no autenticado");
-
-    const nombreCompleto =
-        document.getElementById("nombre").value + " " +
-        document.getElementById("apellido").value;
-
     try {
         await db.collection("usuarios").doc(user.uid).set({
-            tipo:      "paciente",
-            email:     user.email,
-            nombre:    nombreCompleto,
+            tipo: "paciente", email: user.email,
+            nombre: document.getElementById("nombre").value + " " + document.getElementById("apellido").value,
             ubicacion: document.getElementById("ubicacion").value,
-            motivo:    document.getElementById("motivo").value,
-            respuestas: respuestas,
-            fecha:     new Date()
+            motivo: document.getElementById("motivo").value,
+            respuestas, fecha: new Date()
         });
         document.getElementById("step2").style.display = "none";
         document.getElementById("final").style.display = "block";
-    } catch (error) {
-        console.log(error);
-        alert("Error guardando datos");
-    }
+    } catch(e) { alert("Error guardando datos"); }
 }
 
-// ================= FINAL PSICÓLOGO =================
 async function finishPsi() {
     const user = auth.currentUser;
     if (!user) return alert("Error: usuario no autenticado");
-
-    const nombreCompleto =
-        document.getElementById("psi_nombre").value + " " +
-        document.getElementById("psi_apellido").value;
-
     try {
         await db.collection("psicologos").doc(user.uid).set({
-            tipo:       "psicologo",
-            email:      user.email,
-            nombre:     nombreCompleto,
-            cedula:     document.getElementById("psi_cedula").value,
-            enfoque:    document.getElementById("psi_enfoque").value,
-            consultorio:document.getElementById("psi_consultorio").value,
-            respuestas: respuestasPsi,
-            fecha:      new Date()
+            tipo: "psicologo", email: user.email,
+            nombre: document.getElementById("psi_nombre").value + " " + document.getElementById("psi_apellido").value,
+            cedula: document.getElementById("psi_cedula").value,
+            cedulaVerificada: cedulaVerificada,
+            enfoque: document.getElementById("psi_enfoque").value,
+            consultorio: document.getElementById("psi_consultorio").value,
+            respuestas: respuestasPsi, fecha: new Date()
         });
         document.getElementById("step2_psi").style.display = "none";
         document.getElementById("final").style.display = "block";
-    } catch (error) {
-        console.log(error);
-        alert("Error guardando datos");
-    }
+    } catch(e) { alert("Error guardando datos"); }
 }
 
-// ================= DASHBOARD =================
-function goHome() {
-    window.location.href = "dashboard.html";
-}
+function goHome() { window.location.href = "dashboard.html"; }
 
 </script>
 </body>
