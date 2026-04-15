@@ -783,6 +783,7 @@ function renderSwipeCard() {
         <div class="sc-row"><span class="sc-icon">📚</span><span class="sc-val"><span class="sc-lbl">Especialización</span>${resp[17]||"—"}</span></div>
         <div class="sc-row"><span class="sc-icon">✅</span><span class="sc-val"><span class="sc-lbl">Disponibilidad</span>${resp[19]||"—"}</span></div>
         ${d.consultorio?`<div class="sc-row"><span class="sc-icon">📍</span><span class="sc-val"><span class="sc-lbl">Consultorio</span>${d.consultorio}</span></div>`:""}
+        ${d.sobreMi?`<div class="sc-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"><span class="sc-icon">💬</span><span class="sc-val" style="font-size:13px;color:var(--muted);line-height:1.55;">${d.sobreMi}</span></div>`:""}
     ` : `
         <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,false)}</span></div>
         <div class="sc-row"><span class="sc-icon">💭</span><span class="sc-val"><span class="sc-lbl">Busca</span>${resp[4]||"—"}</span></div>
@@ -977,6 +978,12 @@ function renderMyProfile() {
     `;
     const saludoSection = isPsi?`
         <div class="profile-section">
+            <div class="ps-title">✏️ Sobre mí</div>
+            <textarea class="saludo-textarea" id="sobreMiInput" placeholder="Escribe algo sobre ti para que los demás te conozcan. Puedes mencionar tu experiencia, tu estilo de trabajo o cómo sueles acompañar a tus pacientes...">${d.sobreMi||""}</textarea>
+            <button class="btn-save-saludo" onclick="saveSobreMi()">Guardar</button>
+            <p class="save-confirm" id="sobreMiConfirm">✅ Guardado</p>
+        </div>
+        <div class="profile-section">
             <div class="ps-title">⚙️ Ajustes de mensajería</div>
             <label class="field-label">Saludo automático al hacer match</label>
             <textarea class="saludo-textarea" id="saludoInput" placeholder="Ej: Hola, soy el Dr. López...">${d.saludoAutomatico||""}</textarea>
@@ -1001,6 +1008,17 @@ async function saveAutoGreeting() {
     const text = document.getElementById("saludoInput").value.trim();
     try { await db.collection("psicologos").doc(currentUser.uid).update({ saludoAutomatico:text }); userData.saludoAutomatico=text; const c=document.getElementById("saveConfirm"); c.style.display="block"; setTimeout(()=>{c.style.display="none";},3000); }
     catch(e) { alert("Error al guardar."); }
+}
+
+async function saveSobreMi() {
+    const text = document.getElementById("sobreMiInput").value.trim();
+    try {
+        await db.collection("psicologos").doc(currentUser.uid).update({ sobreMi: text });
+        userData.sobreMi = text;
+        const c = document.getElementById("sobreMiConfirm");
+        c.style.display = "block";
+        setTimeout(() => { c.style.display = "none"; }, 3000);
+    } catch(e) { alert("Error al guardar."); }
 }
 
 // ══════════════════════════════════════════════════════
