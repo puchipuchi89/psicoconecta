@@ -679,44 +679,63 @@ const lblPac = ["Modalidad preferida","Alcance","Para quién","Tipo de terapia",
 const lblPsi = ["Modalidad de atención","Alcance geográfico","Población","Tipo de terapia","Áreas de atención","Estructura terapéutica","Enfoque predominante","Estilo de intervención","Rol en sesión","Religión/Espiritualidad","Duración del proceso","Frecuencia","Género de pacientes","Enfoque cultural","Horario","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad"];
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
+// Timeout de seguridad: si en 8s el loading sigue visible, lo oculta
+setTimeout(() => {
+    const el = document.getElementById("loading");
+    if (el && el.style.display !== "none") {
+        el.style.display = "none";
+        if (currentUser) openTab("feed");
+        else window.location.href = "index.html";
+    }
+}, 8000);
+
 auth.onAuthStateChanged(async user => {
-    if (!user) { window.location.href = "index.html"; return; }
-    currentUser = user;
-
-    let doc = await db.collection("usuarios").doc(user.uid).get();
-    if (doc.exists) { userType = "paciente"; userData = doc.data(); }
-    else {
-        doc = await db.collection("psicologos").doc(user.uid).get();
-        if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
-        else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
-    }
-
-    // ── ADMIN CHECK ──
-    const emailAdmin = ADMIN_EMAILS.includes(user.email);
-    let firestoreAdmin = false;
     try {
-        const adminDoc = await db.collection("admins").doc(user.uid).get();
-        firestoreAdmin = adminDoc.exists;
-    } catch(e) {}
-    isAdmin = emailAdmin || firestoreAdmin;
+        if (!user) { window.location.href = "index.html"; return; }
+        currentUser = user;
 
-    document.getElementById("headerEmail").innerText = user.email;
-    const tb = document.getElementById("typeBadge");
-    if (isAdmin) {
-        tb.innerText = "Administrador";
-        tb.className = "type-badge admin";
-        document.getElementById("navAdmin").style.display = "block";
-        document.getElementById("mainContainer").classList.add("wide");
-    } else {
-        tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
-        tb.className = "type-badge " + userType;
+        let doc = await db.collection("usuarios").doc(user.uid).get();
+        if (doc.exists) { userType = "paciente"; userData = doc.data(); }
+        else {
+            doc = await db.collection("psicologos").doc(user.uid).get();
+            if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
+            else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
+        }
+
+        // ── ADMIN CHECK ──
+        const emailAdmin = ADMIN_EMAILS.includes(user.email);
+        let firestoreAdmin = false;
+        try {
+            const adminDoc = await db.collection("admins").doc(user.uid).get();
+            firestoreAdmin = adminDoc.exists;
+        } catch(e) {}
+        isAdmin = emailAdmin || firestoreAdmin;
+
+        document.getElementById("headerEmail").innerText = user.email;
+        const tb = document.getElementById("typeBadge");
+        if (isAdmin) {
+            tb.innerText = "Administrador";
+            tb.className = "type-badge admin";
+            document.getElementById("navAdmin").style.display = "block";
+            document.getElementById("mainContainer").classList.add("wide");
+        } else {
+            tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
+            tb.className = "type-badge " + userType;
+        }
+
+        updateLastSeen();
+        lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
+        document.getElementById("loading").style.display = "none";
+        openTab("feed");
+        checkUnreadMessages();
+
+    } catch(e) {
+        console.error("Error al cargar el dashboard:", e);
+        // Aunque algo falle, esconde el loader y muestra el dashboard
+        document.getElementById("loading").style.display = "none";
+        if (currentUser) openTab("feed");
+        else window.location.href = "index.html";
     }
-
-    updateLastSeen();
-    lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
-    document.getElementById("loading").style.display = "none";
-    openTab("feed");
-    checkUnreadMessages();
 });
 
 async function updateLastSeen() {
