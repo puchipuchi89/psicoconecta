@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Leaflet (mapa libre, sin API keysirviopooo) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +33,7 @@
         }
 
         /* ══════════════════════════════════════════
-           STICKY NAVsiiiicambiooo
+           STICKY NAV
         ══════════════════════════════════════════ */
         .top-nav {
             position: sticky; top: 0; z-index: 200;
@@ -682,7 +685,21 @@
 
                 <div class="field">
                     <label>Dirección del consultorio</label>
-                    <input type="text" id="psi_consultorio" placeholder="Calle, colonia, ciudad..." />
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="psi_consultorio" placeholder="Escribe la dirección de tu consultorio..."
+                            autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarDireccion();}" style="flex:1;" />
+                        <button type="button" onclick="buscarDireccion()" id="btnBuscarDir"
+                            style="padding:12px 14px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--sage-dark);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                    <!-- Resultados de búsqueda -->
+                    <div id="dirResultados" style="display:none;background:white;border:1.5px solid var(--border);border-radius:10px;margin-top:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);"></div>
+                    <!-- Mini mapa Leaflet -->
+                    <div id="mapPreview" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+                        <div id="mapMini" style="height:180px;width:100%;"></div>
+                        <div id="mapAddress" style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--cream);"></div>
+                    </div>
                 </div>
 
                 <div class="field">
@@ -1349,6 +1366,8 @@ async function finishPsi() {
             cedulaVerificada: cedulaVerificada,
             enfoque: document.getElementById("psi_enfoque").value,
             consultorio: document.getElementById("psi_consultorio").value,
+            consultorioLat: window._consultorioLat || null,
+            consultorioLng: window._consultorioLng || null,
             sobreMi:     document.getElementById("psi_sobre_mi").value.trim(),
             respuestas: respuestasPsi, fecha: new Date()
         });
@@ -1358,6 +1377,79 @@ async function finishPsi() {
 }
 
 function goHome() { window.location.href = "dashboard.html"; }
+
+// ── NOMINATIM + LEAFLET (sin API key) ───────────────────────────────────────
+window._consultorioLat = null;
+window._consultorioLng = null;
+let _indexLeafletMap    = null;
+let _indexLeafletMarker = null;
+
+async function buscarDireccion() {
+    const input  = document.getElementById("psi_consultorio").value.trim();
+    const btn    = document.getElementById("btnBuscarDir");
+    const resDiv = document.getElementById("dirResultados");
+    if (!input) return;
+
+    btn.innerText  = "Buscando...";
+    btn.disabled   = true;
+    resDiv.style.display = "none";
+    resDiv.innerHTML = "";
+
+    try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}&countrycodes=mx&limit=5&addressdetails=1`;
+        const res  = await fetch(url, { headers: { "Accept-Language": "es" } });
+        const data = await res.json();
+
+        if (!data.length) {
+            resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--muted);">No se encontraron resultados. Intenta con más detalle.</div>`;
+            resDiv.style.display = "block";
+        } else {
+            resDiv.style.display = "block";
+            data.forEach(r => {
+                const item = document.createElement("div");
+                item.style.cssText = "padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s;";
+                item.innerText = r.display_name;
+                item.onmouseover = () => item.style.background = "#f0f6f4";
+                item.onmouseout  = () => item.style.background = "white";
+                item.onclick = () => seleccionarDireccion(r);
+                resDiv.appendChild(item);
+            });
+        }
+    } catch(e) {
+        resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--error);">Error de conexión. Intenta de nuevo.</div>`;
+        resDiv.style.display = "block";
+    }
+
+    btn.innerText = "🔍 Buscar";
+    btn.disabled  = false;
+}
+
+function seleccionarDireccion(lugar) {
+    const lat = parseFloat(lugar.lat);
+    const lng = parseFloat(lugar.lon);
+    window._consultorioLat = lat;
+    window._consultorioLng = lng;
+
+    document.getElementById("psi_consultorio").value = lugar.display_name;
+    document.getElementById("dirResultados").style.display = "none";
+    document.getElementById("mapAddress").innerText = lugar.display_name;
+    document.getElementById("mapPreview").style.display = "block";
+
+    // Init or update Leaflet map
+    if (!_indexLeafletMap) {
+        _indexLeafletMap = L.map("mapMini", { zoomControl: true }).setView([lat, lng], 16);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap"
+        }).addTo(_indexLeafletMap);
+        _indexLeafletMarker = L.marker([lat, lng]).addTo(_indexLeafletMap);
+    } else {
+        _indexLeafletMap.setView([lat, lng], 16);
+        _indexLeafletMarker.setLatLng([lat, lng]);
+    }
+    // Force map resize after display:block
+    setTimeout(() => _indexLeafletMap.invalidateSize(), 100);
+}
+
 
 </script>
 </body>
