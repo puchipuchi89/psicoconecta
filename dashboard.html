@@ -27,7 +27,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEAD888jj8ER ── */
+        /* ── HEADkkkER ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -577,10 +577,6 @@ const db   = firebase.firestore();
 // ══════════════════════════════════════════════
 const ADMIN_EMAILS = [
     "yuma.01browni@gmail.com"   // ← Reemplaza esto con tu correo
-    "cpandrea7@gmail.com"   // ← Reemplaza esto con tu correo
-    "alecastell03@hotmail.com"   // ← Reemplaza esto con tu correo
-    "zamoradidi28@gmail.com"   // ← Reemplaza esto con tu correo
-    "danielaspasez03@gmail.com"   // ← Reemplaza esto con tu correo
 ];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -1123,19 +1119,22 @@ function renderMyProfile() {
 
 async function saveAutoGreeting() {
     const text = document.getElementById("saludoInput").value.trim();
-    try { await db.collection("psicologos").doc(currentUser.uid).update({ saludoAutomatico:text }); userData.saludoAutomatico=text; const c=document.getElementById("saveConfirm"); c.style.display="block"; setTimeout(()=>{c.style.display="none";},3000); }
-    catch(e) { alert("Error al guardar."); }
+    try {
+        await db.collection("psicologos").doc(currentUser.uid).set({ saludoAutomatico: text }, { merge: true });
+        userData.saludoAutomatico = text;
+        const c = document.getElementById("saveConfirm"); c.style.display="block"; setTimeout(()=>{c.style.display="none";},3000);
+    } catch(e) { console.error(e); alert("Error al guardar: " + (e.message||e.code||e)); }
 }
 
 async function saveSobreMi() {
     const text = document.getElementById("sobreMiInput").value.trim();
     try {
-        await db.collection("psicologos").doc(currentUser.uid).update({ sobreMi: text });
+        await db.collection("psicologos").doc(currentUser.uid).set({ sobreMi: text }, { merge: true });
         userData.sobreMi = text;
         const c = document.getElementById("sobreMiConfirm");
         c.style.display = "block";
         setTimeout(() => { c.style.display = "none"; }, 3000);
-    } catch(e) { alert("Error al guardar."); }
+    } catch(e) { console.error(e); alert("Error al guardar: " + (e.message||e.code||e)); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1415,24 +1414,28 @@ function logout() {
 async function saveEditInfo() {
     const isPsi = userType === "psicologo";
     const coll  = isPsi ? "psicologos" : "usuarios";
-    const update = {};
+    const data  = {};
 
     if (isPsi) {
-        update.enfoque    = document.getElementById("edit_enfoque").value.trim();
-        update.consultorio = document.getElementById("edit_consultorio").value.trim();
+        data.enfoque     = document.getElementById("edit_enfoque").value.trim();
+        data.consultorio = document.getElementById("edit_consultorio").value.trim();
     } else {
-        const sel = document.getElementById("edit_ubicacion");
-        update.ubicacion = sel ? sel.value : userData.ubicacion;
-        update.motivo    = document.getElementById("edit_motivo").value.trim();
+        const sel    = document.getElementById("edit_ubicacion");
+        data.ubicacion = sel ? sel.value : userData.ubicacion;
+        data.motivo    = document.getElementById("edit_motivo").value.trim();
     }
 
     try {
-        await db.collection(coll).doc(currentUser.uid).update(update);
-        Object.assign(userData, update);
+        // set con merge:true funciona tanto si el doc existe como si no
+        await db.collection(coll).doc(currentUser.uid).set(data, { merge: true });
+        Object.assign(userData, data);
         const c = document.getElementById("editInfoConfirm");
         c.style.display = "block";
         setTimeout(() => { c.style.display = "none"; renderMyProfile(); }, 2000);
-    } catch(e) { alert("Error al guardar."); }
+    } catch(e) {
+        console.error("saveEditInfo error:", e);
+        alert("Error al guardar: " + (e.message || e.code || e));
+    }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1563,7 +1566,7 @@ function rqPrev() {
 async function rqSave() {
     const coll = userType === "paciente" ? "usuarios" : "psicologos";
     try {
-        await db.collection(coll).doc(currentUser.uid).update({ respuestas: rqRespuestas });
+        await db.collection(coll).doc(currentUser.uid).set({ respuestas: rqRespuestas }, { merge: true });
         userData.respuestas = rqRespuestas;
         document.getElementById("requizModal").classList.remove("show");
         renderRespuestas();
