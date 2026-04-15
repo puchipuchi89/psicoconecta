@@ -27,7 +27,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEA8884DER ── */
+        /* ── HEADJEJEER ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -38,7 +38,6 @@
         .type-badge.paciente  { background:#e8f4f1; color:var(--sage-dark); }
         .type-badge.psicologo { background:var(--admin-light); color:var(--admin); }
         .type-badge.admin     { background:#1a0a3c; color:#c4b8ff; letter-spacing:0.3px; }
-        .type-badge.moderador { background:#0a2a3c; color:#7ecfff; letter-spacing:0.3px; }
         .btn-logout { background:transparent; border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; }
         .btn-logout:hover { border-color:var(--error); color:var(--error); }
 
@@ -401,8 +400,6 @@
             <button class="admin-subbtn"        onclick="openAdminSub('usuarios')">👥 Usuarios</button>
             <button class="admin-subbtn"        onclick="openAdminSub('reportes')">🚨 Reportes</button>
             <button class="admin-subbtn"        onclick="openAdminSub('desconexiones')">💔 Desconexiones</button>
-            <!-- Solo visible para el admin principal -->
-            <button class="admin-subbtn" id="btnSubModerators" onclick="openAdminSub('moderadores')" style="display:none;">👮 Moderadores</button>
         </div>
 
         <!-- Estadísticas -->
@@ -445,23 +442,6 @@
         <!-- Desconexiones -->
         <div class="admin-sub" id="asub-desconexiones">
             <div id="desconexionesList"><div class="spinner" style="margin:30px auto;"></div></div>
-        </div>
-
-        <!-- Moderadores (solo admin principal) -->
-        <div class="admin-sub" id="asub-moderadores">
-            <div style="margin-bottom:20px;">
-                <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Los moderadores pueden acceder al panel de administración y emitir sanciones, pero no pueden gestionar otros moderadores.</p>
-                <div style="display:flex;gap:8px;">
-                    <input type="email" id="modEmail" placeholder="Correo del nuevo moderador..."
-                        style="flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--cream);outline:none;" />
-                    <button onclick="addModerador()"
-                        style="padding:10px 18px;background:var(--sage);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">
-                        + Agregar
-                    </button>
-                </div>
-                <p id="modMsg" style="font-size:13px;margin-top:8px;display:none;"></p>
-            </div>
-            <div id="moderadoresList"><div class="spinner" style="margin:30px auto;"></div></div>
         </div>
     </div>
 
@@ -576,9 +556,6 @@
 </div>
 
 <!-- ── FIREBASE ── -->
-<!-- EmailJS (envío de correos sin backend) -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -594,18 +571,6 @@ const auth = firebase.auth();
 const db   = firebase.firestore();
 
 // ══════════════════════════════════════════════
-//  EMAILJS — Reemplaza con tus claves
-//  1. Crea cuenta gratis en emailjs.com
-//  2. Crea un Email Service (Gmail u otro)
-//  3. Crea un Email Template con las variables indicadas
-//  4. Copia tu Public Key, Service ID y Template ID aquí
-// ══════════════════════════════════════════════
-const EMAILJS_PUBLIC_KEY  = "IFb3_WZEaIAOQNSWL";
-const EMAILJS_SERVICE_ID  = "service_vbuyuyl";
-const EMAILJS_TEMPLATE_ID = "template_smm76ua";
-emailjs.init(EMAILJS_PUBLIC_KEY);
-
-// ══════════════════════════════════════════════
 //  ⬇️  REEMPLAZA CON TU CORREO DE ADMINISTRADOR
 //  También puedes crear el documento admins/{tu_uid}
 //  en Firestore manualmente para activar el acceso.
@@ -619,8 +584,6 @@ let currentUser   = null;
 let userType      = null;
 let userData      = null;
 let isAdmin       = false;
-let isModerador   = false;  // moderador nombrado por el admin principal
-let isSuper       = false;  // admin principal (ADMIN_EMAILS o admins/{uid})
 let profilesQueue = [];
 let profileIndex  = 0;
 let likedSet      = new Set();
@@ -696,35 +659,20 @@ auth.onAuthStateChanged(async user => {
         else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
     }
 
-    // ── ADMIN / MODERADOR CHECK ──
+    // ── ADMIN CHECK ──
     const emailAdmin = ADMIN_EMAILS.includes(user.email);
     let firestoreAdmin = false;
-    let firestoreMod   = false;
     try {
-        const [adminDoc, modDoc] = await Promise.all([
-            db.collection("admins").doc(user.uid).get(),
-            db.collection("moderadores").doc(user.uid).get()
-        ]);
+        const adminDoc = await db.collection("admins").doc(user.uid).get();
         firestoreAdmin = adminDoc.exists;
-        firestoreMod   = modDoc.exists && !firestoreAdmin && !emailAdmin; // mod solo si no es admin
     } catch(e) {}
-
-    isSuper     = emailAdmin || firestoreAdmin;
-    isModerador = firestoreMod;
-    isAdmin     = isSuper || isModerador; // ambos acceden al panel
+    isAdmin = emailAdmin || firestoreAdmin;
 
     document.getElementById("headerEmail").innerText = user.email;
     const tb = document.getElementById("typeBadge");
-    if (isSuper) {
+    if (isAdmin) {
         tb.innerText = "Administrador";
         tb.className = "type-badge admin";
-        document.getElementById("navAdmin").style.display = "block";
-        document.getElementById("mainContainer").classList.add("wide");
-        // Solo el admin principal ve el tab de moderadores
-        document.getElementById("btnSubModerators").style.display = "block";
-    } else if (isModerador) {
-        tb.innerText = "Moderador";
-        tb.className = "type-badge moderador";
         document.getElementById("navAdmin").style.display = "block";
         document.getElementById("mainContainer").classList.add("wide");
     } else {
@@ -943,28 +891,7 @@ function openReportFromCard() {
     openReport(uid, d.nombre||"Usuario");
 }
 
-// ── ENVÍO DE CORREOS DE MATCH ─────────────────────────────────────────────────
-async function sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct) {
-    const siteUrl = window.location.origin + "/psicoconecta/dashboard.html";
-    const year    = new Date().getFullYear();
-
-    const sendOne = (toEmail, toNombre, matchNombre, role) =>
-        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_email:     toEmail,
-            to_name:      toNombre,
-            match_name:   matchNombre,
-            compatibility: pct + "%",
-            role,                          // "psicólogo" o "paciente"
-            site_url:     siteUrl,
-            year
-        });
-
-    // Enviamos ambos correos en paralelo; si uno falla no bloquea al otro
-    await Promise.allSettled([
-        sendOne(pacEmail,  pacNombre,  psiNombre, "psicólogo"),
-        sendOne(psiEmail,  psiNombre,  pacNombre, "paciente")
-    ]);
-}
+async function likeProfile() {
     if (profileIndex>=profilesQueue.length) return;
     const {uid:targetUid, data:targetData, pct} = profilesQueue[profileIndex];
     document.getElementById("swipe-card").classList.add("fly-right");
@@ -982,23 +909,6 @@ async function sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct) {
             else { const pd = await db.collection("psicologos").doc(psiUid).get(); if(pd.exists) greetingText=pd.data().saludoAutomatico||""; }
             await db.collection("chats").doc(matchId).set({ participants:[pacUid,psiUid], lastMessage:greetingText||"¡Es un match!", lastMessageTime:new Date(), unread:{[pacUid]:greetingText?1:0,[psiUid]:0} });
             if (greetingText) await db.collection("chats").doc(matchId).collection("messages").add({ sender:psiUid, text:greetingText, timestamp:new Date(), auto:true });
-
-            // ── CORREOS DE NOTIFICACIÓN ──
-            try {
-                // Obtener emails y nombres de ambos
-                const [pacDoc, psiDoc] = await Promise.all([
-                    db.collection("usuarios").doc(pacUid).get(),
-                    db.collection("psicologos").doc(psiUid).get()
-                ]);
-                const pacEmail  = pacDoc.exists  ? (pacDoc.data().email  || "") : "";
-                const pacNombre = pacDoc.exists  ? (pacDoc.data().nombre || "Paciente")    : "Paciente";
-                const psiEmail  = psiDoc.exists  ? (psiDoc.data().email  || "") : "";
-                const psiNombre = psiDoc.exists  ? (psiDoc.data().nombre || "Psicólogo/a") : "Psicólogo/a";
-                if (pacEmail && psiEmail) {
-                    sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct);
-                }
-            } catch(emailErr) { console.warn("No se pudo enviar email de match:", emailErr); }
-
             setTimeout(() => {
                 document.getElementById("matchModalText").innerText = `¡Tú y ${targetData.nombre||"tu nueva conexión"} hicieron match! ${greetingText?"El psicólogo ya te envió un saludo. 💬":"Ya pueden escribirse."}`;
                 document.getElementById("matchModal").classList.add("show");
@@ -1264,22 +1174,17 @@ async function submitReport() {
 // ══════════════════════════════════════════════════════
 function openAdminSub(id) {
     if (!isAdmin) return;
-    // Solo el admin principal puede ver la sección de moderadores
-    if (id === "moderadores" && !isSuper) return;
-
     document.querySelectorAll(".admin-sub").forEach(s => s.classList.remove("active"));
     document.querySelectorAll(".admin-subbtn").forEach(b => b.classList.remove("active"));
     document.getElementById("asub-"+id).classList.add("active");
-    document.querySelectorAll(".admin-subbtn").forEach(b => {
-        if(b.getAttribute("onclick")===`openAdminSub('${id}')`) b.classList.add("active");
-    });
+    // activate the button
+    document.querySelectorAll(".admin-subbtn").forEach(b => { if(b.getAttribute("onclick")===`openAdminSub('${id}')`) b.classList.add("active"); });
 
-    if (id==="stats")         loadAdminStats();
-    if (id==="cedulas")       loadCedulasPendientes();
-    if (id==="usuarios")      loadAdminUsers("all");
-    if (id==="reportes")      loadAdminReports("pending");
+    if (id==="stats")    loadAdminStats();
+    if (id==="cedulas")  loadCedulasPendientes();
+    if (id==="usuarios") loadAdminUsers("all");
+    if (id==="reportes") loadAdminReports("pending");
     if (id==="desconexiones") loadAdminDesconexiones();
-    if (id==="moderadores")   loadModeradores();
 }
 
 async function loadAdminPanel() {
@@ -1490,115 +1395,6 @@ async function resolveReport(reportId, status) {
         loadAdminReports(currentReportFilter);
         loadAdminStats();
     } catch(e) { alert("Error al actualizar reporte."); }
-}
-
-// ══════════════════════════════════════════════════════
-//  GESTIÓN DE MODERADORES (solo admin principal)
-// ══════════════════════════════════════════════════════
-async function loadModeradores() {
-    if (!isSuper) return;
-    const container = document.getElementById("moderadoresList");
-    container.innerHTML = '<div class="spinner" style="margin:24px auto;"></div>';
-
-    try {
-        const snap = await db.collection("moderadores").get();
-
-        if (snap.empty) {
-            container.innerHTML = `<div class="empty-state"><div class="empty-icon">👮</div><h3>Sin moderadores</h3><p>Agrega un moderador con su correo arriba.</p></div>`;
-            return;
-        }
-
-        container.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            const row = document.createElement("div");
-            row.className = "admin-row";
-            row.innerHTML = `
-                <div class="admin-row-av">👮</div>
-                <div class="admin-row-info">
-                    <div class="admin-row-name">${d.email || doc.id}</div>
-                    <div class="admin-row-meta">UID: ${doc.id} · Agregado: ${d.addedAt ? new Date(d.addedAt.toDate()).toLocaleDateString("es-MX") : "—"}</div>
-                    <div style="margin-top:4px;"><span class="sbadge active">🛡️ Moderador activo</span></div>
-                </div>
-                <div class="admin-row-actions">
-                    <button class="btn-adm reject" onclick="removeModerador('${doc.id}','${(d.email||"").replace(/'/g,"\\'")}')">🗑 Revocar</button>
-                </div>`;
-            container.appendChild(row);
-        });
-    } catch(e) {
-        container.innerHTML = `<p style="color:var(--error);font-size:13px;">Error al cargar moderadores.</p>`;
-        console.error(e);
-    }
-}
-
-async function addModerador() {
-    if (!isSuper) return;
-    const email = document.getElementById("modEmail").value.trim().toLowerCase();
-    const msg   = document.getElementById("modMsg");
-
-    if (!email || !email.includes("@")) {
-        msg.style.display = "block"; msg.style.color = "var(--error)";
-        msg.innerText = "Ingresa un correo válido."; return;
-    }
-
-    msg.style.display = "block"; msg.style.color = "var(--muted)";
-    msg.innerText = "Buscando usuario...";
-
-    try {
-        // Buscar el uid del usuario por su correo en ambas colecciones
-        const [psiSnap, pacSnap] = await Promise.all([
-            db.collection("psicologos").where("email","==",email).limit(1).get(),
-            db.collection("usuarios").where("email","==",email).limit(1).get()
-        ]);
-
-        let targetUid = null;
-        if (!psiSnap.empty) targetUid = psiSnap.docs[0].id;
-        else if (!pacSnap.empty) targetUid = pacSnap.docs[0].id;
-
-        if (!targetUid) {
-            msg.style.color = "var(--error)";
-            msg.innerText = "No se encontró un usuario registrado con ese correo."; return;
-        }
-
-        // Verificar que no sea ya admin o moderador
-        if (ADMIN_EMAILS.includes(email)) {
-            msg.style.color = "var(--error)";
-            msg.innerText = "Este correo ya es el administrador principal."; return;
-        }
-
-        const existing = await db.collection("moderadores").doc(targetUid).get();
-        if (existing.exists) {
-            msg.style.color = "var(--error)";
-            msg.innerText = "Este usuario ya es moderador."; return;
-        }
-
-        await db.collection("moderadores").doc(targetUid).set({
-            email, addedBy: currentUser.uid, addedAt: new Date()
-        });
-
-        document.getElementById("modEmail").value = "";
-        msg.style.color = "var(--sage)";
-        msg.innerText = `✅ ${email} ahora es moderador.`;
-        setTimeout(() => { msg.style.display = "none"; }, 3000);
-        loadModeradores();
-
-    } catch(e) {
-        msg.style.color = "var(--error)";
-        msg.innerText = "Error: " + (e.message || e.code || e);
-        console.error(e);
-    }
-}
-
-async function removeModerador(uid, email) {
-    if (!isSuper) return;
-    if (!confirm(`¿Revocar los permisos de moderador de ${email || uid}?`)) return;
-
-    try {
-        await db.collection("moderadores").doc(uid).delete();
-        loadModeradores();
-    } catch(e) {
-        alert("Error al revocar: " + (e.message || e.code));
-    }
 }
 
 // ── MODAL ────────────────────────────────────────────────────────────────────
