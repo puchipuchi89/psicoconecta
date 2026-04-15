@@ -685,6 +685,11 @@
                     <input type="text" id="psi_consultorio" placeholder="Calle, colonia, ciudad..." />
                 </div>
 
+                <div class="field">
+                    <label>Sobre mí</label>
+                    <textarea id="psi_sobre_mi" placeholder="Escribe algo sobre ti para que los demás te conozcan. Puedes mencionar tu experiencia, tu estilo de trabajo o cómo sueles acompañar a tus pacientes..." style="min-height:90px;"></textarea>
+                </div>
+
                 <button class="btn-primary" onclick="startQuizPsi()">Continuar →</button>
                 <div class="error-msg" id="psicologo-error"></div>
             </div>
@@ -1344,6 +1349,7 @@ async function finishPsi() {
             cedulaVerificada: cedulaVerificada,
             enfoque: document.getElementById("psi_enfoque").value,
             consultorio: document.getElementById("psi_consultorio").value,
+            sobreMi:     document.getElementById("psi_sobre_mi").value.trim(),
             respuestas: respuestasPsi, fecha: new Date()
         });
         document.getElementById("step2_psi").style.display = "none";
