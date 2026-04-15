@@ -1794,6 +1794,205 @@ async function loadAdminDesconexiones() {
         });
     } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; console.error(e); }
 }
+// ─── MISSING FUNCTIONS ─────────────────────────────────────────────────────────
+
+async function checkUnreadMessages() {
+    if (!currentUser || !userType) return;
+    try {
+        const myF = userType === "paciente" ? "paciente" : "psicologo";
+        const matchSnap = await db.collection("matches").where(myF, "==", currentUser.uid).get();
+        if (matchSnap.empty) return;
+    } catch(e) { console.error("Error checking unread:", e); }
+}
+
+function logout() {
+    auth.signOut().then(() => { window.location.href = "index.html"; }).catch(e => console.error(e));
+}
+
+function renderRespuestas() {
+    const container = document.getElementById("respuestasList");
+    if (!userData || !userData.respuestas || userData.respuestas.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3></div>`;
+        return;
+    }
+    container.innerHTML = userData.respuestas.map((r, i) => `<div class="resp-item"><div class="resp-lbl">Pregunta ${i+1}</div><div class="resp-val">${r || "No respondida"}</div></div>`).join("");
+}
+
+function renderMyProfile() {
+    const container = document.getElementById("perfilContent");
+    if (!userData) {
+        container.innerHTML = `<div class="empty-state"><p>Cargando perfil...</p></div>`;
+        return;
+    }
+    container.innerHTML = `
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-av">${userType === "paciente" ? "👤" : "🧠"}</div>
+                <div><div class="profile-name">${userData.nombre || "Usuario"}</div><div style="font-size:12px;color:var(--muted);">${userData.email}</div></div>
+            </div>
+            <div class="profile-section">
+                <div class="ps-title">Información</div>
+                <div class="pf-row"><div class="pf-label">Email</div><div class="pf-val">${userData.email}</div></div>
+                <div class="pf-row"><div class="pf-label">Tipo</div><div class="pf-val">${userType === "paciente" ? "Paciente" : "Psicólogo/a"}</div></div>
+            </div>
+        </div>
+    `;
+}
+
+function loadAdminPanel() {
+    if (!isAdmin) {
+        document.getElementById("tab-admin").innerHTML = `<p>No tienes acceso.</p>`;
+        return;
+    }
+    loadAdminStats();
+}
+
+async function loadAdminStats() {
+    try {
+        const [psiSnap, pacSnap, matchSnap] = await Promise.all([
+            db.collection("psicologos").get(),
+            db.collection("usuarios").get(),
+            db.collection("matches").get()
+        ]);
+        document.getElementById("as-psi").innerText = psiSnap.size;
+        document.getElementById("as-pac").innerText = pacSnap.size;
+        document.getElementById("as-match").innerText = matchSnap.size;
+    } catch(e) { console.error(e); }
+}
+
+function openAdminSub(sub) {
+    document.querySelectorAll(".admin-sub").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".admin-subbtn").forEach(b => b.classList.remove("active"));
+    document.getElementById("asub-" + sub).classList.add("active");
+    if (event.target) event.target.classList.add("active");
+}
+
+function formatMsgTime(ts) {
+    if (!ts) return "";
+    const date = ts.toDate ? ts.toDate() : new Date(ts);
+    const now = new Date();
+    const diff = now - date;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h`;
+    return date.toLocaleDateString();
+}
+
+function openChat(matchId, otherUid, otherName, emoji) {
+    activeChatId = matchId;
+    document.getElementById("msgList").style.display = "none";
+    document.getElementById("chatView").classList.add("open");
+    document.getElementById("chatName").innerText = otherName;
+    document.getElementById("chatAv").innerText = emoji;
+    document.getElementById("chatMessages").innerHTML = "";
+    loadChatMessages(matchId);
+}
+
+async function loadChatMessages(matchId) {
+    const container = document.getElementById("chatMessages");
+    try {
+        const msgs = await db.collection("chats").doc(matchId).collection("messages").orderBy("timestamp", "asc").get();
+        container.innerHTML = "";
+        msgs.forEach(doc => {
+            const msg = doc.data();
+            const isMine = msg.sender === currentUser.uid;
+            container.innerHTML += `<div class="msg-row ${isMine ? 'mine' : 'theirs'}"><div class="msg-bubble">${msg.text}</div></div>`;
+        });
+        container.scrollTop = container.scrollHeight;
+    } catch(e) { console.error(e); }
+}
+
+function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text || !activeChatId) return;
+    db.collection("chats").doc(activeChatId).collection("messages").add({
+        sender: currentUser.uid,
+        text: text,
+        timestamp: new Date()
+    }).then(() => {
+        input.value = "";
+        loadChatMessages(activeChatId);
+    }).catch(e => console.error(e));
+}
+
+function closeChat() {
+    activeChatId = null;
+    document.getElementById("msgList").style.display = "block";
+    document.getElementById("chatView").classList.remove("open");
+}
+
+function openReport(uid, name) {
+    reportTargetUid = uid;
+    reportTargetName = name;
+    document.getElementById("reportTargetName").innerText = name;
+    document.getElementById("reportModal").classList.add("show");
+}
+
+function closeReportModal() {
+    document.getElementById("reportModal").classList.remove("show");
+}
+
+async function submitReport() {
+    if (!reportTargetUid) return;
+    const reason = document.getElementById("reportReason").value;
+    const details = document.getElementById("reportDetails").value;
+    try {
+        await db.collection("reports").add({
+            reporter: currentUser.uid,
+            reported: reportTargetUid,
+            reason: reason,
+            details: details,
+            timestamp: new Date(),
+            status: "pending"
+        });
+        closeReportModal();
+    } catch(e) { console.error(e); }
+}
+
+function openBreakModal(matchId, otherUid, otherName) {
+    document.getElementById("breakMatchId").value = matchId;
+    document.getElementById("breakOtherUid").value = otherUid;
+    document.getElementById("breakTargetName").innerText = otherName;
+    document.getElementById("breakModal").classList.add("show");
+}
+
+function closeBreakModal() {
+    document.getElementById("breakModal").classList.remove("show");
+}
+
+function checkBreakReason() {
+    const reason = document.getElementById("breakReason").value;
+    const note = document.getElementById("breakReportNote");
+    note.style.display = reason === "problema_psicologo" ? "block" : "none";
+}
+
+async function confirmBreakMatch() {
+    const matchId = document.getElementById("breakMatchId").value;
+    try {
+        await db.collection("matches").doc(matchId).delete();
+        closeBreakModal();
+        openTab("feed");
+    } catch(e) { console.error(e); }
+}
+
+function closeModal() {
+    document.getElementById("matchModal").classList.remove("show");
+}
+
+function goToMensajes() {
+    closeModal();
+    openTab("mensajes");
+}
+
+function filterUsers(filter) {
+    currentUserFilter = filter;
+}
+
+function filterReports(filter) {
+    currentReportFilter = filter;
+}
 </script>
 
 </body>
