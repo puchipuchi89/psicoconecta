@@ -1,595 +1,934 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-    <title>PsicoConecta - Dashboard</title>
+    <title>PsicoConecta</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Leaflet (mapa libre, sin API key) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --sage:       #4a7c6f;
-            --sage-light: #6a9e90;
-            --sage-dark:  #2f5248;
-            --cream:      #faf8f4;
-            --warm-white: #ffffff;
-            --text:       #1e2d2b;
-            --muted:      #6b7e7a;
-            --border:     #dde8e5;
-            --error:      #c0392b;
-            --shadow:     0 8px 40px rgba(74,124,111,0.12);
-            --shadow-sm:  0 2px 12px rgba(74,124,111,0.08);
-            --admin:      #4a3c7c;
-            --admin-light:#ede8f4;
+            --sage:      #4a7c6f;
+            --sage-light:#6a9e90;
+            --sage-dark: #2f5248;
+            --cream:     #faf8f4;
+            --warm-white:#ffffff;
+            --text:      #1e2d2b;
+            --muted:     #6b7e7a;
+            --border:    #dde8e5;
+            --error:     #c0392b;
+            --shadow:    0 8px 40px rgba(74,124,111,0.12);
+            --shadow-sm: 0 2px 12px rgba(74,124,111,0.08);
         }
 
-        body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
-
-        /* ── HEADER ── */
-        .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
-        .logo { display:flex; align-items:center; gap:8px; }
-        .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
-        .logo-text { font-family:'DM Serif Display',serif; font-size:20px; color:var(--sage-dark); }
-        .header-right { display:flex; align-items:center; gap:10px; }
-        .user-email { font-size:12px; color:var(--muted); background:var(--cream); padding:5px 10px; border-radius:20px; border:1px solid var(--border); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .type-badge { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; }
-        .type-badge.paciente  { background:#e8f4f1; color:var(--sage-dark); }
-        .type-badge.psicologo { background:var(--admin-light); color:var(--admin); }
-        .type-badge.admin     { background:#1a0a3c; color:#c4b8ff; letter-spacing:0.3px; }
-        .btn-logout { background:transparent; border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; }
-        .btn-logout:hover { border-color:var(--error); color:var(--error); }
-
-        /* ── NAV ── */
-        .nav-tabs { background:var(--warm-white); border-bottom:1px solid var(--border); display:flex; padding:0 16px; overflow-x:auto; }
-        .nav-tab { padding:14px 16px; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; position:relative; }
-        .nav-tab.active { color:var(--sage-dark); border-bottom-color:var(--sage); }
-        .nav-tab.admin-tab { color:var(--admin); }
-        .nav-tab.admin-tab.active { border-bottom-color:var(--admin); color:var(--admin); }
-        .unread-dot { display:inline-block; width:8px; height:8px; background:#e74c3c; border-radius:50%; position:absolute; top:10px; right:6px; }
-
-        /* ── MAIN ── */
-        .main { max-width:580px; margin:0 auto; padding:24px 16px; }
-        .main.wide { max-width:960px; }
-        .tab-section { display:none; }
-        .tab-section.active { display:block; }
-
-        /* ── LOADING ── */
-        #loading { text-align:center; padding:80px 20px; color:var(--muted); }
-        .spinner { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--sage); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-
-        .section-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:4px; }
-        .section-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
-
-        .empty-state { text-align:center; padding:48px 20px; color:var(--muted); }
-        .empty-icon { font-size:48px; margin-bottom:14px; }
-        .empty-state h3 { font-family:'DM Serif Display',serif; color:var(--sage-dark); margin-bottom:8px; }
-        .empty-state p { font-size:14px; line-height:1.6; }
-
-        /* ── FEED MATCH CARDS ── */
-        .match-card { background:var(--warm-white); border-radius:16px; padding:20px; margin-bottom:16px; border:1px solid var(--border); box-shadow:var(--shadow-sm); animation:fadeUp 0.3s ease; }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
-        .match-card-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-        .avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
-        .match-name { font-family:'DM Serif Display',serif; font-size:17px; color:var(--sage-dark); margin-bottom:3px; }
-        .compat-pill { display:inline-block; padding:2px 10px; border-radius:20px; font-size:12px; font-weight:600; }
-        .c-high { background:#d4edda; color:#1a6b37; }
-        .c-mid  { background:#fff3cd; color:#856404; }
-        .c-low  { background:#f8d7da; color:#842029; }
-        .match-label { margin-left:auto; font-size:12px; color:#c0768a; font-weight:600; }
-        .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
-        .detail-chip { background:var(--cream); border-radius:8px; padding:8px 12px; }
-        .chip-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px; }
-        .chip-val { font-size:13px; color:var(--text); }
-        .contact-row { display:flex; align-items:center; gap:8px; padding-top:12px; border-top:1px solid var(--border); font-size:13px; flex-wrap:wrap; }
-        .contact-email { color:var(--sage); font-weight:500; }
-        .btn-chat { margin-left:auto; padding:7px 16px; background:var(--sage); color:white; border:none; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:background 0.2s; }
-        .btn-chat:hover { background:var(--sage-dark); }
-        .btn-report-sm { padding:6px 12px; background:transparent; border:1px solid #ffb3b3; color:#e05555; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; }
-        .btn-report-sm:hover { background:#fff0f0; }
-
-        /* ── SWIPE ── */
-        .swipe-wrap { display:flex; flex-direction:column; align-items:center; }
-        .swipe-card { background:var(--warm-white); border-radius:20px; box-shadow:var(--shadow); padding:26px 22px; width:100%; max-width:420px; margin-bottom:18px; transition:transform 0.32s ease,opacity 0.32s ease; touch-action:pan-y; cursor:grab; }
-        .swipe-card:active { cursor:grabbing; }
-        .swipe-card.fly-right { transform:translateX(150%) rotate(20deg)!important; opacity:0; }
-        .swipe-card.fly-left  { transform:translateX(-150%) rotate(-20deg)!important; opacity:0; }
-        .sc-top { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
-        .sc-avatar { width:62px; height:62px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
-        .sc-name { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:4px; }
-        .compat-bar-wrap { margin-bottom:18px; }
-        .compat-bar-row { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:5px; }
-        .compat-pct { font-weight:700; font-size:14px; color:var(--sage-dark); }
-        .compat-bar { height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
-        .compat-fill { height:100%; border-radius:99px; transition:width 0.5s ease; }
-        .sc-details { margin-bottom:4px; }
-        .sc-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:9px; font-size:14px; }
-        .sc-icon { font-size:15px; flex-shrink:0; }
-        .sc-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px; margin-right:4px; }
-        .sc-val { color:var(--text); }
-        .action-btns { display:flex; gap:14px; width:100%; max-width:420px; }
-        .btn-pass { flex:1; padding:14px; background:var(--warm-white); border:2px solid #ffb3b3; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; color:#e05555; cursor:pointer; transition:all 0.2s; }
-        .btn-pass:hover { background:#fff0f0; }
-        .btn-like { flex:1; padding:14px; background:var(--sage); border:2px solid var(--sage); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; color:white; cursor:pointer; transition:all 0.2s; }
-        .btn-like:hover { background:var(--sage-dark); border-color:var(--sage-dark); }
-        .swipe-hint { font-size:12px; color:var(--muted); text-align:center; margin-top:10px; }
-        .btn-report-card { margin-top:10px; width:100%; max-width:420px; padding:9px; background:transparent; border:1px solid #ffb3b3; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; color:#e05555; cursor:pointer; transition:all 0.2s; }
-        .btn-report-card:hover { background:#fff0f0; }
-
-        /* ── MENSAJES ── */
-        .convo-item { background:var(--warm-white); border-radius:14px; padding:16px; margin-bottom:10px; border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; gap:14px; transition:box-shadow 0.2s,border-color 0.2s; }
-        .convo-item:hover { box-shadow:var(--shadow-sm); border-color:var(--sage-light); }
-        .convo-av { width:48px; height:48px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:22px; position:relative; }
-        .online-dot { width:11px; height:11px; background:#2ecc71; border:2px solid white; border-radius:50%; position:absolute; bottom:1px; right:1px; }
-        .convo-body { flex:1; min-width:0; }
-        .convo-name { font-weight:600; font-size:14px; color:var(--text); margin-bottom:3px; }
-        .convo-preview { font-size:13px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .convo-meta { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
-        .convo-time { font-size:11px; color:var(--muted); }
-        .unread-badge { background:var(--sage); color:white; border-radius:50%; width:20px; height:20px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; }
-        .convo-lastseen { font-size:11px; color:var(--muted); }
-        #chatView { display:none; flex-direction:column; height:calc(100vh - 130px); }
-        #chatView.open { display:flex; }
-        .chat-header { display:flex; align-items:center; gap:12px; padding:12px 0 14px; border-bottom:1px solid var(--border); margin-bottom:12px; }
-        .btn-back { background:transparent; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; flex-shrink:0; }
-        .btn-back:hover { border-color:var(--sage); color:var(--sage); }
-        .chat-header-av { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-        .chat-header-info { flex:1; }
-        .chat-header-name { font-weight:600; font-size:15px; color:var(--text); }
-        .chat-header-seen { font-size:12px; color:var(--muted); }
-        .chat-messages { flex:1; overflow-y:auto; padding:4px 0 12px; display:flex; flex-direction:column; gap:8px; }
-        .msg-row { display:flex; }
-        .msg-row.mine { justify-content:flex-end; }
-        .msg-row.theirs { justify-content:flex-start; }
-        .msg-bubble { max-width:72%; padding:10px 14px; border-radius:16px; font-size:14px; line-height:1.45; position:relative; }
-        .msg-row.mine .msg-bubble { background:var(--sage); color:white; border-bottom-right-radius:4px; }
-        .msg-row.theirs .msg-bubble { background:var(--warm-white); color:var(--text); border:1px solid var(--border); border-bottom-left-radius:4px; }
-        .msg-time { font-size:10px; opacity:0.65; margin-top:4px; display:block; text-align:right; }
-        .msg-row.theirs .msg-time { text-align:left; }
-        .msg-auto-tag { font-size:10px; background:rgba(255,255,255,0.25); padding:1px 6px; border-radius:10px; display:inline-block; margin-bottom:4px; }
-        .chat-input-area { display:flex; gap:10px; padding-top:12px; border-top:1px solid var(--border); }
-        .chat-input { flex:1; padding:11px 14px; border:1.5px solid var(--border); border-radius:22px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); outline:none; transition:all 0.2s; }
-        .chat-input:focus { border-color:var(--sage-light); background:white; box-shadow:0 0 0 3px rgba(74,124,111,0.1); }
-        .btn-send { padding:11px 20px; background:var(--sage); color:white; border:none; border-radius:22px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
-        .btn-send:hover { background:var(--sage-dark); }
-
-        /* ── PROFILE ── */
-        .profile-card { background:var(--warm-white); border-radius:16px; padding:26px; border:1px solid var(--border); box-shadow:var(--shadow-sm); }
-        .profile-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
-        .profile-av { width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; }
-        .profile-name { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:4px; }
-        .profile-section { margin-bottom:22px; }
-        .ps-title { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
-        .pf-row { display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; }
-        .pf-label { font-size:12px; font-weight:600; color:var(--muted); min-width:130px; flex-shrink:0; padding-top:1px; }
-        .pf-val { font-size:14px; color:var(--text); }
-        .corriente-tag { display:inline-block; background:#e8f4f1; color:var(--sage-dark); padding:5px 12px; border-radius:20px; font-size:13px; font-weight:500; }
-        .field-label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
-        .saludo-textarea { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); resize:vertical; min-height:80px; outline:none; transition:all 0.2s; }
-        .saludo-textarea:focus { border-color:var(--sage-light); background:white; box-shadow:0 0 0 3px rgba(74,124,111,0.1); }
-        .btn-save-saludo { margin-top:10px; padding:10px 20px; background:var(--sage); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:background 0.2s; }
-        .btn-save-saludo:hover { background:var(--sage-dark); }
-        .save-confirm { font-size:12px; color:var(--sage); margin-top:6px; display:none; }
-
-        /* ── RESPUESTAS ── */
-        .resp-item { background:var(--warm-white); border-radius:10px; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); }
-        .resp-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:3px; }
-        .resp-val { font-size:14px; color:var(--text); }
-
-        /* ════════════════════════════════════════
-           ADMIN PANEL
-        ════════════════════════════════════════ */
-        .admin-subnav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:24px; }
-        .admin-subbtn {
-            padding:8px 16px; border:1.5px solid var(--border); border-radius:10px;
-            background:transparent; font-family:'DM Sans',sans-serif; font-size:13px;
-            font-weight:500; color:var(--muted); cursor:pointer; transition:all 0.2s;
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text);
         }
-        .admin-subbtn.active { background:var(--admin); color:white; border-color:var(--admin); }
-        .admin-subbtn:hover:not(.active) { border-color:var(--admin); color:var(--admin); }
 
-        .admin-sub { display:none; }
-        .admin-sub.active { display:block; }
-
-        /* Stats grid */
-        .stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
-        .stat-box { background:var(--warm-white); border-radius:14px; padding:18px; border:1px solid var(--border); text-align:center; }
-        .stat-num { font-family:'DM Serif Display',serif; font-size:32px; color:var(--sage-dark); }
-        .stat-lbl { font-size:12px; color:var(--muted); margin-top:4px; }
-        .stat-box.danger .stat-num { color:var(--error); }
-        .stat-box.warn   .stat-num { color:#856404; }
-
-        /* Admin rows */
-        .admin-row {
-            background:var(--warm-white); border-radius:12px; padding:16px;
-            margin-bottom:10px; border:1px solid var(--border);
-            display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;
+        /* ══════════════════════════════════════════
+           STICKY NAV
+        ══════════════════════════════════════════ */
+        .top-nav {
+            position: sticky; top: 0; z-index: 200;
+            background: rgba(250,248,244,0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 32px;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .admin-row-av { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
-        .admin-row-info { flex:1; min-width:0; }
-        .admin-row-name { font-weight:600; font-size:14px; margin-bottom:2px; }
-        .admin-row-email { font-size:12px; color:var(--muted); margin-bottom:4px; word-break:break-all; }
-        .admin-row-meta { font-size:12px; color:var(--muted); }
-        .admin-row-actions { display:flex; gap:6px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
-
-        /* Admin action buttons */
-        .btn-adm { padding:6px 12px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
-        .btn-adm.approve { background:#d4edda; color:#1a6b37; }
-        .btn-adm.approve:hover { background:#b8dfc5; }
-        .btn-adm.reject  { background:#f8d7da; color:#842029; }
-        .btn-adm.reject:hover  { background:#f1b8bc; }
-        .btn-adm.warn    { background:#fff3cd; color:#856404; }
-        .btn-adm.warn:hover    { background:#ffe69c; }
-        .btn-adm.suspend { background:#fde8d8; color:#7c3a00; }
-        .btn-adm.suspend:hover { background:#f9ceaf; }
-        .btn-adm.ban     { background:#842029; color:white; }
-        .btn-adm.ban:hover     { background:#6b1a21; }
-        .btn-adm.lift    { background:#e8f4f1; color:var(--sage-dark); }
-        .btn-adm.lift:hover    { background:#c8e6de; }
-        .btn-adm.view    { background:var(--admin-light); color:var(--admin); }
-        .btn-adm.view:hover    { background:#d8d0ee; }
-        .btn-adm.dismiss { background:var(--cream); color:var(--muted); border:1px solid var(--border); }
-
-        /* Status badges */
-        .sbadge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
-        .sbadge.pending  { background:#fff3cd; color:#856404; }
-        .sbadge.verified { background:#d4edda; color:#1a6b37; }
-        .sbadge.rejected { background:#f8d7da; color:#842029; }
-        .sbadge.active   { background:#e8f4f1; color:var(--sage-dark); }
-        .sbadge.warned   { background:#fff3cd; color:#856404; }
-        .sbadge.suspended{ background:#fde8d8; color:#7c3a00; }
-        .sbadge.banned   { background:#842029; color:white; }
-        .sbadge.report   { background:#f8d7da; color:#842029; }
-        .sbadge.reviewed { background:#e8f4f1; color:var(--sage-dark); }
-
-        /* Report reason box */
-        .report-reason { background:var(--cream); border-radius:8px; padding:10px 12px; font-size:13px; color:var(--text); margin-bottom:8px; border-left:3px solid #e74c3c; }
-
-        /* Sanction note */
-        .sanction-note { background:#fde8d8; border-radius:8px; padding:8px 12px; font-size:12px; color:#7c3a00; margin-top:6px; }
-
-        /* ── MODALS ── */
-        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); display:none; align-items:center; justify-content:center; z-index:999; }
-        .modal-overlay.show { display:flex; }
-        .modal-box { background:var(--warm-white); border-radius:24px; padding:40px 30px; text-align:center; max-width:340px; width:90%; animation:popIn 0.3s ease; }
-        .modal-box.wide { max-width:480px; text-align:left; }
-        @keyframes popIn { from{transform:scale(0.75);opacity:0;}to{transform:scale(1);opacity:1;} }
-        .modal-emoji { font-size:60px; margin-bottom:14px; }
-        .modal-box h2 { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:8px; }
-        .modal-box p { font-size:14px; color:var(--muted); margin-bottom:22px; line-height:1.5; }
-        .btn-modal-primary { width:100%; padding:12px; background:var(--sage); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; margin-bottom:10px; transition:background 0.2s; }
-        .btn-modal-primary:hover { background:var(--sage-dark); }
-        .btn-modal-secondary { width:100%; padding:11px; background:transparent; color:var(--muted); border:1px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; }
-
-        /* Report modal inputs */
-        .rfield { margin-bottom:14px; }
-        .rfield label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
-        .rfield select, .rfield textarea { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); outline:none; transition:all 0.2s; }
-        .rfield select:focus, .rfield textarea:focus { border-color:var(--sage-light); background:white; }
-        .rfield textarea { min-height:80px; resize:vertical; }
-        .btn-submit-report { width:100%; padding:12px; background:#e74c3c; color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; transition:background 0.2s; }
-        .btn-submit-report:hover { background:#c0392b; }
-
-        /* Admin sanction modal */
-        .rfield textarea.sanc-textarea { min-height:60px; }
-
-        /* ── EDIT PROFILE FORM ── */
-        .edit-field { margin-bottom:14px; }
-        .edit-field label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
-        .edit-field input, .edit-field select, .edit-field textarea {
-            width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px;
-            font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text);
-            background:var(--cream); outline:none; transition:all 0.2s;
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo-icon {
+            width: 34px; height: 34px; background: var(--sage);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px;
         }
-        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color:var(--sage-light); background:white; }
-        .edit-field textarea { min-height:72px; resize:vertical; }
-        .btn-save-edit {
-            padding:10px 22px; background:var(--sage); color:white; border:none;
-            border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px;
-            font-weight:600; cursor:pointer; transition:background 0.2s; margin-top:4px;
+        .nav-logo-text { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark); }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a {
+            font-size: 14px; color: var(--muted); text-decoration: none;
+            font-weight: 500; transition: color 0.2s;
         }
-        .btn-save-edit:hover { background:var(--sage-dark); }
-
-        /* ── RE-QUIZ BUTTON ── */
-        .btn-requiz {
-            width:100%; padding:11px; background:transparent; color:var(--sage);
-            border:1.5px solid var(--border); border-radius:10px;
-            font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500;
-            cursor:pointer; margin-top:10px; transition:all 0.2s;
+        .nav-links a:hover { color: var(--sage-dark); }
+        .nav-cta {
+            padding: 8px 20px; background: var(--sage); color: white;
+            border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            text-decoration: none;
         }
-        .btn-requiz:hover { border-color:var(--sage); background:#f0f6f4; }
+        .nav-cta:hover { background: var(--sage-dark); }
 
-        /* ── BREAK MATCH BUTTON ── */
-        .btn-break {
-            padding:6px 12px; background:transparent; border:1px solid #ffb3b3;
-            color:#e05555; border-radius:8px; font-family:'DM Sans',sans-serif;
-            font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s;
+        /* ══════════════════════════════════════════
+           HERO (two-column)
+        ══════════════════════════════════════════ */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 60px;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 70px 32px 60px;
+            align-items: start;
         }
-        .btn-break:hover { background:#fff0f0; }
 
-        /* ── MAPS PREVIEW ── */
-        .map-preview { display:none; margin-top:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); }
-        .map-mini    { height:160px; width:100%; }
-        .map-address { font-size:12px; color:var(--muted); padding:6px 10px; background:var(--cream); }
+        .hero-left { padding-top: 20px; }
 
-        /* ── ADMIN: DESCONEXIONES ── */
-        .disc-row { background:var(--warm-white); border-radius:10px; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); font-size:13px; }
-        .disc-row strong { color:var(--text); }
-        .disc-row span   { color:var(--muted); }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: #e8f4f1; color: var(--sage-dark);
+            padding: 5px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+            margin-bottom: 22px; letter-spacing: 0.3px;
+        }
+
+        .hero-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(36px, 5vw, 52px);
+            color: var(--sage-dark);
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+        .hero-title em { color: var(--sage); font-style: italic; }
+
+        .hero-desc {
+            font-size: 16px; color: var(--muted); line-height: 1.7;
+            margin-bottom: 36px; max-width: 440px; font-weight: 300;
+        }
+
+        .hero-stats {
+            display: flex; gap: 32px; margin-bottom: 40px; flex-wrap: wrap;
+        }
+        .stat-item { }
+        .stat-num {
+            font-family: 'DM Serif Display', serif;
+            font-size: 28px; color: var(--sage-dark); margin-bottom: 2px;
+        }
+        .stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+        .hero-trust {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: var(--muted);
+        }
+        .trust-icon { font-size: 16px; }
+
+        /* ── CARD (unchanged) ── */
+        .card {
+            background: var(--warm-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px 36px;
+            width: 100%;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 24px; color: var(--sage-dark); margin-bottom: 6px;
+        }
+        .card .subtitle {
+            font-size: 13px; color: var(--muted); margin-bottom: 28px; font-weight: 300;
+        }
+        .auth-tabs {
+            display: flex; background: #eef3f2; border-radius: 10px;
+            padding: 4px; margin-bottom: 28px; gap: 2px;
+        }
+        .auth-tab {
+            flex: 1; padding: 8px 6px; border: none; background: transparent;
+            border-radius: 8px; font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .auth-tab.active {
+            background: var(--warm-white); color: var(--sage-dark);
+            box-shadow: 0 2px 8px rgba(74,124,111,0.12);
+        }
+        .field { margin-bottom: 16px; }
+        label {
+            display: block; font-size: 12px; font-weight: 600;
+            color: var(--sage-dark); margin-bottom: 6px;
+            letter-spacing: 0.4px; text-transform: uppercase;
+        }
+        input, select, textarea {
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif;
+            font-size: 14px; color: var(--text); background: var(--cream);
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none; appearance: none;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--sage-light);
+            box-shadow: 0 0 0 3px rgba(74,124,111,0.1);
+            background: white;
+        }
+        textarea { resize: vertical; min-height: 90px; }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-primary {
+            width: 100%; padding: 13px; background: var(--sage); color: white;
+            border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px;
+            transition: background 0.2s, transform 0.15s; letter-spacing: 0.2px;
+        }
+        .btn-primary:hover  { background: var(--sage-dark); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-secondary {
+            width: 100%; padding: 11px; background: transparent; color: var(--sage);
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+            cursor: pointer; margin-top: 10px; transition: border-color 0.2s, background 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--sage-light); background: #f0f6f4; }
+
+        /* QUIZ */
+        #step2, #step2_psi { display: none; }
+        .quiz-progress { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+        .progress-bar { height: 4px; background: var(--border); border-radius: 99px; margin-bottom: 24px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--sage); border-radius: 99px; transition: width 0.3s ease; }
+        .quiz-question { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark); margin-bottom: 20px; line-height: 1.4; }
+        .options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .opt-btn {
+            padding: 13px 16px; background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+            color: var(--text); cursor: pointer; text-align: left; transition: all 0.18s;
+        }
+        .opt-btn:hover { border-color: var(--sage-light); background: #f0f6f4; color: var(--sage-dark); }
+        .religion-box {
+            background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 12px; padding: 16px; margin-bottom: 12px; display: none;
+        }
+        .religion-box label { text-transform: none; font-size: 13px; margin-bottom: 10px; }
+        #final { display: none; text-align: center; }
+        .final-icon { font-size: 52px; margin-bottom: 16px; }
+        #final h2 { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--sage-dark); margin-bottom: 8px; }
+        #final p { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+        .error-msg { font-size: 13px; color: var(--error); margin-top: 10px; text-align: center; min-height: 18px; }
+
+        /* ── CÉDULA VERIFICACIÓN ── */
+        .cedula-row { display: flex; gap: 8px; align-items: flex-end; }
+        .cedula-row input { flex: 1; }
+        .btn-verify-cedula {
+            padding: 12px 14px; background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+            font-weight: 600; color: var(--sage-dark); cursor: pointer;
+            white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+        }
+        .btn-verify-cedula:hover { border-color: var(--sage-light); background: #f0f6f4; }
+        .btn-verify-cedula:disabled { opacity: 0.5; cursor: default; }
+        .cedula-status {
+            font-size: 12px; margin-top: 6px; padding: 6px 12px;
+            border-radius: 8px; display: none;
+        }
+        .cedula-status.ok  { display: block; background: #d4edda; color: #1a6b37; }
+        .cedula-status.err { display: block; background: #f8d7da; color: #842029; }
+        .cedula-status.pending { display: block; background: #fff3cd; color: #856404; }
+
+        /* ══════════════════════════════════════════
+           SECCIÓN: PSICÓLOGOS EN LA PLATAFORMA
+        ══════════════════════════════════════════ */
+        .section-psi {
+            background: var(--warm-white);
+            padding: 72px 32px;
+            border-top: 1px solid var(--border);
+        }
+        .section-inner { max-width: 1120px; margin: 0 auto; }
+        .section-eyebrow {
+            font-size: 11px; font-weight: 700; color: var(--sage);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+        }
+        .section-heading {
+            font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 38px);
+            color: var(--sage-dark); margin-bottom: 10px; line-height: 1.2;
+        }
+        .section-desc {
+            font-size: 15px; color: var(--muted); margin-bottom: 44px;
+            max-width: 520px; line-height: 1.65; font-weight: 300;
+        }
+
+        .psi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+        }
+
+        .psi-card {
+            background: var(--cream);
+            border-radius: 18px; padding: 24px;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
+        }
+        .psi-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+
+        .psi-card-top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .psi-av {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; flex-shrink: 0;
+        }
+        .psi-name { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--sage-dark); margin-bottom: 4px; }
+        .psi-tag {
+            display: inline-block; background: #ede8f4; color: #4a3c7c;
+            padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        }
+        .psi-verified {
+            position: absolute; top: 16px; right: 16px;
+            background: #d4edda; color: #1a6b37;
+            font-size: 10px; font-weight: 700; padding: 3px 8px;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px;
+        }
+
+        .psi-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .psi-chip {
+            background: var(--warm-white); border: 1px solid var(--border);
+            border-radius: 8px; padding: 4px 10px; font-size: 12px; color: var(--text);
+        }
+        .psi-chip span { color: var(--muted); font-size: 11px; display: block; margin-bottom: 1px; }
+
+        .psi-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 14px; border-top: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .psi-costo { color: var(--sage-dark); font-weight: 600; }
+        .psi-disp { color: var(--muted); font-size: 12px; }
+
+        .psi-loading { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+        .psi-spinner {
+            width: 28px; height: 28px; border: 3px solid var(--border);
+            border-top-color: var(--sage); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ══════════════════════════════════════════
+           SECCIÓN: CÓMO FUNCIONA
+        ══════════════════════════════════════════ */
+        html { scroll-behavior: smooth; }
+
+        #registro, #psicologos, #como-funciona, #quienes-somos {
+            scroll-margin-top: 70px;
+        }
+
+        .section-how { padding: 72px 32px; background: var(--cream); border-top: 1px solid var(--border); }
+
+        .steps-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 44px;
+        }
+        .step-item { text-align: center; }
+        .step-num {
+            width: 52px; height: 52px; border-radius: 50%; background: var(--sage);
+            color: white; font-family: 'DM Serif Display', serif; font-size: 22px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+        }
+        .step-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--sage-dark); margin-bottom: 10px; }
+        .step-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+        /* ══════════════════════════════════════════
+           SECCIÓN: QUIÉNES SOMOS
+        ══════════════════════════════════════════ */
+        .section-about {
+            background: var(--sage-dark); color: white;
+            padding: 72px 32px; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .section-about .section-eyebrow { color: var(--sage-light); }
+        .section-about .section-heading { color: white; }
+        .section-about .section-desc    { color: rgba(255,255,255,0.7); }
+
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-values { display: flex; flex-direction: column; gap: 22px; }
+        .about-val {
+            display: flex; gap: 16px; align-items: flex-start;
+        }
+        .about-val-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(255,255,255,0.1); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 19px;
+        }
+        .about-val-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .about-val-desc  { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+        .about-quote-block {
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 32px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .about-quote {
+            font-family: 'DM Serif Display', serif; font-size: 22px;
+            line-height: 1.45; margin-bottom: 20px; color: rgba(255,255,255,0.9);
+        }
+        .about-quote-author { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+        /* ══════════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════════ */
+        footer {
+            background: var(--text); color: rgba(255,255,255,0.5);
+            padding: 32px; text-align: center; font-size: 13px;
+        }
+        footer strong { color: rgba(255,255,255,0.8); }
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 20px; }
+            .hero-left { padding-top: 0; }
+            .about-grid { grid-template-columns: 1fr; gap: 32px; }
+            .steps-grid { grid-template-columns: 1fr; gap: 24px; }
+            .nav-links { display: none; }
+        }
+
+        /* ══════════════════════════════════════════
+           SLIDESHOW DE PSICÓLOGOS (hero-left)
+        ══════════════════════════════════════════ */
+        .psi-slideshow {
+            margin-top: 32px;
+            background: var(--warm-white);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .slideshow-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 20px 0;
+        }
+        .slideshow-eyebrow {
+            font-size: 10px; font-weight: 700; color: var(--sage);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .slideshow-counter {
+            font-size: 11px; color: var(--muted); font-weight: 500;
+        }
+
+        .slide-card {
+            display: none;
+            padding: 16px 20px 6px;
+            animation: slideIn 0.4s ease;
+        }
+        .slide-card.active { display: block; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Reuse existing .psi-card-top, .psi-av, .psi-name, .psi-tag,
+           .psi-chips, .psi-chip, .psi-verified, .psi-footer inside slide-card */
+        .slide-card .psi-card-top { margin-bottom: 12px; }
+        .slide-card .psi-chips    { gap: 5px; margin-bottom: 10px; }
+        .slide-card .psi-footer   { margin-bottom: 4px; }
+        .slide-card .psi-verified {
+            position: static; display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .slideshow-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .slideshow-dots { display: flex; gap: 6px; }
+        .slideshow-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--border); cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            border: none; padding: 0;
+        }
+        .slideshow-dot.active { background: var(--sage); transform: scale(1.25); }
+
+        .slideshow-nav { display: flex; gap: 6px; }
+        .slideshow-btn {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--cream); border: 1px solid var(--border);
+            color: var(--muted); font-size: 13px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .slideshow-btn:hover { background: var(--sage); color: white; border-color: var(--sage); }
+
+        .slideshow-loading {
+            padding: 32px 20px; text-align: center;
+            color: var(--muted); font-size: 13px;
+        }
+
+        /* ══ AVISO DE PRIVACIDAD ══ */
+        .privacy-section { background: var(--text); border-top: 1px solid rgba(255,255,255,0.07); }
+        .privacy-toggle {
+            width: 100%; display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 32px; background: none; border: none; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+            color: rgba(255,255,255,0.55); text-align: left; transition: color 0.2s; gap: 12px;
+        }
+        .privacy-toggle:hover { color: rgba(255,255,255,0.85); }
+        .privacy-arrow { font-size: 16px; transition: transform 0.3s ease; flex-shrink: 0; line-height: 1; }
+        .privacy-toggle.open .privacy-arrow { transform: rotate(180deg); }
+        .privacy-body { max-height: 0; overflow: hidden; transition: max-height 0.45s ease; }
+        .privacy-body.open { max-height: 5000px; }
+        .privacy-inner {
+            max-width: 820px; margin: 0 auto; padding: 4px 32px 40px;
+            color: rgba(255,255,255,0.58); font-size: 13px; line-height: 1.8;
+        }
+        .privacy-inner h3 {
+            font-family: 'DM Serif Display', serif; font-size: 15px;
+            color: rgba(255,255,255,0.82); margin: 22px 0 8px; font-weight: 400;
+        }
+        .privacy-inner h3:first-child { margin-top: 0; }
+        .privacy-inner p  { margin-bottom: 10px; }
+        .privacy-inner ul { padding-left: 18px; margin-bottom: 10px; }
+        .privacy-inner li { margin-bottom: 5px; }
+        .privacy-inner strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+        .footer-priv-btn {
+            background: none; border: none; color: rgba(255,255,255,0.4);
+            font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
+            text-decoration: underline; transition: color 0.2s;
+        }
+        .footer-priv-btn:hover { color: rgba(255,255,255,0.75); }
     </style>
 </head>
 
 <body>
 
-<!-- ── HEADER ── -->
-<header class="dash-header">
-    <div class="logo">
-        <div class="logo-icon">🧠</div>
-        <span class="logo-text">PsicoConecta</span>
+<!-- ══ NAV ══════════════════════════════════════════════════════════ -->
+<nav class="top-nav">
+    <a class="nav-logo" href="#">
+        <div class="nav-logo-icon">🧠</div>
+        <span class="nav-logo-text">PsicoConecta</span>
+    </a>
+    <div class="nav-links">
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#quienes-somos">Quiénes somos</a>
     </div>
-    <div class="header-right">
-        <span class="user-email" id="headerEmail"></span>
-        <span class="type-badge" id="typeBadge"></span>
-        <button class="btn-logout" onclick="logout()">Salir</button>
-    </div>
-</header>
-
-<!-- ── NAV ── -->
-<nav class="nav-tabs" id="navBar">
-    <button class="nav-tab active" id="navFeed"       onclick="openTab('feed')">🏠 Conexiones</button>
-    <button class="nav-tab"        id="navMensajes"   onclick="openTab('mensajes')">💬 Mensajes</button>
-    <button class="nav-tab"        id="navExplorar"   onclick="openTab('explorar')">🔍 Explorar</button>
-    <button class="nav-tab"        id="navRespuestas" onclick="openTab('respuestas')">📋 Respuestas</button>
-    <button class="nav-tab"        id="navPerfil"     onclick="openTab('perfil')">👤 Mi perfil</button>
-    <!-- Admin tab: hidden by default, shown for admins -->
-    <button class="nav-tab admin-tab" id="navAdmin" onclick="openTab('admin')" style="display:none;">🛡️ Admin</button>
+    <a class="nav-cta" href="#registro" onclick="document.getElementById('registro').scrollIntoView({behavior:'smooth'})">Comenzar</a>
 </nav>
 
-<!-- ── MAIN ── -->
-<div class="main" id="mainContainer">
+<!-- ══ HERO ═════════════════════════════════════════════════════════ -->
+<section class="hero" id="registro">
 
-    <div id="loading"><div class="spinner"></div><p>Cargando tu espacio...</p></div>
+    <!-- IZQUIERDA: copy -->
+    <div class="hero-left">
+        <div class="hero-badge">🇲🇽 Plataforma mexicana de salud mental</div>
 
-    <!-- CONEXIONES -->
-    <div class="tab-section" id="tab-feed">
-        <h2 class="section-title">Mis Conexiones</h2>
-        <p class="section-sub">Personas con las que hiciste match</p>
-        <div id="feedList"></div>
-    </div>
+        <h1 class="hero-title">
+            Encuentra tu psicólogo<br>
+            <em>ideal para ti</em>
+        </h1>
 
-    <!-- MENSAJES -->
-    <div class="tab-section" id="tab-mensajes">
-        <div id="msgList">
-            <h2 class="section-title">Mensajes</h2>
-            <p class="section-sub">Tus conversaciones activas</p>
-            <div id="convoList"></div>
+        <p class="hero-desc">
+            PsicoConecta usa un algoritmo de compatibilidad para conectarte con el terapeuta cuyo enfoque, estilo y disponibilidad se alinean con lo que necesitas. Sin adivinar. Sin perder tiempo.
+        </p>
+
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-num" id="statPsi">—</div>
+                <div class="stat-lbl">Psicólogos verificados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" id="statPac">—</div>
+                <div class="stat-lbl">Pacientes activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">20</div>
+                <div class="stat-lbl">Preguntas de compatibilidad</div>
+            </div>
         </div>
-        <div id="chatView">
-            <div class="chat-header">
-                <button class="btn-back" onclick="closeChat()">← Volver</button>
-                <div class="chat-header-av" id="chatAv"></div>
-                <div class="chat-header-info">
-                    <div class="chat-header-name" id="chatName"></div>
-                    <div class="chat-header-seen" id="chatLastSeen"></div>
+
+        <div class="hero-trust">
+            <span class="trust-icon">🔒</span>
+            Tu información es privada y está protegida. Solo tu match puede ver tu contacto.
+        </div>
+
+        <!-- SLIDESHOW DE PSICÓLOGOS -->
+        <div class="psi-slideshow" id="psiSlideshow">
+            <div class="slideshow-header">
+                <span class="slideshow-eyebrow">🧠 Psicólogos verificados</span>
+                <span class="slideshow-counter" id="slideCounter"></span>
+            </div>
+            <div id="slideshowTrack">
+                <div class="slideshow-loading">
+                    <div class="psi-spinner"></div>
+                    Cargando perfiles...
                 </div>
             </div>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-area">
-                <input class="chat-input" id="chatInput" type="text" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter') sendMessage()" />
-                <button class="btn-send" onclick="sendMessage()">Enviar</button>
+            <div class="slideshow-footer">
+                <div class="slideshow-dots" id="slideshowDots"></div>
+                <div class="slideshow-nav">
+                    <button class="slideshow-btn" onclick="slidePrev()">‹</button>
+                    <button class="slideshow-btn" onclick="slideNext()">›</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- EXPLORAR -->
-    <div class="tab-section" id="tab-explorar">
-        <h2 class="section-title">Explorar</h2>
-        <p class="section-sub" id="explorarSub"></p>
-        <div class="swipe-wrap">
-            <div id="swipe-card" class="swipe-card"></div>
-            <div class="action-btns" id="action-btns" style="display:none;">
-                <button class="btn-pass" onclick="passProfile()">✕ Pasar</button>
-                <button class="btn-like" onclick="likeProfile()">♥ Me interesa</button>
+    <!-- DERECHA: card de registro (INTACTO) -->
+    <div class="card">
+
+        <div id="step1">
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-paciente"  onclick="showAuthTab('paciente')">Crear perfil</button>
+                <button class="auth-tab"        id="tab-psicologo" onclick="showAuthTab('psicologo')">Soy psicólogo</button>
+                <button class="auth-tab"        id="tab-login"     onclick="showAuthTab('login')">Iniciar sesión</button>
             </div>
-            <button class="btn-report-card" id="btnReportCard" style="display:none;" onclick="openReportFromCard()">⚑ Reportar este perfil</button>
-            <p class="swipe-hint" id="swipe-hint"></p>
-        </div>
-    </div>
 
-    <!-- RESPUESTAS -->
-    <div class="tab-section" id="tab-respuestas">
-        <h2 class="section-title">Mis Respuestas</h2>
-        <p class="section-sub">Tu cuestionario de compatibilidad</p>
-        <div id="respuestasList"></div>
-    </div>
+            <!-- ── REGISTRO PACIENTE ── -->
+            <div id="view-paciente">
+                <h2>Crea tu perfil</h2>
+                <p class="subtitle">Completa tu información para comenzar</p>
 
-    <!-- PERFIL -->
-    <div class="tab-section" id="tab-perfil">
-        <h2 class="section-title">Mi Perfil</h2>
-        <div id="perfilContent"></div>
-    </div>
+                <div class="row-2">
+                    <div class="field">
+                        <label>Nombre</label>
+                        <input type="text" id="nombre" placeholder="Ej. María" />
+                    </div>
+                    <div class="field">
+                        <label>Apellido</label>
+                        <input type="text" id="apellido" placeholder="Ej. García" />
+                    </div>
+                </div>
 
-    <!-- ════════════ ADMIN PANEL ════════════ -->
-    <div class="tab-section" id="tab-admin">
-        <h2 class="section-title">🛡️ Panel de Administración</h2>
-        <p class="section-sub">Moderación, reportes y gestión de la plataforma</p>
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="correo" placeholder="correo@ejemplo.com" />
+                </div>
 
-        <div class="admin-subnav">
-            <button class="admin-subbtn active" onclick="openAdminSub('stats')">📊 Estadísticas</button>
-            <button class="admin-subbtn"        onclick="openAdminSub('cedulas')">🔍 Cédulas pendientes</button>
-            <button class="admin-subbtn"        onclick="openAdminSub('usuarios')">👥 Usuarios</button>
-            <button class="admin-subbtn"        onclick="openAdminSub('reportes')">🚨 Reportes</button>
-            <button class="admin-subbtn"        onclick="openAdminSub('desconexiones')">💔 Desconexiones</button>
-        </div>
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres" />
+                </div>
 
-        <!-- Estadísticas -->
-        <div class="admin-sub active" id="asub-stats">
-            <div class="stat-grid" id="adminStatGrid">
-                <div class="stat-box"><div class="stat-num" id="as-psi">—</div><div class="stat-lbl">Psicólogos</div></div>
-                <div class="stat-box"><div class="stat-num" id="as-pac">—</div><div class="stat-lbl">Pacientes</div></div>
-                <div class="stat-box"><div class="stat-num" id="as-match">—</div><div class="stat-lbl">Matches</div></div>
-                <div class="stat-box warn"><div class="stat-num" id="as-ced">—</div><div class="stat-lbl">Cédulas pendientes</div></div>
-                <div class="stat-box danger"><div class="stat-num" id="as-rep">—</div><div class="stat-lbl">Reportes activos</div></div>
-                <div class="stat-box danger"><div class="stat-num" id="as-san">—</div><div class="stat-lbl">Usuarios sancionados</div></div>
+                <div class="field">
+                    <label>Estado</label>
+                    <select id="ubicacion">
+                        <option value="">Elige tu estado</option>
+                        <option>Aguascalientes</option><option>Baja California</option>
+                        <option>Baja California Sur</option><option>Campeche</option>
+                        <option>Chiapas</option><option>Chihuahua</option>
+                        <option>Ciudad de México</option><option>Coahuila</option>
+                        <option>Colima</option><option>Durango</option>
+                        <option>Estado de México</option><option>Guanajuato</option>
+                        <option>Guerrero</option><option>Hidalgo</option>
+                        <option>Jalisco</option><option>Michoacán</option>
+                        <option>Morelos</option><option>Nayarit</option>
+                        <option>Nuevo León</option><option>Oaxaca</option>
+                        <option>Puebla</option><option>Querétaro</option>
+                        <option>Quintana Roo</option><option>San Luis Potosí</option>
+                        <option>Sinaloa</option><option>Sonora</option>
+                        <option>Tabasco</option><option>Tamaulipas</option>
+                        <option>Tlaxcala</option><option>Veracruz</option>
+                        <option>Yucatán</option><option>Zacatecas</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Motivo de consulta</label>
+                    <textarea id="motivo" placeholder="Cuéntanos brevemente qué te trae aquí..."></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="startQuiz()">Continuar →</button>
+                <div class="error-msg" id="paciente-error"></div>
+            </div>
+
+            <!-- ── REGISTRO PSICÓLOGO ── -->
+            <div id="view-psicologo" style="display:none;">
+                <h2>Registro de psicólogo</h2>
+                <p class="subtitle">Ingresa tus datos profesionales</p>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label>Nombre</label>
+                        <input type="text" id="psi_nombre" placeholder="Ej. Carlos" />
+                    </div>
+                    <div class="field">
+                        <label>Apellido</label>
+                        <input type="text" id="psi_apellido" placeholder="Ej. López" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="psi_correo" placeholder="correo@ejemplo.com" />
+                </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="psi_password" placeholder="Mínimo 6 caracteres" />
+                </div>
+
+                <!-- CÉDULA + VERIFICACIÓN -->
+                <div class="field">
+                    <label>Cédula profesional</label>
+                    <div class="cedula-row">
+                        <input type="text" id="psi_cedula" placeholder="Ej. 12345678"
+                            maxlength="10" oninput="resetCedulaStatus()" />
+                        <button class="btn-verify-cedula" onclick="verificarCedula()" id="btnVerify">
+                            🔍 Verificar
+                        </button>
+                    </div>
+                    <div class="cedula-status" id="cedulaStatus"></div>
+                </div>
+
+                <div class="field">
+                    <label>Enfoque a trabajar</label>
+                    <input type="text" id="psi_enfoque" placeholder="Ej. TCC, Humanista, Sistémica..." />
+                </div>
+
+                <div class="field">
+                    <label>Dirección del consultorio</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="psi_consultorio" placeholder="Escribe la dirección de tu consultorio..."
+                            autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarDireccion();}" style="flex:1;" />
+                        <button type="button" onclick="buscarDireccion()" id="btnBuscarDir"
+                            style="padding:12px 14px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--sage-dark);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                    <!-- Resultados de búsqueda -->
+                    <div id="dirResultados" style="display:none;background:white;border:1.5px solid var(--border);border-radius:10px;margin-top:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);"></div>
+                    <!-- Mini mapa Leaflet -->
+                    <div id="mapPreview" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+                        <div id="mapMini" style="height:180px;width:100%;"></div>
+                        <div id="mapAddress" style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--cream);"></div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Sobre mí</label>
+                    <textarea id="psi_sobre_mi" placeholder="Escribe algo sobre ti para que los demás te conozcan. Puedes mencionar tu experiencia, tu estilo de trabajo o cómo sueles acompañar a tus pacientes..." style="min-height:90px;"></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="startQuizPsi()">Continuar →</button>
+                <div class="error-msg" id="psicologo-error"></div>
+            </div>
+
+            <!-- ── INICIAR SESIÓN ── -->
+            <div id="view-login" style="display:none;">
+                <h2>Bienvenido de vuelta</h2>
+                <p class="subtitle">Ingresa con tu cuenta para continuar</p>
+
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="login-correo" placeholder="correo@ejemplo.com" />
+                </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" placeholder="Tu contraseña" />
+                </div>
+
+                <button class="btn-primary" onclick="login()">Iniciar sesión</button>
+                <div class="error-msg" id="login-error"></div>
             </div>
         </div>
 
-        <!-- Cédulas pendientes -->
-        <div class="admin-sub" id="asub-cedulas">
-            <div id="cedulasList"><div class="spinner" style="margin:30px auto;"></div></div>
-        </div>
-
-        <!-- Usuarios -->
-        <div class="admin-sub" id="asub-usuarios">
-            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-                <button class="admin-subbtn active" id="ufilterAll"    onclick="filterUsers('all')">Todos</button>
-                <button class="admin-subbtn"        id="ufilterPsi"    onclick="filterUsers('psicologo')">Psicólogos</button>
-                <button class="admin-subbtn"        id="ufilterPac"    onclick="filterUsers('paciente')">Pacientes</button>
-                <button class="admin-subbtn"        id="ufilterSanc"   onclick="filterUsers('sancionado')">Sancionados</button>
+        <!-- QUIZ PACIENTE -->
+        <div id="step2">
+            <p class="quiz-progress" id="progress"></p>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <h2 class="quiz-question" id="question"></h2>
+            <div class="options-grid" id="options"></div>
+            <div class="religion-box" id="religion_sub">
+                <label>¿Cuál tradición o creencia?</label>
+                <select id="religion_select">
+                    <option value="Cristianismo">Cristianismo</option>
+                    <option value="Judaísmo">Judaísmo</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Budismo">Budismo</option>
+                    <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
+                    <option value="Otra">Otra</option>
+                </select>
+                <button class="btn-primary" onclick="confirmarReligionPaciente()">Confirmar →</button>
             </div>
-            <div id="usuariosList"><div class="spinner" style="margin:30px auto;"></div></div>
+            <button class="btn-secondary" onclick="prevQuestion()">← Atrás</button>
         </div>
 
-        <!-- Reportes -->
-        <div class="admin-sub" id="asub-reportes">
-            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-                <button class="admin-subbtn active" id="rfilterPending"  onclick="filterReports('pending')">Pendientes</button>
-                <button class="admin-subbtn"        id="rfilterAll"      onclick="filterReports('all')">Todos</button>
+        <!-- QUIZ PSICÓLOGO -->
+        <div id="step2_psi">
+            <p class="quiz-progress" id="psi_progress"></p>
+            <div class="progress-bar"><div class="progress-fill" id="psi_progressFill"></div></div>
+            <h2 class="quiz-question" id="psi_question"></h2>
+            <div class="options-grid" id="psi_options"></div>
+            <div class="religion-box" id="psi_religion_sub">
+                <label>¿Cuál tradición o creencia?</label>
+                <select id="psi_religion_select">
+                    <option value="Cristianismo">Cristianismo</option>
+                    <option value="Judaísmo">Judaísmo</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Budismo">Budismo</option>
+                    <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
+                    <option value="Otra">Otra</option>
+                </select>
+                <button class="btn-primary" onclick="confirmarReligionPsi()">Confirmar →</button>
             </div>
-            <div id="reportesList"><div class="spinner" style="margin:30px auto;"></div></div>
+            <button class="btn-secondary" onclick="prevPsiQuestion()">← Atrás</button>
         </div>
 
-        <!-- Desconexiones -->
-        <div class="admin-sub" id="asub-desconexiones">
-            <div id="desconexionesList"><div class="spinner" style="margin:30px auto;"></div></div>
+        <!-- FINAL -->
+        <div id="final">
+            <div class="final-icon">✅</div>
+            <h2>¡Todo listo!</h2>
+            <p>Tu perfil ha sido creado correctamente.<br>Ya puedes explorar tu espacio.</p>
+            <button class="btn-primary" onclick="goHome()">Ir al dashboard →</button>
+        </div>
+
+    </div>
+    <!-- /card -->
+
+</section>
+
+<!-- ══ CÓMO FUNCIONA ════════════════════════════════════════════════ -->
+<section class="section-how" id="como-funciona">
+    <div class="section-inner">
+        <div class="section-eyebrow">El proceso</div>
+        <h2 class="section-heading">¿Cómo funciona<br>PsicoConecta?</h2>
+        <p class="section-desc">Tres pasos sencillos para encontrar al psicólogo que mejor se adapta a ti.</p>
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-title">Crea tu perfil</div>
+                <p class="step-desc">Registra tus datos básicos. Sin formularios interminables — solo lo esencial para empezar.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-title">Responde 20 preguntas</div>
+                <p class="step-desc">Nuestro cuestionario evalúa tus preferencias de modalidad, enfoque, horario, presupuesto y más. Tarda menos de 3 minutos.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-title">Haz match y conecta</div>
+                <p class="step-desc">Explora perfiles ordenados por porcentaje de compatibilidad. Cuando haya interés mutuo, se abre el chat directamente.</p>
+            </div>
         </div>
     </div>
+</section>
 
-</div>
+<!-- ══ QUIÉNES SOMOS ════════════════════════════════════════════════ -->
+<section class="section-about" id="quienes-somos">
+    <div class="section-inner">
+        <div class="about-grid">
+            <div>
+                <div class="section-eyebrow">Quiénes somos</div>
+                <h2 class="section-heading">Salud mental accesible,<br>transparente y personalizada</h2>
+                <p class="section-desc">PsicoConecta nació de la convicción de que encontrar el psicólogo correcto no debería ser tan difícil. Combinamos tecnología de compatibilidad con una red de profesionales verificados para que el primer paso hacia el bienestar sea sencillo.</p>
+                <div class="about-values">
+                    <div class="about-val">
+                        <div class="about-val-icon">🔍</div>
+                        <div>
+                            <div class="about-val-title">Transparencia profesional</div>
+                            <div class="about-val-desc">Verificamos la cédula de cada psicólogo ante la SEP antes de que aparezca en la plataforma.</div>
+                        </div>
+                    </div>
+                    <div class="about-val">
+                        <div class="about-val-icon">🤝</div>
+                        <div>
+                            <div class="about-val-title">Compatibilidad real</div>
+                            <div class="about-val-desc">No es un directorio. Es un algoritmo que evalúa 20 dimensiones para encontrar afinidad genuina entre paciente y terapeuta.</div>
+                        </div>
+                    </div>
+                    <div class="about-val">
+                        <div class="about-val-icon">🔒</div>
+                        <div>
+                            <div class="about-val-title">Privacidad primero</div>
+                            <div class="about-val-desc">Tu información personal solo es visible para las conexiones que tú confirmas. Nunca se comparte con terceros.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="about-quote-block">
+                    <div class="about-quote">"El primer paso para pedir ayuda no debería ser el más difícil. PsicoConecta existe para que ese paso sea claro, seguro y humano."</div>
+                    <div class="about-quote-author">— Equipo PsicoConecta</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<!-- ── MATCH MODAL ── -->
-<div class="modal-overlay" id="matchModal">
-    <div class="modal-box">
-        <div class="modal-emoji">🎉</div>
-        <h2>¡Es un Match!</h2>
-        <p id="matchModalText">Han mostrado interés mutuo.</p>
-        <button class="btn-modal-primary" onclick="goToMensajes()">💬 Ver mensajes →</button>
-        <button class="btn-modal-secondary" onclick="closeModal()">Seguir explorando</button>
+<!-- ══ FOOTER ════════════════════════════════════════════════════════ -->
+<footer>
+    <strong>PsicoConecta</strong> · Tu información es privada y está protegida · México 🇲🇽
+    &nbsp;·&nbsp;
+    <button class="footer-priv-btn" onclick="togglePrivacy()">Aviso de Privacidad</button>
+</footer>
+
+<!-- ══ AVISO DE PRIVACIDAD ════════════════════════════════════════════ -->
+<div class="privacy-section">
+    <button class="privacy-toggle" id="privacyToggle" onclick="togglePrivacy()">
+        🔒 Aviso de Privacidad de Clientes — PsicoConecta
+        <span class="privacy-arrow">⌄</span>
+    </button>
+    <div class="privacy-body" id="privacyBody">
+        <div class="privacy-inner">
+
+            <h3>Identidad y Domicilio del Responsable</h3>
+            <p>PsicoConecta, con domicilio ubicado en <strong>Av. Camino Real a San Andrés Cholula 4002, Emiliano Zapata, 72810 San Andrés Cholula, Pue.</strong>, es responsable del tratamiento y protección de sus datos personales, garantizando el buen uso, protección y confidencialidad de los mismos. Nos comprometemos a brindarle toda la información necesaria para que usted tenga pleno control sobre el tratamiento de sus datos personales.</p>
+
+            <h3>Servicios</h3>
+            <p>La principal finalidad para la cual PsicoConecta trata sus datos personales es brindarle servicios y productos de calidad relacionados con la salud mental, ofreciendo un espacio donde los profesionales de la salud mental puedan presentar sus servicios y generar una vinculación con las necesidades específicas de los pacientes que buscan apoyo psicológico, considerando distintos enfoques terapéuticos y especialidades óptimas para cada caso.</p>
+
+            <h3>Datos Personales Tratados</h3>
+            <p>Para el funcionamiento de la aplicación y la prestación de los servicios ofrecidos, se recabarán las siguientes categorías de datos personales:</p>
+            <ul>
+                <li><strong>Datos de identificación:</strong> nombre completo, fecha de nacimiento (edad), sexo, ubicación geográfica.</li>
+                <li><strong>Datos de contacto:</strong> dirección de correo electrónico, número telefónico.</li>
+                <li><strong>Datos de perfil y preferencias:</strong> motivo de consulta, áreas de interés terapéutico, preferencias de tipo de terapia y modalidad de consulta, creencias.</li>
+                <li><strong>Datos de profesionales registrados:</strong> cédula profesional, formación académica y experiencia, especialidades clínicas, enfoque terapéutico, estilos de intervención, modalidad de consulta, duración promedio del proceso, costos y disponibilidad.</li>
+                <li><strong>Datos técnicos y de uso:</strong> dirección IP, identificadores de dispositivo, sistema operativo, historial de navegación dentro de la app e interacciones con la plataforma.</li>
+            </ul>
+
+            <h3>Finalidades Necesarias y Minimización de Datos</h3>
+            <p>PsicoConecta, en cumplimiento a los principios de proporcionalidad y minimización, únicamente recaba y hace uso legítimo de los datos personales adecuados, necesarios y relevantes para la prestación de los servicios, así como para cumplir con las finalidades del tratamiento informadas en el presente Aviso de Privacidad. Por ningún motivo tratará los datos para finalidades distintas o incompatibles con las aquí descritas.</p>
+
+            <h3>¿Cómo Usa PsicoConecta sus Datos Personales?</h3>
+            <ul>
+                <li>Crear y administrar la cuenta del usuario dentro de la app.</li>
+                <li>Permitir el acceso y uso de los servicios disponibles en la plataforma.</li>
+                <li>Facilitar la búsqueda y conexión entre usuarios y profesionales de la psicología.</li>
+                <li>Generar recomendaciones de terapeutas con base en las necesidades y preferencias del usuario.</li>
+                <li>Permitir la comunicación y coordinación de consultas entre usuarios y profesionales.</li>
+                <li>Verificar la identidad y credenciales profesionales de los psicólogos registrados.</li>
+                <li>Garantizar el correcto funcionamiento y seguridad de la plataforma, realizando análisis estadísticos y desarrollando nuevas funcionalidades.</li>
+            </ul>
+
+            <h3>Uso de Cookies y Tecnologías Similares</h3>
+            <p>Recopilamos automáticamente información técnica básica de todos los usuarios, como su dirección IP, a través de cookies y herramientas de recopilación automática, con el propósito de recordar preferencias, facilitar el inicio de sesión y mejorar la funcionalidad de la plataforma. El usuario puede configurar su dispositivo o navegador para rechazar o limitar el uso de cookies, aunque algunas funcionalidades podrían verse afectadas.</p>
+
+            <h3>Seguridad</h3>
+            <p>PsicoConecta toma medidas técnicas, legales y organizativas razonables para proteger los datos personales en nuestra posesión, incluyendo: cifrado de información durante su transmisión, uso de protocolos seguros (HTTPS), almacenamiento en servidores protegidos, políticas internas de confidencialidad y controles de acceso restringido. Sin perjuicio de lo anterior, el usuario reconoce que ningún sistema tecnológico es completamente infalible.</p>
+
+            <h3>Actualizaciones a este Aviso</h3>
+            <p>De vez en cuando evaluamos nuestras políticas y procedimientos de privacidad. Si realizamos cambios sustanciales, le notificaremos mediante un aviso destacado en el sitio web antes de que el cambio entre en vigencia.</p>
+
+            <h3>Consentimiento</h3>
+            <p>El uso de la aplicación, así como el registro de una cuenta dentro de la misma, implica que el usuario ha leído, comprendido y aceptado el presente Aviso de Privacidad, otorgando su consentimiento para el tratamiento de sus datos personales conforme a lo aquí establecido.</p>
+
+        </div>
     </div>
 </div>
 
-<!-- ── REPORT MODAL ── -->
-<div class="modal-overlay" id="reportModal">
-    <div class="modal-box wide">
-        <h2 style="margin-bottom:6px;">⚑ Reportar perfil</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Reportando a: <strong id="reportTargetName"></strong></p>
-        <div class="rfield">
-            <label>Razón del reporte</label>
-            <select id="reportReason">
-                <option value="informacion_falsa">Información falsa o engañosa</option>
-                <option value="comportamiento_inapropiado">Comportamiento inapropiado</option>
-                <option value="fraude">Fraude o estafa</option>
-                <option value="acoso">Acoso o amenazas</option>
-                <option value="cedula_invalida">Cédula profesional inválida</option>
-                <option value="otro">Otro</option>
-            </select>
-        </div>
-        <div class="rfield">
-            <label>Descripción (opcional)</label>
-            <textarea id="reportDetails" placeholder="Cuéntanos qué pasó..."></textarea>
-        </div>
-        <button class="btn-submit-report" onclick="submitReport()">Enviar reporte</button>
-        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeReportModal()">Cancelar</button>
-        <div id="reportSent" style="display:none;font-size:13px;color:var(--sage);margin-top:10px;text-align:center;">✅ Reporte enviado. Nuestro equipo lo revisará.</div>
-    </div>
-</div>
-
-<!-- ── ADMIN SANCTION MODAL ── -->
-<div class="modal-overlay" id="sanctionModal">
-    <div class="modal-box wide">
-        <h2 style="margin-bottom:6px;">⚖️ Aplicar sanción</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Usuario: <strong id="sanctionTargetName"></strong></p>
-        <input type="hidden" id="sanctionTargetUid" />
-        <input type="hidden" id="sanctionTargetType" />
-        <div class="rfield">
-            <label>Tipo de sanción</label>
-            <select id="sanctionType">
-                <option value="warning">⚠️ Advertencia</option>
-                <option value="suspended">🚫 Suspensión temporal</option>
-                <option value="banned">🔴 Baneo permanente</option>
-            </select>
-        </div>
-        <div class="rfield">
-            <label>Motivo interno</label>
-            <textarea class="sanc-textarea" id="sanctionReason" placeholder="Razón de la sanción (visible solo para admins)..."></textarea>
-        </div>
-        <button class="btn-submit-report" onclick="applySanction()">Aplicar sanción</button>
-        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeSanctionModal()">Cancelar</button>
-    </div>
-</div>
-
-<!-- ── BREAK MATCH MODAL ── -->
-<div class="modal-overlay" id="breakModal">
-    <div class="modal-box wide">
-        <h2 style="margin-bottom:6px;">💔 Romper conexión</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Con: <strong id="breakTargetName"></strong></p>
-        <input type="hidden" id="breakMatchId" />
-        <input type="hidden" id="breakOtherUid" />
-        <div class="rfield">
-            <label>¿Por qué deseas romper esta conexión?</label>
-            <select id="breakReason" onchange="checkBreakReason()">
-                <option value="">Elige una razón...</option>
-                <option value="ya_no_necesito">Ya no necesito el servicio</option>
-                <option value="encontre_algo_mejor">Encontré algo mejor</option>
-                <option value="muy_lejos">El psicólogo está muy lejos</option>
-                <option value="informacion_no_precisa">La información no es precisa</option>
-                <option value="problema_psicologo">Tuve un problema con el psicólogo</option>
-            </select>
-        </div>
-        <div id="breakReportNote" style="display:none;background:#fff3cd;border-radius:8px;padding:10px 12px;font-size:13px;color:#856404;margin-bottom:14px;">
-            ⚠️ Al confirmar, también se abrirá el formulario de reporte para que puedas detallar el problema.
-        </div>
-        <button class="btn-submit-report" onclick="confirmBreakMatch()">Confirmar</button>
-        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeBreakModal()">Cancelar</button>
-    </div>
-</div>
-
-<!-- ── RE-QUIZ MODAL ── -->
-<div class="modal-overlay" id="requizModal">
-    <div class="modal-box" style="max-width:480px;text-align:left;">
-        <h2 style="margin-bottom:6px;font-size:20px;">🔄 Actualizar respuestas</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;" id="requizSubtitle"></p>
-        <p class="quiz-progress" id="rq_progress" style="font-size:12px;color:var(--muted);margin-bottom:6px;"></p>
-        <div style="height:4px;background:var(--border);border-radius:99px;margin-bottom:20px;overflow:hidden;">
-            <div id="rq_fill" style="height:100%;background:var(--sage);border-radius:99px;transition:width 0.3s ease;width:0%;"></div>
-        </div>
-        <h3 id="rq_question" style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--sage-dark);margin-bottom:16px;line-height:1.4;"></h3>
-        <div id="rq_options" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
-        <div id="rq_religion_sub" style="display:none;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;">
-            <p style="font-size:13px;margin-bottom:8px;font-weight:600;">¿Cuál tradición o creencia?</p>
-            <select id="rq_religion_select" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:white;outline:none;">
-                <option value="Cristianismo">Cristianismo</option>
-                <option value="Judaísmo">Judaísmo</option>
-                <option value="Islam">Islam</option>
-                <option value="Budismo">Budismo</option>
-                <option value="Espiritualidad no religiosa">Espiritualidad no religiosa</option>
-                <option value="Otra">Otra</option>
-            </select>
-            <button onclick="rqConfirmReligion()" style="margin-top:10px;padding:9px 18px;background:var(--sage);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Confirmar →</button>
-        </div>
-        <button class="btn-modal-secondary" onclick="rqPrev()">← Atrás</button>
-    </div>
-</div>
-
-<!-- ── FIREBASE ── -->
+<script>
+function togglePrivacy() {
+    const toggle = document.getElementById("privacyToggle");
+    const body   = document.getElementById("privacyBody");
+    const isOpen = body.classList.contains("open");
+    body.classList.toggle("open", !isOpen);
+    toggle.classList.toggle("open", !isOpen);
+    if (!isOpen) toggle.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+</script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<!-- Leaflet (mapa libre, sin API key) -->
-<!-- El JS de Leaflet se carga de forma lazy cuando el usuario busca una dirección -->
 
 <script>
 const firebaseConfig = {
@@ -600,1087 +939,459 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
+</script>
 
-// ══════════════════════════════════════════════
-//  ⬇️  REEMPLAZA CON TU CORREO DE ADMINISTRADOR
-//  También puedes crear el documento admins/{tu_uid}
-//  en Firestore manualmente para activar el acceso.
-// ══════════════════════════════════════════════
-const ADMIN_EMAILS = [
-    "yuma.01browni@gmail.com"   // ← Reemplaza esto con tu correo
-];
+<script>
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let currentUser   = null;
-let userType      = null;
-let userData      = null;
-let isAdmin       = false;
-let profilesQueue = [];
-let profileIndex  = 0;
-let likedSet      = new Set();
-let passedSet     = new Set();
-let activeChatId  = null;
-let chatUnsub     = null;
-let lastSeenTimer = null;
-let reportTargetUid  = null;
-let reportTargetName = "";
-let allUsersCache = [];
-let allPsisCache  = [];
-let currentUserFilter  = "all";
-let currentReportFilter = "pending";
-
-// ─── QUESTION ARRAYS ─────────────────────────────────────────────────────────
-const qPac = [
-    {opts:["Presencial","En línea","Me da igual"]},
-    {opts:["Solo en mi ciudad","En cualquier lugar del país","En cualquier parte del mundo"]},
-    {opts:["Niño o adolescente","Adulto o adulto mayor","Grupo de distintas edades"]},
-    {opts:["Individual","Pareja o familiar","Grupal"]},
-    {opts:["Ansiedad, depresión, regulación emocional, duelo","Evaluación y terapia neuropsicológica","Trastornos conductuales o de personalidad"]},
-    {opts:["Con ejercicios y tareas prácticas","Mezcla de conversación y herramientas","Conversación profunda y reflexión"]},
-    {opts:["Que me enseñe estrategias para cambiar pensamientos, hábitos y dinámicas, enfocado en soluciones","Que me ayude a aumentar la conciencia, la aceptación y el crecimiento personal","Que exploremos mi historia personal y patrones relacionales"]},
-    {opts:["Directo y orientado a soluciones","Colaborativo","Más reflexivo"]},
-    {opts:["Herramientas prácticas","Escucha y comprensión","Análisis profundo de mis patrones"]},
-    {opts:["No, prefiero una terapia sin enfoque religioso","Podría estar bien si se usan elementos espirituales de forma general","Sí, me gustaría que la terapia incluya mi religión o creencias espirituales"]},
-    {opts:["Pocas sesiones","Algunos meses","Proceso largo"]},
-    {opts:["Cada semana","Cada 15 días","Flexible"]},
-    {opts:["Mujer","Hombre","Indistinto"]},
-    {opts:["Prefiero una terapia enfocada principalmente en herramientas psicológicas clínicas","Me gustaría que el terapeuta también considere mi contexto cultural o social","Me gustaría que el terapeuta pueda integrar mis creencias espirituales o religiosas"]},
-    {opts:["Mañana","Tarde","Noche o fines de semana"]},
-    {opts:["Menos de $500","$500–$1,000","Más de $700"]},
-    {opts:["No mucho","Algo","Mucho"]},
-    {opts:["Licenciatura","Maestría","Doctorado o especialización avanzada"]},
-    {opts:["No","Tal vez talleres o grupos","Sí, ambas"]},
-    {opts:["Puedo esperar","Pronto","Lo antes posible"]}
-];
-const qPsi = [
-    {opts:["Presencial","En línea","Híbrida (ambas)"]},
-    {opts:["Local","Nacional","Internacional"]},
-    {opts:["Niños/adolescentes","Adultos/Adultos mayores","Todas las edades"]},
-    {opts:["Individual","Pareja/familiar","Grupal"]},
-    {opts:["Ansiedad, depresión, regulación emocional, duelo","Evaluación y terapia neuropsicológica","Trastornos conductuales o de personalidad"]},
-    {opts:["Muy estructurada con tareas y ejercicios","Moderadamente estructurada","Más reflexiva y exploratoria"]},
-    {opts:["TCC, Breve o Sistémica","Humanista o Contextual (ACT, DBT, FAP, AC, Mindfulness)","Psicoanálisis o Psicodinámica"]},
-    {opts:["Directivo (orientación clara y estrategias)","Colaborativo","Exploratorio"]},
-    {opts:["Enseñar herramientas prácticas","Escuchar y reflexionar juntos","Analizar patrones profundos"]},
-    {opts:["No, mi práctica es completamente secular","Sí, integro principios espirituales de manera general cuando el paciente lo solicita","Sí, mi práctica se basa o se inspira en una tradición religiosa específica"]},
-    {opts:["Corto plazo (1–3 meses)","Mediano plazo (3–12 meses)","Largo plazo"]},
-    {opts:["Semanal","Quincenal","Flexible"]},
-    {opts:["Mujeres","Hombres","Indistinto"]},
-    {opts:["Enfoque general clínico","Enfoque con sensibilidad cultural y social","Enfoque que integra valores religiosos o espirituales"]},
-    {opts:["Mañana","Tarde","Noche/fines de semana"]},
-    {opts:["Menos de $500 MXN","$500–$1,000 MXN","Más de $1,000 MXN"]},
-    {opts:["1–3 años","4–10 años","Más de 10 años"]},
-    {opts:["Licenciatura","Maestría o especialidad","Doctorado o certificaciones avanzadas"]},
-    {opts:["Solo sesiones individuales","Talleres o grupos","Ambas"]},
-    {opts:["Limitada","Moderada","Alta"]}
-];
-const lblPac = ["Modalidad preferida","Alcance","Para quién","Tipo de terapia","Motivo principal","Estilo de terapia","Enfoque deseado","Estilo del terapeuta","Expectativa","Espiritualidad","Duración esperada","Frecuencia","Género del terapeuta","Contexto","Horario","Presupuesto","Importancia de la experiencia","Formación preferida","Otras actividades","Urgencia"];
-const lblPsi = ["Modalidad de atención","Alcance geográfico","Población","Tipo de terapia","Áreas de atención","Estructura terapéutica","Enfoque predominante","Estilo de intervención","Rol en sesión","Religión/Espiritualidad","Duración del proceso","Frecuencia","Género de pacientes","Enfoque cultural","Horario","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad"];
-
-// ─── AUTH ────────────────────────────────────────────────────────────────────
-// Timeout de seguridad: si en 8s el loading sigue visible, lo oculta
-setTimeout(() => {
-    const el = document.getElementById("loading");
-    if (el && el.style.display !== "none") {
-        el.style.display = "none";
-        if (currentUser) openTab("feed");
-        else window.location.href = "index.html";
-    }
-}, 8000);
-
-auth.onAuthStateChanged(async user => {
+// ══════════════════════════════════════════════════════
+//  ESTADÍSTICAS LANDING
+// ══════════════════════════════════════════════════════
+(async function loadStats() {
     try {
-        if (!user) { window.location.href = "index.html"; return; }
-        currentUser = user;
+        const [psiSnap, pacSnap] = await Promise.all([
+            db.collection("psicologos").get(),
+            db.collection("usuarios").get()
+        ]);
+        document.getElementById("statPsi").innerText = psiSnap.size || "0";
+        document.getElementById("statPac").innerText = pacSnap.size || "0";
+    } catch(e) {}
+})();
 
-        let doc = await db.collection("usuarios").doc(user.uid).get();
-        if (doc.exists) { userType = "paciente"; userData = doc.data(); }
-        else {
-            doc = await db.collection("psicologos").doc(user.uid).get();
-            if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
-            else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
-        }
-
-        // ── ADMIN CHECK ──
-        const emailAdmin = ADMIN_EMAILS.includes(user.email);
-        let firestoreAdmin = false;
-        try {
-            const adminDoc = await db.collection("admins").doc(user.uid).get();
-            firestoreAdmin = adminDoc.exists;
-        } catch(e) {}
-        isAdmin = emailAdmin || firestoreAdmin;
-
-        document.getElementById("headerEmail").innerText = user.email;
-        const tb = document.getElementById("typeBadge");
-        if (isAdmin) {
-            tb.innerText = "Administrador";
-            tb.className = "type-badge admin";
-            document.getElementById("navAdmin").style.display = "block";
-            document.getElementById("mainContainer").classList.add("wide");
-        } else {
-            tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
-            tb.className = "type-badge " + userType;
-        }
-
-        updateLastSeen();
-        lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
-        document.getElementById("loading").style.display = "none";
-        openTab("feed");
-        checkUnreadMessages();
-
-    } catch(e) {
-        console.error("Error al cargar el dashboard:", e);
-        // Aunque algo falle, esconde el loader y muestra el dashboard
-        document.getElementById("loading").style.display = "none";
-        if (currentUser) openTab("feed");
-        else window.location.href = "index.html";
-    }
-});
-
-async function updateLastSeen() {
-    if (!currentUser) return;
-    const coll = userType === "psicologo" ? "psicologos" : "usuarios";
-    try { await db.collection(coll).doc(currentUser.uid).update({ lastSeen: new Date() }); } catch(e) {}
-}
-
-function formatLastSeen(ts) {
-    if (!ts) return "Desconectado";
-    const diff = Date.now() - (ts.toMillis ? ts.toMillis() : ts);
-    const mins = Math.floor(diff / 60000);
-    if (mins < 2)  return "🟢 En línea";
-    if (mins < 60) return `Última conexión hace ${mins} min`;
-    const hrs = Math.floor(mins/60);
-    if (hrs < 24)  return `Última conexión hace ${hrs}h`;
-    return `Última conexión hace ${Math.floor(hrs/24)} día(s)`;
-}
-
-// ─── TABS ────────────────────────────────────────────────────────────────────
-function openTab(id) {
-    document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
-    document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
-    document.getElementById("tab-"+id).classList.add("active");
-    const nel = document.getElementById("nav"+id.charAt(0).toUpperCase()+id.slice(1));
-    if (nel) nel.classList.add("active");
-
-    if (id === "feed")       loadFeed();
-    if (id === "mensajes")   loadConvoList();
-    if (id === "explorar")   loadExplorar();
-    if (id === "respuestas") renderRespuestas();
-    if (id === "perfil")     renderMyProfile();
-    if (id === "admin")      loadAdminPanel();
-}
-
-// ─── COMPATIBILITY ────────────────────────────────────────────────────────────
-function ansIdx(ans, qi, isPsi) {
-    if (!ans) return -1;
-    const opts = isPsi ? qPsi[qi].opts : qPac[qi].opts;
-    const i = opts.indexOf(ans);
-    if (i !== -1) return i;
-    if (ans.startsWith("Sí, integra") || ans.startsWith("Sí, práctica")) return 2;
-    return -1;
-}
-function calcCompat(rPac, rPsi) {
-    if (!rPac || !rPsi || !rPac.length || !rPsi.length) return 0;
-    let score = 0;
-    const n = Math.min(rPac.length, rPsi.length, 20);
-    for (let i = 0; i < n; i++) {
-        const p = ansIdx(rPac[i],i,false), t = ansIdx(rPsi[i],i,true);
-        if (p === -1 || t === -1) { score += 1; continue; }
-        if (p === t) score += 2; else if (Math.abs(p-t) === 1) score += 1;
-    }
-    return Math.round((score/(n*2))*100);
-}
-function compatClass(pct) { return pct>=70?"c-high":pct>=45?"c-mid":"c-low"; }
-function compatColor(pct) { return pct>=70?"#2ecc71":pct>=45?"#f39c12":"#e74c3c"; }
-function getCorriente(resp, isPsi) {
-    if (!resp||resp.length<7) return "🔄 Integrativa";
-    const r = resp[6]||"";
-    if (isPsi) {
-        if (r.includes("TCC"))          return "🧩 TCC / Sistémica";
-        if (r.includes("Humanista"))    return "🌱 Humanista / Contextual";
-        if (r.includes("Psicoanálisis")) return "🧠 Psicoanalítica";
-    } else {
-        if (r.includes("estrategias"))  return "🧩 TCC";
-        if (r.includes("conciencia"))   return "🌱 Humanista";
-        if (r.includes("historia"))     return "🧠 Psicoanalítica";
-    }
+// ══════════════════════════════════════════════════════
+//  PERFILES PSICÓLOGOS EN LANDING (desde Firestore)
+// ══════════════════════════════════════════════════════
+function getCorriente(resp) {
+    if (!resp || resp.length < 7) return "🔄 Integrativa";
+    const r = resp[6] || "";
+    if (r.includes("TCC"))           return "🧩 TCC / Sistémica";
+    if (r.includes("Humanista"))     return "🌱 Humanista / Contextual";
+    if (r.includes("Psicoanálisis")) return "🧠 Psicoanalítica";
     return "🔄 Integrativa";
 }
 
-// ─── FEED ────────────────────────────────────────────────────────────────────
-async function loadFeed() {
-    const list = document.getElementById("feedList");
-    list.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
-    const myF = userType==="paciente"?"paciente":"psicologo";
-    const othF = userType==="paciente"?"psicologo":"paciente";
-    const othC = userType==="paciente"?"psicologos":"usuarios";
-    let snap;
-    try { snap = await db.collection("matches").where(myF,"==",currentUser.uid).orderBy("fecha","desc").get(); }
-    catch(e) { snap = await db.collection("matches").where(myF,"==",currentUser.uid).get(); }
-    if (!snap||snap.empty) { list.innerHTML=`<div class="empty-state"><div class="empty-icon">🌱</div><h3>Aún no tienes conexiones</h3><p>Ve a <strong>Explorar</strong> para descubrir perfiles.</p></div>`; return; }
-    list.innerHTML="";
-    for (const doc of snap.docs) {
-        const md=doc.data(), pct=md.compatibility||0;
-        const od = await db.collection(othC).doc(md[othF]).get();
-        if (!od.exists) continue;
-        const d=od.data(), resp=d.respuestas||[], cardIsPsi=userType==="paciente";
-        const matchId=doc.id, otherUid=md[othF];
-        const safeName = (d.nombre||"Usuario").replace(/'/g,"\\'");
-        let extra = cardIsPsi ? `
-            <div class="detail-chip"><div class="chip-label">Enfoque</div><div class="chip-val">${getCorriente(resp,true)}</div></div>
-            <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
-            <div class="detail-chip"><div class="chip-label">Costo/sesión</div><div class="chip-val">${resp[15]||"—"}</div></div>
-            <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
-            ${d.cedula?`<div class="detail-chip"><div class="chip-label">Cédula</div><div class="chip-val">${d.cedula}</div></div>`:""}
-            ${d.consultorio?`<div class="detail-chip"><div class="chip-label">Consultorio</div><div class="chip-val">${d.consultorio}</div></div>`:""}
-        ` : `
-            <div class="detail-chip"><div class="chip-label">Corriente</div><div class="chip-val">${getCorriente(resp,false)}</div></div>
-            <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
-            <div class="detail-chip"><div class="chip-label">Presupuesto</div><div class="chip-val">${resp[15]||"—"}</div></div>
-            <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
-        `;
-        const card = document.createElement("div");
-        card.className = "match-card";
-        card.innerHTML = `
-            <div class="match-card-header">
-                <div class="avatar">${cardIsPsi?"🧠":"👤"}</div>
-                <div>
-                    <div class="match-name">${d.nombre||"Usuario"}</div>
-                    <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
-                </div>
-                <div class="match-label">❤️ Match</div>
-            </div>
-            <div class="detail-grid">${extra}</div>
-            <div class="contact-row">
-                <span style="color:var(--muted);">📧</span>
-                <span class="contact-email">${d.email||"—"}</span>
-                <button class="btn-chat" onclick="openTab('mensajes');setTimeout(()=>openChat('${matchId}','${otherUid}','${safeName}','${cardIsPsi?"🧠":"👤"}'),200)">💬 Mensaje</button>
-                <button class="btn-report-sm" onclick="openReport('${otherUid}','${safeName}')">⚑ Reportar</button>
-                <button class="btn-break" onclick="openBreakModal('${matchId}','${otherUid}','${safeName}')">💔 Romper</button>
-            </div>`;
-        list.appendChild(card);
-    }
-}
-
-// ─── EXPLORAR ────────────────────────────────────────────────────────────────
-async function loadExplorar() {
-    const card = document.getElementById("swipe-card");
-    document.getElementById("action-btns").style.display = "none";
-    document.getElementById("btnReportCard").style.display = "none";
-    document.getElementById("explorarSub").innerText = userType==="paciente" ? "Perfiles de psicólogos ordenados por compatibilidad" : "Perfiles de pacientes ordenados por compatibilidad";
-    card.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><div class="spinner" style="margin:0 auto 14px;"></div><p>Cargando perfiles...</p></div>';
-    const othC = userType==="paciente"?"psicologos":"usuarios";
-    const [lk,ps] = await Promise.all([db.collection("likes").where("from","==",currentUser.uid).get(), db.collection("passes").where("from","==",currentUser.uid).get()]);
-    likedSet  = new Set(lk.docs.map(d => d.data().to));
-    passedSet = new Set(ps.docs.map(d => d.data().to));
-    const snap = await db.collection(othC).limit(60).get();
-    const profiles = [];
-    snap.forEach(doc => {
-        const uid = doc.id;
-        if (uid===currentUser.uid||likedSet.has(uid)||passedSet.has(uid)) return;
-        const data = doc.data();
-        if (data.sanctionStatus === "banned") return; // hide banned users
-        const rPac = userType==="paciente"?(userData.respuestas||[]):(data.respuestas||[]);
-        const rPsi = userType==="paciente"?(data.respuestas||[]):(userData.respuestas||[]);
-        profiles.push({ uid, data, pct: calcCompat(rPac, rPsi) });
-    });
-    profiles.sort((a,b) => b.pct - a.pct);
-    profilesQueue = profiles; profileIndex = 0;
-    renderSwipeCard();
-}
-
-function renderSwipeCard() {
-    const card = document.getElementById("swipe-card");
-    const btns = document.getElementById("action-btns");
-    const hint = document.getElementById("swipe-hint");
-    const rBtn = document.getElementById("btnReportCard");
-    if (profileIndex >= profilesQueue.length) {
-        card.innerHTML = `<div class="empty-state"><div class="empty-icon">🌿</div><h3>¡Has visto todos los perfiles!</h3><p>Vuelve más tarde para nuevas conexiones.</p></div>`;
-        btns.style.display="none"; rBtn.style.display="none"; hint.innerText=""; return;
-    }
-    const {data:d, pct} = profilesQueue[profileIndex];
-    const cardIsPsi = (userType==="paciente");
-    const resp = d.respuestas||[];
-    const det = cardIsPsi ? `
-        <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,true)}</span></div>
-        <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${resp[0]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${resp[14]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Costo</span>${resp[15]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">📚</span><span class="sc-val"><span class="sc-lbl">Especialización</span>${resp[17]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">✅</span><span class="sc-val"><span class="sc-lbl">Disponibilidad</span>${resp[19]||"—"}</span></div>
-        ${d.consultorio?`<div class="sc-row"><span class="sc-icon">📍</span><span class="sc-val"><span class="sc-lbl">Consultorio</span>${d.consultorio}</span></div>`:""}
-        ${d.sobreMi?`<div class="sc-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"><span class="sc-icon">💬</span><span class="sc-val" style="font-size:13px;color:var(--muted);line-height:1.55;">${d.sobreMi}</span></div>`:""}
-    ` : `
-        <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,false)}</span></div>
-        <div class="sc-row"><span class="sc-icon">💭</span><span class="sc-val"><span class="sc-lbl">Busca</span>${resp[4]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${resp[0]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${resp[14]||"—"}</span></div>
-        <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Presupuesto</span>${resp[15]||"—"}</span></div>
-    `;
-    card.innerHTML = `
-        <div class="sc-top">
-            <div class="sc-avatar">${cardIsPsi?"🧠":"👤"}</div>
-            <div><div class="sc-name">${d.nombre||"Usuario"}</div><span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span></div>
-        </div>
-        <div class="compat-bar-wrap">
-            <div class="compat-bar-row"><span>Compatibilidad</span><span class="compat-pct">${pct}%</span></div>
-            <div class="compat-bar"><div class="compat-fill" style="width:${pct}%;background:${compatColor(pct)};"></div></div>
-        </div>
-        <div class="sc-details">${det}</div>`;
-    btns.style.display="flex"; rBtn.style.display="block";
-    hint.innerText = "← Pasar  |  → Me interesa  |  Desliza la tarjeta";
-    let tx=0;
-    card.ontouchstart = e => { tx=e.touches[0].clientX; };
-    card.ontouchend   = e => { const dx=e.changedTouches[0].clientX-tx; if(dx>80) likeProfile(); else if(dx<-80) passProfile(); };
-    document.onkeydown = e => { if(e.key==="ArrowRight") likeProfile(); if(e.key==="ArrowLeft") passProfile(); };
-}
-
-function openReportFromCard() {
-    if (profileIndex >= profilesQueue.length) return;
-    const {uid, data:d} = profilesQueue[profileIndex];
-    openReport(uid, d.nombre||"Usuario");
-}
-
-async function likeProfile() {
-    if (profileIndex>=profilesQueue.length) return;
-    const {uid:targetUid, data:targetData, pct} = profilesQueue[profileIndex];
-    document.getElementById("swipe-card").classList.add("fly-right");
-    try {
-        await db.collection("likes").doc(currentUser.uid+"_"+targetUid).set({ from:currentUser.uid, to:targetUid, fromType:userType, fecha:new Date() });
-        likedSet.add(targetUid);
-        const rev = await db.collection("likes").doc(targetUid+"_"+currentUser.uid).get();
-        if (rev.exists) {
-            const pacUid = userType==="paciente"?currentUser.uid:targetUid;
-            const psiUid = userType==="psicologo"?currentUser.uid:targetUid;
-            const matchId = [pacUid,psiUid].sort().join("_");
-            await db.collection("matches").doc(matchId).set({ paciente:pacUid, psicologo:psiUid, compatibility:pct, fecha:new Date() });
-            let greetingText = "";
-            if (userType==="psicologo") greetingText = userData.saludoAutomatico||"";
-            else { const pd = await db.collection("psicologos").doc(psiUid).get(); if(pd.exists) greetingText=pd.data().saludoAutomatico||""; }
-            await db.collection("chats").doc(matchId).set({ participants:[pacUid,psiUid], lastMessage:greetingText||"¡Es un match!", lastMessageTime:new Date(), unread:{[pacUid]:greetingText?1:0,[psiUid]:0} });
-            if (greetingText) await db.collection("chats").doc(matchId).collection("messages").add({ sender:psiUid, text:greetingText, timestamp:new Date(), auto:true });
-            setTimeout(() => {
-                document.getElementById("matchModalText").innerText = `¡Tú y ${targetData.nombre||"tu nueva conexión"} hicieron match! ${greetingText?"El psicólogo ya te envió un saludo. 💬":"Ya pueden escribirse."}`;
-                document.getElementById("matchModal").classList.add("show");
-            }, 340);
-        }
-    } catch(e) { console.error(e); }
-    setTimeout(() => { document.getElementById("swipe-card").classList.remove("fly-right"); profileIndex++; renderSwipeCard(); }, 340);
-}
-
-async function passProfile() {
-    if (profileIndex>=profilesQueue.length) return;
-    const {uid:targetUid} = profilesQueue[profileIndex];
-    document.getElementById("swipe-card").classList.add("fly-left");
-    try { await db.collection("passes").doc(currentUser.uid+"_"+targetUid).set({ from:currentUser.uid, to:targetUid, fecha:new Date() }); passedSet.add(targetUid); } catch(e) {}
-    setTimeout(() => { document.getElementById("swipe-card").classList.remove("fly-left"); profileIndex++; renderSwipeCard(); }, 340);
-}
-
-// ─── MENSAJES ────────────────────────────────────────────────────────────────
-async function loadConvoList() {
-    document.getElementById("msgList").style.display = "block";
-    document.getElementById("chatView").classList.remove("open");
-    const container = document.getElementById("convoList");
-    container.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
-    const myF=userType==="paciente"?"paciente":"psicologo", othF=userType==="paciente"?"psicologo":"paciente", othC=userType==="paciente"?"psicologos":"usuarios";
-    let matchSnap;
-    try { matchSnap = await db.collection("matches").where(myF,"==",currentUser.uid).get(); } catch(e) { container.innerHTML=""; return; }
-    if (!matchSnap||matchSnap.empty) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">💬</div><h3>Sin conversaciones</h3><p>Haz match con alguien en <strong>Explorar</strong>.</p></div>`; return; }
-    container.innerHTML=""; const rows=[];
-    for (const doc of matchSnap.docs) {
-        const md=doc.data(), matchId=doc.id, otherUid=md[othF];
-        const [od,chatDoc] = await Promise.all([db.collection(othC).doc(otherUid).get(), db.collection("chats").doc(matchId).get()]);
-        if (!od.exists) continue;
-        const d=od.data(), chat=chatDoc.exists?chatDoc.data():{};
-        const unread=(chat.unread||{})[currentUser.uid]||0, lastMsg=chat.lastMessage||"Inicia la conversación", lastTime=chat.lastMessageTime?formatMsgTime(chat.lastMessageTime):"", lastSeen=d.lastSeen?formatLastSeen(d.lastSeen):"Desconectado", isOnline=d.lastSeen&&(Date.now()-d.lastSeen.toMillis())<5*60*1000, emoji=userType==="paciente"?"🧠":"👤", safeName=(d.nombre||"Usuario").replace(/'/g,"\\'");
-        rows.push({ lastTime:chat.lastMessageTime?chat.lastMessageTime.toMillis():0, html:`<div class="convo-item" onclick="openChat('${matchId}','${otherUid}','${safeName}','${emoji}')"><div class="convo-av">${emoji}${isOnline?'<div class="online-dot"></div>':""}</div><div class="convo-body"><div class="convo-name">${d.nombre||"Usuario"}</div><div class="convo-preview">${lastMsg}</div><div class="convo-lastseen">${lastSeen}</div></div><div class="convo-meta"><div class="convo-time">${lastTime}</div>${unread>0?`<div class="unread-badge">${unread}</div>`:""}</div></div>` });
-    }
-    rows.sort((a,b)=>b.lastTime-a.lastTime);
-    container.innerHTML = rows.map(r=>r.html).join("") || `<div class="empty-state"><div class="empty-icon">💬</div><h3>Sin conversaciones aún</h3></div>`;
-}
-
-async function openChat(matchId, otherUid, otherName, emoji) {
-    activeChatId = matchId;
-    document.getElementById("msgList").style.display="none";
-    document.getElementById("chatView").classList.add("open");
-    document.getElementById("chatName").innerText = otherName;
-    document.getElementById("chatAv").innerText   = emoji||"👤";
-    document.getElementById("chatMessages").innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">Cargando...</div>';
-    document.getElementById("chatLastSeen").innerText = "";
-    const othC = userType==="paciente"?"psicologos":"usuarios";
-    try { const od=await db.collection(othC).doc(otherUid).get(); if(od.exists&&od.data().lastSeen) document.getElementById("chatLastSeen").innerText=formatLastSeen(od.data().lastSeen); } catch(e) {}
-    try { await db.collection("chats").doc(matchId).update({[`unread.${currentUser.uid}`]:0}); } catch(e) {}
-    const dot = document.querySelector("#navMensajes .unread-dot"); if(dot) dot.remove();
-    if (chatUnsub) chatUnsub();
-    chatUnsub = db.collection("chats").doc(matchId).collection("messages").orderBy("timestamp","asc").onSnapshot(snap => {
-        const c = document.getElementById("chatMessages"); c.innerHTML="";
-        snap.forEach(doc => {
-            const m=doc.data(), isMine=m.sender===currentUser.uid, time=m.timestamp?formatMsgTime(m.timestamp):"";
-            const div=document.createElement("div"); div.className="msg-row "+(isMine?"mine":"theirs");
-            div.innerHTML=`<div class="msg-bubble">${!isMine&&m.auto?'<div class="msg-auto-tag">✉️ saludo automático</div>':""}${m.text}<span class="msg-time">${time}</span></div>`;
-            c.appendChild(div);
-        });
-        c.scrollTop = c.scrollHeight;
-    });
-    document.getElementById("chatInput").focus();
-}
-
-function closeChat() {
-    if (chatUnsub) { chatUnsub(); chatUnsub=null; }
-    activeChatId=null;
-    document.getElementById("chatView").classList.remove("open");
-    document.getElementById("msgList").style.display="block";
-    loadConvoList();
-}
-
-async function sendMessage() {
-    const input=document.getElementById("chatInput"), text=input.value.trim();
-    if (!text||!activeChatId) return;
-    input.value="";
-    try {
-        await db.collection("chats").doc(activeChatId).collection("messages").add({ sender:currentUser.uid, text, timestamp:new Date(), auto:false });
-        const chatDoc = await db.collection("chats").doc(activeChatId).get();
-        const participants = chatDoc.exists?(chatDoc.data().participants||[]):[];
-        const otherUid = participants.find(uid=>uid!==currentUser.uid);
-        const update = { lastMessage:text, lastMessageTime:new Date() };
-        if (otherUid) update[`unread.${otherUid}`] = firebase.firestore.FieldValue.increment(1);
-        await db.collection("chats").doc(activeChatId).update(update);
-    } catch(e) { console.error(e); input.value=text; }
-}
-
-async function checkUnreadMessages() {
-    const myF = userType==="paciente"?"paciente":"psicologo";
-    try {
-        const matches = await db.collection("matches").where(myF,"==",currentUser.uid).get();
-        let total=0;
-        for (const doc of matches.docs) { const cd=await db.collection("chats").doc(doc.id).get(); if(cd.exists) total+=(cd.data().unread||{})[currentUser.uid]||0; }
-        const btn=document.getElementById("navMensajes");
-        if (total>0&&!btn.querySelector(".unread-dot")) { const dot=document.createElement("span"); dot.className="unread-dot"; btn.appendChild(dot); }
-    } catch(e) {}
-}
-
-function formatMsgTime(ts) {
-    if (!ts) return "";
-    const d = ts.toDate?ts.toDate():new Date(ts), now=new Date();
-    if (d.toDateString()===now.toDateString()) return d.toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"});
-    return d.toLocaleDateString("es-MX",{day:"2-digit",month:"short"});
-}
-
-// ─── RESPUESTAS ──────────────────────────────────────────────────────────────
-function renderRespuestas() {
-    const list=document.getElementById("respuestasList"), resp=userData.respuestas||[], labels=userType==="paciente"?lblPac:lblPsi;
-    const requizBtn = `<button class="btn-requiz" onclick="startReQuiz()">🔄 Volver a contestar el cuestionario</button>`;
-    if (!resp.length) {
-        list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3></div>${requizBtn}`;
-        return;
-    }
-    list.innerHTML = resp.map((r,i)=>`<div class="resp-item"><div class="resp-lbl">${labels[i]||"Pregunta "+(i+1)}</div><div class="resp-val">${r}</div></div>`).join("") + requizBtn;
-}
-
-// ─── MI PERFIL ───────────────────────────────────────────────────────────────
-function renderMyProfile() {
-    const container=document.getElementById("perfilContent"), d=userData, resp=d.respuestas||[], isPsi=userType==="psicologo", corriente=getCorriente(resp,isPsi);
-
-    // ── Editable info section ──
-    const editSection = isPsi ? `
-        <div class="profile-section">
-            <div class="ps-title">✏️ Editar información</div>
-            <div class="edit-field">
-                <label>Enfoque a trabajar</label>
-                <input type="text" id="edit_enfoque" value="${(d.enfoque||"").replace(/"/g,"&quot;")}" placeholder="Ej. TCC, Humanista..." />
-            </div>
-            <div class="edit-field">
-                <label>Dirección del consultorio</label>
-                <div style="display:flex;gap:8px;">
-                    <input type="text" id="edit_consultorio" value="${(d.consultorio||"").replace(/"/g,"&quot;")}"
-                        placeholder="Escribe la dirección..." autocomplete="off"
-                        onkeydown="if(event.key==='Enter'){event.preventDefault();buscarDireccionEdit();}" style="flex:1;" />
-                    <button type="button" onclick="buscarDireccionEdit()" id="btnBuscarEdit"
-                        style="padding:10px 12px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--sage-dark);cursor:pointer;white-space:nowrap;flex-shrink:0;">
-                        🔍
-                    </button>
-                </div>
-                <div id="editDirResultados" style="display:none;background:white;border:1.5px solid var(--border);border-radius:10px;margin-top:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);"></div>
-                <div class="map-preview" id="editMapPreview">
-                    <div class="map-mini" id="editMapMini"></div>
-                    <div class="map-address" id="editMapAddress"></div>
-                </div>
-            </div>
-            <button class="btn-save-edit" onclick="saveEditInfo()">Guardar cambios</button>
-            <p class="save-confirm" id="editInfoConfirm">✅ Guardado</p>
-        </div>
-    ` : `
-        <div class="profile-section">
-            <div class="ps-title">✏️ Editar información</div>
-            <div class="edit-field">
-                <label>Estado</label>
-                <select id="edit_ubicacion">
-                    ${["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Ciudad de México","Coahuila","Colima","Durango","Estado de México","Guanajuato","Guerrero","Hidalgo","Jalisco","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"]
-                    .map(s=>`<option${d.ubicacion===s?" selected":""}>${s}</option>`).join("")}
-                </select>
-            </div>
-            <div class="edit-field">
-                <label>Motivo de consulta</label>
-                <textarea id="edit_motivo" placeholder="Actualiza tu motivo de consulta...">${d.motivo||""}</textarea>
-            </div>
-            <button class="btn-save-edit" onclick="saveEditInfo()">Guardar cambios</button>
-            <p class="save-confirm" id="editInfoConfirm">✅ Guardado</p>
-        </div>
-    `;
-
-    const infoFields = isPsi ? `
-        <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
-        <div class="pf-row"><span class="pf-label">Cédula profesional</span><span class="pf-val">${d.cedula||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Enfoque declarado</span><span class="pf-val">${d.enfoque||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Consultorio</span><span class="pf-val">${d.consultorio||"—"}</span></div>
-    ` : `
-        <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
-        <div class="pf-row"><span class="pf-label">Estado</span><span class="pf-val">${d.ubicacion||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Motivo de consulta</span><span class="pf-val">${d.motivo||"—"}</span></div>
-    `;
-    const quizFields = resp.length===0?"":isPsi?`
-        <div class="pf-row"><span class="pf-label">Modalidad</span><span class="pf-val">${resp[0]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Áreas</span><span class="pf-val">${resp[4]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Enfoque terapéutico</span><span class="pf-val">${resp[6]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Costo/sesión</span><span class="pf-val">${resp[15]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Experiencia</span><span class="pf-val">${resp[16]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Especialización</span><span class="pf-val">${resp[17]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Disponibilidad</span><span class="pf-val">${resp[19]||"—"}</span></div>
-    `:`
-        <div class="pf-row"><span class="pf-label">Modalidad preferida</span><span class="pf-val">${resp[0]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Lo que busca</span><span class="pf-val">${resp[4]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Presupuesto</span><span class="pf-val">${resp[15]||"—"}</span></div>
-        <div class="pf-row"><span class="pf-label">Urgencia</span><span class="pf-val">${resp[19]||"—"}</span></div>
-    `;
-    const saludoSection = isPsi?`
-        <div class="profile-section">
-            <div class="ps-title">✏️ Sobre mí</div>
-            <textarea class="saludo-textarea" id="sobreMiInput" placeholder="Escribe algo sobre ti para que los demás te conozcan. Puedes mencionar tu experiencia, tu estilo de trabajo o cómo sueles acompañar a tus pacientes...">${d.sobreMi||""}</textarea>
-            <button class="btn-save-saludo" onclick="saveSobreMi()">Guardar</button>
-            <p class="save-confirm" id="sobreMiConfirm">✅ Guardado</p>
-        </div>
-        <div class="profile-section">
-            <div class="ps-title">⚙️ Ajustes de mensajería</div>
-            <label class="field-label">Saludo automático al hacer match</label>
-            <textarea class="saludo-textarea" id="saludoInput" placeholder="Ej: Hola, soy el Dr. López...">${d.saludoAutomatico||""}</textarea>
-            <p style="font-size:12px;color:var(--muted);margin-top:6px;">Este mensaje se enviará automáticamente cuando hagas match con un paciente.</p>
-            <button class="btn-save-saludo" onclick="saveAutoGreeting()">Guardar saludo</button>
-            <p class="save-confirm" id="saveConfirm">✅ Guardado correctamente</p>
-        </div>
-    `:"";
-    container.innerHTML=`
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-av">${isPsi?"🧠":"👤"}</div>
-                <div><div class="profile-name">${d.nombre||"—"}</div><span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
-            </div>
-            <div class="profile-section"><div class="ps-title">Información general</div>${infoFields}</div>
-            ${editSection}
-            <div class="profile-section"><div class="ps-title">Perfil psicológico</div><div class="pf-row"><span class="pf-label">Corriente</span><span class="pf-val"><span class="corriente-tag">${corriente}</span></span></div>${quizFields}</div>
-            ${saludoSection}
-        </div>`;
-
-    // Init Maps autocomplete for consultorio edit field (psicólogo)
-    if (isPsi) setTimeout(() => initEditMaps(), 200);
-}
-}
-
-async function saveAutoGreeting() {
-    const text = document.getElementById("saludoInput").value.trim();
-    try { await db.collection("psicologos").doc(currentUser.uid).update({ saludoAutomatico:text }); userData.saludoAutomatico=text; const c=document.getElementById("saveConfirm"); c.style.display="block"; setTimeout(()=>{c.style.display="none";},3000); }
-    catch(e) { alert("Error al guardar."); }
-}
-
-async function saveSobreMi() {
-    const text = document.getElementById("sobreMiInput").value.trim();
-    try {
-        await db.collection("psicologos").doc(currentUser.uid).update({ sobreMi: text });
-        userData.sobreMi = text;
-        const c = document.getElementById("sobreMiConfirm");
-        c.style.display = "block";
-        setTimeout(() => { c.style.display = "none"; }, 3000);
-    } catch(e) { alert("Error al guardar."); }
-}
-
 // ══════════════════════════════════════════════════════
-//  REPORT SYSTEM
+//  SLIDESHOW DE PSICÓLOGOS (hero-left)
 // ══════════════════════════════════════════════════════
-function openReport(uid, name) {
-    reportTargetUid  = uid;
-    reportTargetName = name;
-    document.getElementById("reportTargetName").innerText = name;
-    document.getElementById("reportDetails").value = "";
-    document.getElementById("reportSent").style.display = "none";
-    document.getElementById("reportModal").classList.add("show");
-}
-function closeReportModal() { document.getElementById("reportModal").classList.remove("show"); }
+let slideIndex   = 0;
+let slideTotal   = 0;
+let slideTimer   = null;
 
-async function submitReport() {
-    const reason  = document.getElementById("reportReason").value;
-    const details = document.getElementById("reportDetails").value.trim();
-    if (!reportTargetUid) return;
-    try {
-        await db.collection("reports").add({
-            reportedUid:  reportTargetUid,
-            reportedName: reportTargetName,
-            reportedBy:   currentUser.uid,
-            reporterEmail: currentUser.email,
-            reason, details,
-            timestamp: new Date(),
-            status: "pending"
-        });
-        document.getElementById("reportSent").style.display = "block";
-        setTimeout(() => closeReportModal(), 2500);
-    } catch(e) { alert("Error al enviar el reporte. Intenta de nuevo."); }
-}
-
-// ══════════════════════════════════════════════════════
-//  ADMIN PANEL
-// ══════════════════════════════════════════════════════
-function openAdminSub(id) {
-    if (!isAdmin) return;
-    document.querySelectorAll(".admin-sub").forEach(s => s.classList.remove("active"));
-    document.querySelectorAll(".admin-subbtn").forEach(b => b.classList.remove("active"));
-    document.getElementById("asub-"+id).classList.add("active");
-    // activate the button
-    document.querySelectorAll(".admin-subbtn").forEach(b => { if(b.getAttribute("onclick")===`openAdminSub('${id}')`) b.classList.add("active"); });
-
-    if (id==="stats")    loadAdminStats();
-    if (id==="cedulas")  loadCedulasPendientes();
-    if (id==="usuarios") loadAdminUsers("all");
-    if (id==="reportes") loadAdminReports("pending");
-    if (id==="desconexiones") loadAdminDesconexiones();
-}
-
-async function loadAdminPanel() {
-    openAdminSub("stats");
-}
-
-// ─── Stats ───────────────────────────────────────────────────────────────────
-async function loadAdminStats() {
-    try {
-        const [psiSnap, pacSnap, matchSnap, repSnap, sancSnap] = await Promise.all([
-            db.collection("psicologos").get(),
-            db.collection("usuarios").get(),
-            db.collection("matches").get(),
-            db.collection("reports").where("status","==","pending").get(),
-            db.collection("sanctions").get()
-        ]);
-        const cedPend = psiSnap.docs.filter(d => d.data().cedulaVerificada === "pendiente").length;
-        document.getElementById("as-psi").innerText   = psiSnap.size;
-        document.getElementById("as-pac").innerText   = pacSnap.size;
-        document.getElementById("as-match").innerText = matchSnap.size;
-        document.getElementById("as-ced").innerText   = cedPend;
-        document.getElementById("as-rep").innerText   = repSnap.size;
-        document.getElementById("as-san").innerText   = sancSnap.size;
-    } catch(e) { console.error(e); }
-}
-
-// ─── Cédulas ─────────────────────────────────────────────────────────────────
-async function loadCedulasPendientes() {
-    const container = document.getElementById("cedulasList");
-    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
-    try {
-        const snap = await db.collection("psicologos").where("cedulaVerificada","==","pendiente").get();
-        if (snap.empty) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">✅</div><h3>Sin cédulas pendientes</h3><p>Todas las cédulas están revisadas.</p></div>`; return; }
-        container.innerHTML="";
-        snap.forEach(doc => {
-            const d=doc.data(), uid=doc.id;
-            const row=document.createElement("div"); row.className="admin-row";
-            row.innerHTML=`
-                <div class="admin-row-av">🧠</div>
-                <div class="admin-row-info">
-                    <div class="admin-row-name">${d.nombre||"—"}</div>
-                    <div class="admin-row-email">${d.email||"—"}</div>
-                    <div class="admin-row-meta">Cédula: <strong>${d.cedula||"—"}</strong> · Enfoque: ${d.enfoque||"—"}</div>
-                    <div style="margin-top:4px;"><span class="sbadge pending">⏳ Pendiente</span></div>
-                </div>
-                <div class="admin-row-actions">
-                    <button class="btn-adm approve" onclick="setCedulaStatus('${uid}',true)">✅ Aprobar</button>
-                    <button class="btn-adm reject"  onclick="setCedulaStatus('${uid}',false)">❌ Rechazar</button>
-                </div>`;
-            container.appendChild(row);
-        });
-    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; }
-}
-
-async function setCedulaStatus(uid, approved) {
-    try {
-        await db.collection("psicologos").doc(uid).update({ cedulaVerificada: approved });
-        loadCedulasPendientes();
-        loadAdminStats();
-    } catch(e) { alert("Error al actualizar."); }
-}
-
-// ─── Usuarios ────────────────────────────────────────────────────────────────
-async function loadAdminUsers(filter) {
-    currentUserFilter = filter;
-    const container = document.getElementById("usuariosList");
-    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
-    try {
-        const [psiSnap, pacSnap, sancSnap] = await Promise.all([
-            db.collection("psicologos").limit(80).get(),
-            db.collection("usuarios").limit(80).get(),
-            db.collection("sanctions").get()
-        ]);
-        const sancMap = {};
-        sancSnap.forEach(d => { sancMap[d.id] = d.data(); });
-
-        allPsisCache  = psiSnap.docs.map(d => ({ uid:d.id, tipo:"psicologo", ...d.data(), sanc:sancMap[d.id]||null }));
-        allUsersCache = pacSnap.docs.map(d => ({ uid:d.id, tipo:"paciente",  ...d.data(), sanc:sancMap[d.id]||null }));
-
-        renderFilteredUsers();
-    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; }
-}
-
-function filterUsers(filter) {
-    currentUserFilter = filter;
-    document.querySelectorAll("#asub-usuarios .admin-subbtn").forEach(b => b.classList.remove("active"));
-    document.getElementById("ufilter"+filter.charAt(0).toUpperCase()+filter.slice(1)).classList.add("active");
-    renderFilteredUsers();
-}
-
-function renderFilteredUsers() {
-    const container = document.getElementById("usuariosList");
-    let list = [...allPsisCache, ...allUsersCache];
-
-    if (currentUserFilter==="psicologo") list = allPsisCache;
-    else if (currentUserFilter==="paciente") list = allUsersCache;
-    else if (currentUserFilter==="sancionado") list = [...allPsisCache,...allUsersCache].filter(u => u.sanc);
-
-    container.innerHTML="";
-    if (!list.length) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><h3>Sin resultados</h3></div>`; return; }
-
-    list.forEach(u => {
-        const isPsi = u.tipo==="psicologo";
-        const sanc  = u.sanc;
-        const sancBadge = sanc ? `<span class="sbadge ${sanc.type}">${sanc.type==="warning"?"⚠️ Advertido":sanc.type==="suspended"?"🚫 Suspendido":"🔴 Baneado"}</span>` : `<span class="sbadge active">✅ Activo</span>`;
-        const cedulaBadge = isPsi ? ` · Cédula: <span class="sbadge ${u.cedulaVerificada===true?"verified":u.cedulaVerificada==="pendiente"?"pending":"rejected"}">${u.cedulaVerificada===true?"✓ Verificada":u.cedulaVerificada==="pendiente"?"⏳ Pendiente":"✗ Rechazada"}</span>` : "";
-        const row = document.createElement("div"); row.className="admin-row";
-        row.innerHTML=`
-            <div class="admin-row-av">${isPsi?"🧠":"👤"}</div>
-            <div class="admin-row-info">
-                <div class="admin-row-name">${u.nombre||"—"} <span style="font-size:11px;color:var(--muted);font-weight:400;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
-                <div class="admin-row-email">${u.email||"—"}</div>
-                <div class="admin-row-meta" style="margin-top:4px;">${sancBadge}${cedulaBadge}</div>
-                ${sanc?`<div class="sanction-note">Motivo: ${sanc.reason||"—"} · ${sanc.date?new Date(sanc.date.toDate()).toLocaleDateString("es-MX"):""}</div>`:""}
-            </div>
-            <div class="admin-row-actions">
-                ${!sanc ? `<button class="btn-adm warn"    onclick="openSanctionModal('${u.uid}','${(u.nombre||'').replace(/'/g,"\\'")}','${u.tipo}')">⚖️ Sancionar</button>` : `<button class="btn-adm lift" onclick="liftSanction('${u.uid}','${u.tipo}')">↩ Levantar</button>`}
-                ${isPsi&&u.cedulaVerificada==="pendiente"?`<button class="btn-adm approve" onclick="setCedulaStatus('${u.uid}',true)">✅ Cédula</button>`:""}
-            </div>`;
-        container.appendChild(row);
-    });
-}
-
-async function liftSanction(uid, tipo) {
-    if (!confirm("¿Levantar sanción de este usuario?")) return;
-    try {
-        await db.collection("sanctions").doc(uid).delete();
-        const coll = tipo==="psicologo"?"psicologos":"usuarios";
-        await db.collection(coll).doc(uid).update({ sanctionStatus: firebase.firestore.FieldValue.delete() });
-        loadAdminUsers(currentUserFilter);
-        loadAdminStats();
-    } catch(e) { alert("Error al levantar sanción."); }
-}
-
-// ─── Sanction Modal ──────────────────────────────────────────────────────────
-function openSanctionModal(uid, name, tipo) {
-    document.getElementById("sanctionTargetUid").value  = uid;
-    document.getElementById("sanctionTargetName").innerText = name;
-    document.getElementById("sanctionTargetType").value = tipo;
-    document.getElementById("sanctionReason").value = "";
-    document.getElementById("sanctionModal").classList.add("show");
-}
-function closeSanctionModal() { document.getElementById("sanctionModal").classList.remove("show"); }
-
-async function applySanction() {
-    const uid    = document.getElementById("sanctionTargetUid").value;
-    const tipo   = document.getElementById("sanctionTargetType").value;
-    const type   = document.getElementById("sanctionType").value;
-    const reason = document.getElementById("sanctionReason").value.trim();
-    if (!uid) return;
-    try {
-        await db.collection("sanctions").doc(uid).set({ uid, tipo, type, reason, adminUid:currentUser.uid, date:new Date() });
-        const coll = tipo==="psicologo"?"psicologos":"usuarios";
-        await db.collection(coll).doc(uid).update({ sanctionStatus: type });
-        closeSanctionModal();
-        loadAdminUsers(currentUserFilter);
-        loadAdminStats();
-        alert(`Sanción "${type}" aplicada correctamente.`);
-    } catch(e) { alert("Error al aplicar sanción."); }
-}
-
-// ─── Reports ─────────────────────────────────────────────────────────────────
-async function loadAdminReports(filter) {
-    currentReportFilter = filter;
-    const container = document.getElementById("reportesList");
-    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
-    try {
-        let query = db.collection("reports").orderBy("timestamp","desc");
-        if (filter==="pending") query = db.collection("reports").where("status","==","pending");
-        const snap = await query.get();
-        if (snap.empty) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">✅</div><h3>Sin reportes ${filter==="pending"?"pendientes":""}</h3></div>`; return; }
-        container.innerHTML="";
-        snap.forEach(doc => {
-            const r=doc.data(), rid=doc.id;
-            const ts = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}) : "—";
-            const reasonLabels = { informacion_falsa:"Información falsa", comportamiento_inapropiado:"Comportamiento inapropiado", fraude:"Fraude/Estafa", acoso:"Acoso", cedula_invalida:"Cédula inválida", otro:"Otro" };
-            const row=document.createElement("div"); row.className="admin-row";
-            row.innerHTML=`
-                <div class="admin-row-av">🚨</div>
-                <div class="admin-row-info">
-                    <div class="admin-row-name">Reporte contra: <strong>${r.reportedName||r.reportedUid||"—"}</strong></div>
-                    <div class="admin-row-email">Por: ${r.reporterEmail||"—"} · ${ts}</div>
-                    <div class="report-reason">${reasonLabels[r.reason]||r.reason}: ${r.details||"Sin descripción"}</div>
-                    <span class="sbadge ${r.status==="pending"?"report":"reviewed"}">${r.status==="pending"?"🔴 Pendiente":"✅ Revisado"}</span>
-                </div>
-                <div class="admin-row-actions">
-                    ${r.status==="pending"?`
-                        <button class="btn-adm warn"    onclick="openSanctionModal('${r.reportedUid}','${(r.reportedName||"usuario").replace(/'/g,"\\'")}','')">⚖️ Sancionar</button>
-                        <button class="btn-adm dismiss" onclick="resolveReport('${rid}','reviewed')">✅ Marcar revisado</button>
-                        <button class="btn-adm reject"  onclick="resolveReport('${rid}','dismissed')">Desestimar</button>
-                    `:`<span style="font-size:12px;color:var(--muted);">Resuelto</span>`}
-                </div>`;
-            container.appendChild(row);
-        });
-    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar reportes.</p>"; }
-}
-
-function filterReports(filter) {
-    currentReportFilter = filter;
-    document.querySelectorAll("#asub-reportes .admin-subbtn").forEach(b => b.classList.remove("active"));
-    document.getElementById("rfilter"+filter.charAt(0).toUpperCase()+filter.slice(1)).classList.add("active");
-    loadAdminReports(filter);
-}
-
-async function resolveReport(reportId, status) {
-    try {
-        await db.collection("reports").doc(reportId).update({ status, resolvedBy:currentUser.uid, resolvedAt:new Date() });
-        loadAdminReports(currentReportFilter);
-        loadAdminStats();
-    } catch(e) { alert("Error al actualizar reporte."); }
-}
-
-// ── MODAL ────────────────────────────────────────────────────────────────────
-function closeModal()    { document.getElementById("matchModal").classList.remove("show"); }
-function goToMensajes()  { closeModal(); openTab("mensajes"); }
-
-// ── LOGOUT ───────────────────────────────────────────────────────────────────
-function logout() {
-    if (lastSeenTimer) clearInterval(lastSeenTimer);
-    if (chatUnsub) chatUnsub();
-    auth.signOut().then(() => { window.location.href = "index.html"; });
-}
-
-// ══════════════════════════════════════════════════════
-//  BREAK MATCH
-// ══════════════════════════════════════════════════════
-let _breakMatchId  = null;
-let _breakOtherUid = null;
-let _breakOtherName = "";
-
-function openBreakModal(matchId, otherUid, otherName) {
-    _breakMatchId   = matchId;
-    _breakOtherUid  = otherUid;
-    _breakOtherName = otherName;
-    document.getElementById("breakTargetName").innerText = otherName;
-    document.getElementById("breakReason").value = "";
-    document.getElementById("breakReportNote").style.display = "none";
-    document.getElementById("breakModal").classList.add("show");
-}
-
-function closeBreakModal() { document.getElementById("breakModal").classList.remove("show"); }
-
-function checkBreakReason() {
-    const val = document.getElementById("breakReason").value;
-    document.getElementById("breakReportNote").style.display =
-        val === "problema_psicologo" ? "block" : "none";
-}
-
-async function confirmBreakMatch() {
-    const reason = document.getElementById("breakReason").value;
-    if (!reason) { alert("Por favor elige una razón."); return; }
-    if (!_breakMatchId) return;
+(async function loadPsiPerfiles() {
+    const track  = document.getElementById("slideshowTrack");
+    const dots   = document.getElementById("slideshowDots");
+    const counter = document.getElementById("slideCounter");
 
     try {
-        // Save disconnection reason to Firestore
-        await db.collection("disconnections").add({
-            matchId:    _breakMatchId,
-            initiator:  currentUser.uid,
-            otherUid:   _breakOtherUid,
-            otherName:  _breakOtherName,
-            userType:   userType,
-            reason,
-            timestamp:  new Date()
-        });
+        const snap = await db.collection("psicologos").limit(8).get();
 
-        // Delete the match document
-        await db.collection("matches").doc(_breakMatchId).delete();
-
-        // Also clean up chat
-        try { await db.collection("chats").doc(_breakMatchId).delete(); } catch(e) {}
-
-        closeBreakModal();
-
-        // If problem with psicólogo → open report modal
-        if (reason === "problema_psicologo") {
-            openReport(_breakOtherUid, _breakOtherName);
-        } else {
-            loadFeed();
-        }
-    } catch(e) { alert("Error al romper la conexión. Intenta de nuevo."); console.error(e); }
-}
-
-// ══════════════════════════════════════════════════════
-//  SAVE EDIT INFO
-// ══════════════════════════════════════════════════════
-async function saveEditInfo() {
-    const isPsi = userType === "psicologo";
-    const coll  = isPsi ? "psicologos" : "usuarios";
-    let update  = {};
-
-    if (isPsi) {
-        update.enfoque    = document.getElementById("edit_enfoque").value.trim();
-        update.consultorio = document.getElementById("edit_consultorio").value.trim();
-        if (window._editConsultorioLat) update.consultorioLat = window._editConsultorioLat;
-        if (window._editConsultorioLng) update.consultorioLng = window._editConsultorioLng;
-    } else {
-        const sel = document.getElementById("edit_ubicacion");
-        update.ubicacion = sel ? sel.value : userData.ubicacion;
-        update.motivo    = document.getElementById("edit_motivo").value.trim();
-    }
-
-    try {
-        await db.collection(coll).doc(currentUser.uid).update(update);
-        Object.assign(userData, update);
-        const c = document.getElementById("editInfoConfirm");
-        c.style.display = "block";
-        setTimeout(() => { c.style.display = "none"; renderMyProfile(); }, 2000);
-    } catch(e) { alert("Error al guardar."); }
-}
-
-// ══════════════════════════════════════════════════════
-//  RE-QUIZ
-// ══════════════════════════════════════════════════════
-let rqCurrent   = 0;
-let rqRespuestas = [];
-let rqQuestions  = [];
-
-function startReQuiz() {
-    rqCurrent    = 0;
-    rqRespuestas = [];
-    rqQuestions  = userType === "paciente" ? qPac : qPsi;
-
-    const labels = userType === "paciente" ? lblPac : lblPsi;
-    document.getElementById("requizSubtitle").innerText =
-        `Actualizando tu cuestionario de ${userType === "paciente" ? "preferencias" : "perfil profesional"} (${rqQuestions.length} preguntas)`;
-    document.getElementById("requizModal").classList.add("show");
-    rqShow();
-}
-
-function rqShow() {
-    const q   = rqQuestions[rqCurrent];
-    const pct = (rqCurrent / rqQuestions.length) * 100;
-    document.getElementById("rq_progress").innerText = `Pregunta ${rqCurrent+1} de ${rqQuestions.length}`;
-    document.getElementById("rq_fill").style.width   = pct + "%";
-    document.getElementById("rq_question").innerText = q.q || q;
-    document.getElementById("rq_religion_sub").style.display = "none";
-
-    const opts = q.opts || q;
-    const container = document.getElementById("rq_options");
-    container.innerHTML = "";
-    opts.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.innerText  = opt;
-        btn.style.cssText = "padding:11px 14px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);cursor:pointer;text-align:left;transition:all 0.18s;width:100%;";
-        btn.onmouseover = () => { btn.style.borderColor="var(--sage-light)"; btn.style.background="#f0f6f4"; };
-        btn.onmouseout  = () => { btn.style.borderColor="var(--border)";     btn.style.background="var(--cream)"; };
-        btn.onclick = () => {
-            if (q.special === "religion" && opt === opts[2]) {
-                document.getElementById("rq_religion_sub").style.display = "block";
-            } else {
-                rqNext(opt);
-            }
-        };
-        container.appendChild(btn);
-    });
-}
-
-function rqConfirmReligion() {
-    const val = document.getElementById("rq_religion_select").value;
-    rqNext(rqCurrent < rqQuestions.length/2
-        ? "Sí, integra creencia: " + val
-        : "Sí, práctica basada en tradición: " + val);
-}
-
-function rqNext(answer) {
-    rqRespuestas.push(answer);
-    document.getElementById("rq_religion_sub").style.display = "none";
-    if (rqCurrent < rqQuestions.length - 1) {
-        rqCurrent++;
-        rqShow();
-    } else {
-        rqSave();
-    }
-}
-
-function rqPrev() {
-    if (rqCurrent > 0) { rqCurrent--; rqRespuestas.pop(); rqShow(); }
-    else { document.getElementById("requizModal").classList.remove("show"); }
-}
-
-async function rqSave() {
-    const coll = userType === "paciente" ? "usuarios" : "psicologos";
-    try {
-        await db.collection(coll).doc(currentUser.uid).update({ respuestas: rqRespuestas });
-        userData.respuestas = rqRespuestas;
-        document.getElementById("requizModal").classList.remove("show");
-        renderRespuestas();
-        alert("✅ ¡Cuestionario actualizado! Tu perfil de compatibilidad ha sido recalculado.");
-    } catch(e) { alert("Error al guardar. Intenta de nuevo."); }
-}
-
-// ══════════════════════════════════════════════════════
-//  NOMINATIM + LEAFLET – DASHBOARD (sin API key)
-// ══════════════════════════════════════════════════════
-window._editConsultorioLat = null;
-window._editConsultorioLng = null;
-let _editLeafletMap    = null;
-let _editLeafletMarker = null;
-let _leafletLoaded     = false;
-
-function initDashboardMaps() { /* no-op */ }
-function initEditMaps()      { /* no-op */ }
-
-// Carga Leaflet de forma lazy (solo cuando el usuario busca una dirección)
-function loadLeafletIfNeeded() {
-    return new Promise((resolve) => {
-        if (window.L) { resolve(); return; }
-        if (_leafletLoaded) {
-            // Ya se está cargando, espera
-            const check = setInterval(() => { if (window.L) { clearInterval(check); resolve(); } }, 100);
+        if (snap.empty) {
+            track.innerHTML = `<div class="slideshow-loading">Pronto habrá psicólogos disponibles.<br>¡Regístrate y sé el primero!</div>`;
             return;
         }
-        _leafletLoaded = true;
-        const script = document.createElement("script");
-        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-        script.onload = resolve;
-        script.onerror = resolve; // si falla, continúa sin mapa
-        document.head.appendChild(script);
+
+        track.innerHTML = "";
+        dots.innerHTML  = "";
+        let idx = 0;
+
+        snap.forEach(doc => {
+            const d    = doc.data();
+            const resp = d.respuestas || [];
+            const corriente   = getCorriente(resp);
+            const modalidad   = resp[0]  || "—";
+            const areas       = resp[4]  || "—";
+            const horario     = resp[14] || "—";
+            const costo       = resp[15] || "—";
+            const experiencia = resp[16] || "—";
+            const disp        = resp[19] || "—";
+            const isVerified  = d.cedulaVerificada === true;
+            const nombre      = d.nombre
+                ? d.nombre.split(" ").map((w,i) => i === 0 ? w : w[0]+".").join(" ")
+                : "Psicólogo/a";
+
+            // Slide card
+            const slide = document.createElement("div");
+            slide.className = "slide-card" + (idx === 0 ? " active" : "");
+            slide.innerHTML = `
+                ${isVerified ? '<div class="psi-verified">✓ Cédula verificada</div>' : ''}
+                <div class="psi-card-top">
+                    <div class="psi-av">🧠</div>
+                    <div>
+                        <div class="psi-name">${nombre}</div>
+                        <span class="psi-tag">${corriente}</span>
+                    </div>
+                </div>
+                <div class="psi-chips">
+                    <div class="psi-chip"><span>Modalidad</span>${modalidad}</div>
+                    <div class="psi-chip"><span>Horario</span>${horario}</div>
+                    <div class="psi-chip"><span>Experiencia</span>${experiencia}</div>
+                    <div class="psi-chip"><span>Áreas</span>${areas}</div>
+                </div>
+                <div class="psi-footer">
+                    <span class="psi-costo">${costo}</span>
+                    <span class="psi-disp">Disponibilidad: ${disp}</span>
+                </div>`;
+            track.appendChild(slide);
+
+            // Dot
+            const dot = document.createElement("button");
+            dot.className = "slideshow-dot" + (idx === 0 ? " active" : "");
+            dot.onclick = () => goToSlide(idx);
+            dots.appendChild(dot);
+
+            idx++;
+        });
+
+        slideTotal = idx;
+        slideIndex = 0;
+        updateSlideCounter();
+        startSlideTimer();
+
+    } catch(e) {
+        track.innerHTML = `<div class="slideshow-loading">Los perfiles estarán disponibles pronto.</div>`;
+    }
+})();
+
+function goToSlide(n) {
+    const slides = document.querySelectorAll(".slide-card");
+    const dotEls = document.querySelectorAll(".slideshow-dot");
+    if (!slides.length) return;
+
+    slides[slideIndex].classList.remove("active");
+    dotEls[slideIndex].classList.remove("active");
+
+    slideIndex = (n + slideTotal) % slideTotal;
+
+    slides[slideIndex].classList.add("active");
+    dotEls[slideIndex].classList.add("active");
+    updateSlideCounter();
+}
+
+function slideNext() { clearTimeout(slideTimer); goToSlide(slideIndex + 1); startSlideTimer(); }
+function slidePrev() { clearTimeout(slideTimer); goToSlide(slideIndex - 1); startSlideTimer(); }
+
+function updateSlideCounter() {
+    const el = document.getElementById("slideCounter");
+    if (el && slideTotal > 0) el.innerText = (slideIndex + 1) + " / " + slideTotal;
+}
+
+function startSlideTimer() {
+    clearTimeout(slideTimer);
+    slideTimer = setTimeout(() => { goToSlide(slideIndex + 1); startSlideTimer(); }, 4000);
+}
+
+// ══════════════════════════════════════════════════════
+//  VERIFICACIÓN DE CÉDULA SEP
+// ══════════════════════════════════════════════════════
+let cedulaVerificada = false;
+
+function resetCedulaStatus() {
+    cedulaVerificada = false;
+    const s = document.getElementById("cedulaStatus");
+    s.className = "cedula-status"; s.innerText = "";
+}
+
+async function verificarCedula() {
+    const cedula = document.getElementById("psi_cedula").value.trim();
+    const btn    = document.getElementById("btnVerify");
+    const status = document.getElementById("cedulaStatus");
+
+    if (!cedula) {
+        status.className = "cedula-status err";
+        status.innerText = "Ingresa tu número de cédula primero.";
+        return;
+    }
+    if (!/^\d{7,10}$/.test(cedula)) {
+        status.className = "cedula-status err";
+        status.innerText = "La cédula debe tener entre 7 y 10 dígitos.";
+        return;
+    }
+
+    btn.disabled  = true;
+    btn.innerText = "Verificando...";
+    status.className = "cedula-status pending";
+    status.innerText = "🔍 Consultando el registro de la SEP...";
+
+    try {
+        // API pública de Buho Legal que consume el webservice de la SEP
+        const res = await fetch(
+            `https://www.buholegal.com/api/cedula/${cedula}`,
+            { mode: "cors", headers: { "Accept": "application/json" } }
+        );
+
+        if (res.ok) {
+            const data = await res.json();
+            // Response has array of results when found
+            if (data && ((Array.isArray(data) && data.length > 0) || data.nombre)) {
+                const nombre = Array.isArray(data) ? data[0].nombre : data.nombre;
+                status.className = "cedula-status ok";
+                status.innerText = `✅ Cédula válida — ${nombre || "Profesional verificado"}`;
+                cedulaVerificada = true;
+            } else {
+                status.className = "cedula-status err";
+                status.innerText = "❌ No se encontró esta cédula en el registro SEP. Verifica el número.";
+                cedulaVerificada = false;
+            }
+        } else {
+            throw new Error("HTTP " + res.status);
+        }
+    } catch(e) {
+        // CORS or network error — fallback: mark as pending manual review
+        status.className = "cedula-status pending";
+        status.innerText = "⏳ No pudimos conectar con la SEP en este momento. Tu cédula quedará como pendiente de verificación manual por nuestro equipo (máx. 24 h).";
+        cedulaVerificada = "pendiente";
+    }
+
+    btn.disabled  = false;
+    btn.innerText = "🔍 Verificar";
+}
+
+// ══════════════════════════════════════════════════════
+//  AUTH TABS
+// ══════════════════════════════════════════════════════
+function showAuthTab(tab) {
+    document.getElementById('view-paciente').style.display  = tab === 'paciente'  ? 'block' : 'none';
+    document.getElementById('view-psicologo').style.display = tab === 'psicologo' ? 'block' : 'none';
+    document.getElementById('view-login').style.display     = tab === 'login'     ? 'block' : 'none';
+    document.getElementById('tab-paciente').classList.toggle('active',  tab === 'paciente');
+    document.getElementById('tab-psicologo').classList.toggle('active', tab === 'psicologo');
+    document.getElementById('tab-login').classList.toggle('active',     tab === 'login');
+}
+
+// ══════════════════════════════════════════════════════
+//  PREGUNTAS
+// ══════════════════════════════════════════════════════
+const preguntas = [
+    { q: "¿Cómo prefieres tomar terapia?", opts: ["Presencial", "En línea", "Me da igual"] },
+    { q: "¿Qué tan lejos estarías dispuesto a atenderte?", opts: ["Solo en mi ciudad", "En cualquier lugar del país", "En cualquier parte del mundo"] },
+    { q: "¿Para quién es la terapia?", opts: ["Niño o adolescente", "Adulto o adulto mayor", "Grupo de distintas edades"] },
+    { q: "Tipo de terapia que buscas", opts: ["Individual", "Pareja o familiar", "Grupal"] },
+    { q: "Motivo principal de consulta", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
+    { q: "¿Cómo te gustaría que fuera la terapia?", opts: ["Con ejercicios y tareas prácticas", "Mezcla de conversación y herramientas", "Conversación profunda y reflexión"] },
+    { q: "¿Qué tipo de enfoque te gustaría más?", opts: ["Que me enseñe estrategias para cambiar pensamientos, hábitos y dinámicas, enfocado en soluciones", "Que me ayude a aumentar la conciencia, la aceptación y el crecimiento personal", "Que exploremos mi historia personal y patrones relacionales"] },
+    { q: "¿Qué estilo prefieres en tu terapeuta?", opts: ["Directo y orientado a soluciones", "Colaborativo", "Más reflexivo"] },
+    { q: "¿Qué esperas principalmente del terapeuta?", opts: ["Herramientas prácticas", "Escucha y comprensión", "Análisis profundo de mis patrones"] },
+    { q: "¿Te gustaría que tu terapia incluya elementos relacionados con alguna religión o espiritualidad?", opts: ["No, prefiero una terapia sin enfoque religioso", "Podría estar bien si se usan elementos espirituales de forma general", "Sí, me gustaría que la terapia incluya mi religión o creencias espirituales"], special: "religion" },
+    { q: "¿Cuánto tiempo crees que necesitarás terapia?", opts: ["Pocas sesiones", "Algunos meses", "Proceso largo"] },
+    { q: "¿Con qué frecuencia te gustaría tener sesiones?", opts: ["Cada semana", "Cada 15 días", "Flexible"] },
+    { q: "Preferencia de género del terapeuta", opts: ["Mujer", "Hombre", "Indistinto"] },
+    { q: "¿Te gustaría que tu terapeuta tome en cuenta alguno de estos aspectos?", opts: ["Prefiero una terapia enfocada principalmente en herramientas psicológicas clínicas", "Me gustaría que el terapeuta también considere mi contexto cultural o social", "Me gustaría que el terapeuta pueda integrar mis creencias espirituales o religiosas"] },
+    { q: "¿En qué horario puedes tomar terapia?", opts: ["Mañana", "Tarde", "Noche o fines de semana"] },
+    { q: "¿Cuál es tu presupuesto por sesión?", opts: ["Menos de $500", "$500–$1,000", "Más de $700"] },
+    { q: "¿Te importa la experiencia del terapeuta?", opts: ["No mucho", "Algo", "Mucho"] },
+    { q: "¿Qué nivel de formación prefieres en tu terapeuta?", opts: ["Licenciatura", "Maestría", "Doctorado o especialización avanzada"] },
+    { q: "¿Te interesan otras actividades además de terapia individual?", opts: ["No", "Tal vez talleres o grupos", "Sí, ambas"] },
+    { q: "¿Qué tan pronto necesitas empezar terapia?", opts: ["Puedo esperar", "Pronto", "Lo antes posible"] }
+];
+
+const preguntasPsi = [
+    { q: "Modalidad de atención que ofreces principalmente", opts: ["Presencial", "En línea", "Híbrida (ambas)"] },
+    { q: "Ubicación o alcance geográfico", opts: ["Local", "Nacional", "Internacional"] },
+    { q: "Población con la que trabajas principalmente", opts: ["Niños/adolescentes", "Adultos/Adultos mayores", "Todas las edades"] },
+    { q: "Tipo de terapia que ofreces", opts: ["Individual", "Pareja/familiar", "Grupal"] },
+    { q: "Áreas principales de atención", opts: ["Ansiedad, depresión, regulación emocional, duelo", "Evaluación y terapia neuropsicológica", "Trastornos conductuales o de personalidad"] },
+    { q: "Nivel de estructura de tu terapia", opts: ["Muy estructurada con tareas y ejercicios", "Moderadamente estructurada", "Más reflexiva y exploratoria"] },
+    { q: "Enfoque terapéutico predominante", opts: ["TCC, Breve o Sistémica", "Humanista o Contextual (ACT, DBT, FAP, AC, Mindfulness)", "Psicoanálisis o Psicodinámica"] },
+    { q: "Estilo de intervención", opts: ["Directivo (orientación clara y estrategias)", "Colaborativo", "Exploratorio"] },
+    { q: "Rol del terapeuta en sesión", opts: ["Enseñar herramientas prácticas", "Escuchar y reflexionar juntos", "Analizar patrones profundos"] },
+    { q: "¿Tu práctica clínica integra alguna religión o creencia?", opts: ["No, mi práctica es completamente secular", "Sí, integro principios espirituales de manera general cuando el paciente lo solicita", "Sí, mi práctica se basa o se inspira en una tradición religiosa específica"], special: "religion" },
+    { q: "Duración promedio del proceso", opts: ["Corto plazo (1–3 meses)", "Mediano plazo (3–12 meses)", "Largo plazo"] },
+    { q: "Frecuencia recomendada", opts: ["Semanal", "Quincenal", "Flexible"] },
+    { q: "Género de pacientes con los que te especializas", opts: ["Mujeres", "Hombres", "Indistinto"] },
+    { q: "Enfoque cultural o social en tu práctica", opts: ["Enfoque general clínico", "Enfoque con sensibilidad cultural y social", "Enfoque que integra valores religiosos o espirituales"] },
+    { q: "Horarios de atención", opts: ["Mañana", "Tarde", "Noche/fines de semana"] },
+    { q: "Costo por sesión", opts: ["Menos de $500 MXN", "$500–$1,000 MXN", "Más de $1,000 MXN"] },
+    { q: "Experiencia profesional", opts: ["1–3 años", "4–10 años", "Más de 10 años"] },
+    { q: "Nivel de especialización", opts: ["Licenciatura", "Maestría o especialidad", "Doctorado o certificaciones avanzadas"] },
+    { q: "Modalidades adicionales", opts: ["Solo sesiones individuales", "Talleres o grupos", "Ambas"] },
+    { q: "Disponibilidad para nuevos pacientes", opts: ["Limitada", "Moderada", "Alta"] }
+];
+
+let current = 0, respuestas = [];
+let currentPsi = 0, respuestasPsi = [];
+
+function friendlyError(code) {
+    const map = {
+        "auth/email-already-in-use": "Este correo ya está registrado.",
+        "auth/invalid-email":        "El correo no es válido.",
+        "auth/weak-password":        "La contraseña debe tener al menos 6 caracteres.",
+        "auth/user-not-found":       "No encontramos una cuenta con ese correo.",
+        "auth/wrong-password":       "Contraseña incorrecta.",
+        "auth/too-many-requests":    "Demasiados intentos. Intenta más tarde.",
+    };
+    return map[code] || "Ocurrió un error. Intenta de nuevo.";
+}
+
+async function login() {
+    const correo   = document.getElementById("login-correo").value.trim();
+    const password = document.getElementById("login-password").value;
+    const errEl    = document.getElementById("login-error");
+    if (!correo || !password) { errEl.innerText = "Ingresa tu correo y contraseña."; return; }
+    errEl.innerText = "";
+    try {
+        await auth.signInWithEmailAndPassword(correo, password);
+        window.location.href = "dashboard.html";
+    } catch(e) { errEl.innerText = friendlyError(e.code); }
+}
+
+async function startQuiz() {
+    const nombre   = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const correo   = document.getElementById("correo").value.trim();
+    const password = document.getElementById("password").value;
+    const errEl    = document.getElementById("paciente-error");
+    if (!nombre || !apellido || !correo || !password) { errEl.innerText = "Por favor completa todos los campos."; return; }
+    errEl.innerText = ""; respuestas = []; current = 0;
+    try {
+        await auth.createUserWithEmailAndPassword(correo, password);
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2").style.display = "block";
+        showQuestion();
+    } catch(e) { errEl.innerText = friendlyError(e.code); }
+}
+
+function showQuestion() {
+    const q = preguntas[current];
+    const pct = (current / preguntas.length) * 100;
+    document.getElementById("progress").innerText = "Pregunta " + (current+1) + " de " + preguntas.length;
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("question").innerText = q.q;
+    const d = document.getElementById("options"); d.innerHTML = "";
+    document.getElementById("religion_sub").style.display = "none";
+    q.opts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn"; btn.innerText = opt;
+        btn.onclick = () => {
+            if (q.special === "religion" && opt === q.opts[2]) {
+                document.getElementById("religion_sub").style.display = "block";
+            } else { nextQuestion(opt); }
+        };
+        d.appendChild(btn);
     });
 }
 
-async function buscarDireccionEdit() {
-    const input  = document.getElementById("edit_consultorio").value.trim();
-    const btn    = document.getElementById("btnBuscarEdit");
-    const resDiv = document.getElementById("editDirResultados");
+function confirmarReligionPaciente() {
+    nextQuestion("Sí, integra creencia: " + document.getElementById("religion_select").value);
+}
+function nextQuestion(answer) {
+    respuestas.push(answer);
+    document.getElementById("religion_sub").style.display = "none";
+    if (current < preguntas.length - 1) { current++; showQuestion(); } else { finish(); }
+}
+function prevQuestion() {
+    if (current > 0) { current--; respuestas.pop(); showQuestion(); }
+}
+
+async function startQuizPsi() {
+    const nombre      = document.getElementById("psi_nombre").value.trim();
+    const apellido    = document.getElementById("psi_apellido").value.trim();
+    const correo      = document.getElementById("psi_correo").value.trim();
+    const password    = document.getElementById("psi_password").value;
+    const cedula      = document.getElementById("psi_cedula").value.trim();
+    const enfoque     = document.getElementById("psi_enfoque").value.trim();
+    const consultorio = document.getElementById("psi_consultorio").value.trim();
+    const errEl       = document.getElementById("psicologo-error");
+
+    if (!nombre || !apellido || !correo || !password || !cedula || !enfoque || !consultorio) {
+        errEl.innerText = "Por favor completa todos los campos."; return;
+    }
+    if (!cedulaVerificada) {
+        errEl.innerText = "Por favor verifica tu cédula profesional antes de continuar."; return;
+    }
+
+    errEl.innerText = ""; respuestasPsi = []; currentPsi = 0;
+    try {
+        await auth.createUserWithEmailAndPassword(correo, password);
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2_psi").style.display = "block";
+        showPsiQuestion();
+    } catch(e) { errEl.innerText = friendlyError(e.code); }
+}
+
+function showPsiQuestion() {
+    const q = preguntasPsi[currentPsi];
+    const pct = (currentPsi / preguntasPsi.length) * 100;
+    document.getElementById("psi_progress").innerText = "Pregunta " + (currentPsi+1) + " de " + preguntasPsi.length;
+    document.getElementById("psi_progressFill").style.width = pct + "%";
+    document.getElementById("psi_question").innerText = q.q;
+    const d = document.getElementById("psi_options"); d.innerHTML = "";
+    document.getElementById("psi_religion_sub").style.display = "none";
+    q.opts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn"; btn.innerText = opt;
+        btn.onclick = () => {
+            if (q.special === "religion" && opt === q.opts[2]) {
+                document.getElementById("psi_religion_sub").style.display = "block";
+            } else { nextPsiQuestion(opt); }
+        };
+        d.appendChild(btn);
+    });
+}
+
+function confirmarReligionPsi() {
+    nextPsiQuestion("Sí, práctica basada en tradición: " + document.getElementById("psi_religion_select").value);
+}
+function nextPsiQuestion(answer) {
+    respuestasPsi.push(answer);
+    document.getElementById("psi_religion_sub").style.display = "none";
+    if (currentPsi < preguntasPsi.length - 1) { currentPsi++; showPsiQuestion(); } else { finishPsi(); }
+}
+function prevPsiQuestion() {
+    if (currentPsi > 0) { currentPsi--; respuestasPsi.pop(); showPsiQuestion(); }
+}
+
+async function finish() {
+    const user = auth.currentUser;
+    if (!user) return alert("Error: usuario no autenticado");
+    try {
+        await db.collection("usuarios").doc(user.uid).set({
+            tipo: "paciente", email: user.email,
+            nombre: document.getElementById("nombre").value + " " + document.getElementById("apellido").value,
+            ubicacion: document.getElementById("ubicacion").value,
+            motivo: document.getElementById("motivo").value,
+            respuestas, fecha: new Date()
+        });
+        document.getElementById("step2").style.display = "none";
+        document.getElementById("final").style.display = "block";
+    } catch(e) { alert("Error guardando datos"); }
+}
+
+async function finishPsi() {
+    const user = auth.currentUser;
+    if (!user) return alert("Error: usuario no autenticado");
+    try {
+        await db.collection("psicologos").doc(user.uid).set({
+            tipo: "psicologo", email: user.email,
+            nombre: document.getElementById("psi_nombre").value + " " + document.getElementById("psi_apellido").value,
+            cedula: document.getElementById("psi_cedula").value,
+            cedulaVerificada: cedulaVerificada,
+            enfoque: document.getElementById("psi_enfoque").value,
+            consultorio: document.getElementById("psi_consultorio").value,
+            consultorioLat: window._consultorioLat || null,
+            consultorioLng: window._consultorioLng || null,
+            sobreMi:     document.getElementById("psi_sobre_mi").value.trim(),
+            respuestas: respuestasPsi, fecha: new Date()
+        });
+        document.getElementById("step2_psi").style.display = "none";
+        document.getElementById("final").style.display = "block";
+    } catch(e) { alert("Error guardando datos"); }
+}
+
+function goHome() { window.location.href = "dashboard.html"; }
+
+// ── NOMINATIM + LEAFLET (sin API key) ───────────────────────────────────────
+window._consultorioLat = null;
+window._consultorioLng = null;
+let _indexLeafletMap    = null;
+let _indexLeafletMarker = null;
+
+async function buscarDireccion() {
+    const input  = document.getElementById("psi_consultorio").value.trim();
+    const btn    = document.getElementById("btnBuscarDir");
+    const resDiv = document.getElementById("dirResultados");
     if (!input) return;
 
-    btn.innerText = "...";
-    btn.disabled  = true;
+    btn.innerText  = "Buscando...";
+    btn.disabled   = true;
     resDiv.style.display = "none";
     resDiv.innerHTML = "";
 
@@ -1690,7 +1401,7 @@ async function buscarDireccionEdit() {
         const data = await res.json();
 
         if (!data.length) {
-            resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--muted);">No se encontraron resultados.</div>`;
+            resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--muted);">No se encontraron resultados. Intenta con más detalle.</div>`;
             resDiv.style.display = "block";
         } else {
             resDiv.style.display = "block";
@@ -1700,102 +1411,47 @@ async function buscarDireccionEdit() {
                 item.innerText = r.display_name;
                 item.onmouseover = () => item.style.background = "#f0f6f4";
                 item.onmouseout  = () => item.style.background = "white";
-                item.onclick = () => seleccionarDireccionEdit(r);
+                item.onclick = () => seleccionarDireccion(r);
                 resDiv.appendChild(item);
             });
         }
     } catch(e) {
-        resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--error);">Error de conexión.</div>`;
+        resDiv.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:var(--error);">Error de conexión. Intenta de nuevo.</div>`;
         resDiv.style.display = "block";
     }
 
-    btn.innerText = "🔍";
+    btn.innerText = "🔍 Buscar";
     btn.disabled  = false;
 }
 
-async function seleccionarDireccionEdit(lugar) {
+function seleccionarDireccion(lugar) {
     const lat = parseFloat(lugar.lat);
     const lng = parseFloat(lugar.lon);
-    window._editConsultorioLat = lat;
-    window._editConsultorioLng = lng;
+    window._consultorioLat = lat;
+    window._consultorioLng = lng;
 
-    document.getElementById("edit_consultorio").value = lugar.display_name;
-    document.getElementById("editDirResultados").style.display = "none";
-    document.getElementById("editMapAddress").innerText = lugar.display_name;
+    document.getElementById("psi_consultorio").value = lugar.display_name;
+    document.getElementById("dirResultados").style.display = "none";
+    document.getElementById("mapAddress").innerText = lugar.display_name;
+    document.getElementById("mapPreview").style.display = "block";
 
-    const preview = document.getElementById("editMapPreview");
-    preview.style.display = "block";
-
-    // Carga Leaflet solo ahora que se necesita
-    await loadLeafletIfNeeded();
-    if (!window.L) return; // Leaflet no disponible, no muestra mapa
-
-    if (!_editLeafletMap) {
-        _editLeafletMap = L.map("editMapMini", { zoomControl: true }).setView([lat, lng], 16);
+    // Init or update Leaflet map
+    if (!_indexLeafletMap) {
+        _indexLeafletMap = L.map("mapMini", { zoomControl: true }).setView([lat, lng], 16);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: "© OpenStreetMap"
-        }).addTo(_editLeafletMap);
-        _editLeafletMarker = L.marker([lat, lng]).addTo(_editLeafletMap);
+        }).addTo(_indexLeafletMap);
+        _indexLeafletMarker = L.marker([lat, lng]).addTo(_indexLeafletMap);
     } else {
-        _editLeafletMap.setView([lat, lng], 16);
-        _editLeafletMarker.setLatLng([lat, lng]);
+        _indexLeafletMap.setView([lat, lng], 16);
+        _indexLeafletMarker.setLatLng([lat, lng]);
     }
-    setTimeout(() => _editLeafletMap.invalidateSize(), 100);
+    // Force map resize after display:block
+    setTimeout(() => _indexLeafletMap.invalidateSize(), 100);
 }
 
-// ══════════════════════════════════════════════════════
-//  ADMIN: DESCONEXIONES
-// ══════════════════════════════════════════════════════
-async function loadAdminDesconexiones() {
-    const container = document.getElementById("desconexionesList");
-    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
 
-    const reasonLabels = {
-        ya_no_necesito:       "Ya no necesito el servicio",
-        encontre_algo_mejor:  "Encontró algo mejor",
-        muy_lejos:            "El psicólogo está muy lejos",
-        informacion_no_precisa: "La información no es precisa",
-        problema_psicologo:   "Tuvo un problema con el psicólogo"
-    };
-
-    try {
-        let snap;
-        try { snap = await db.collection("disconnections").orderBy("timestamp","desc").limit(80).get(); }
-        catch(e) { snap = await db.collection("disconnections").limit(80).get(); }
-
-        if (snap.empty) {
-            container.innerHTML=`<div class="empty-state"><div class="empty-icon">💔</div><h3>Sin desconexiones registradas</h3><p>Aquí aparecerán las razones por las que los usuarios rompieron conexiones.</p></div>`;
-            return;
-        }
-
-        // Group by reason
-        const counts = {};
-        snap.forEach(doc => {
-            const r = doc.data().reason || "otro";
-            counts[r] = (counts[r]||0) + 1;
-        });
-
-        let html = `<div class="stat-grid" style="margin-bottom:20px;">`;
-        Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([r,n]) => {
-            html += `<div class="stat-box"><div class="stat-num">${n}</div><div class="stat-lbl">${reasonLabels[r]||r}</div></div>`;
-        });
-        html += `</div><h4 style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Registros recientes</h4>`;
-
-        container.innerHTML = html;
-
-        snap.forEach(doc => {
-            const d   = doc.data();
-            const ts  = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}) : "—";
-            const row = document.createElement("div");
-            row.className = "disc-row";
-            row.innerHTML = `<strong>${d.userType==="paciente"?"Paciente":"Psicólogo"}</strong> rompió conexión con <strong>${d.otherName||d.otherUid||"—"}</strong><br>
-                <span>Razón: ${reasonLabels[d.reason]||d.reason||"—"} · ${ts}</span>`;
-            container.appendChild(row);
-        });
-    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; console.error(e); }
-}
 </script>
-
 </body>
 </html>
 
