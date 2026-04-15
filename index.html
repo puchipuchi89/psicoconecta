@@ -30,7 +30,7 @@
         }
 
         /* ══════════════════════════════════════════
-           STICKjhnijkjY NAV
+           STICKY N89jokjAV
         ══════════════════════════════════════════ */
         .top-nav {
             position: sticky; top: 0; z-index: 200;
@@ -186,6 +186,38 @@
 
         /* QUIZ */
         #step2, #step2_psi { display: none; }
+
+        /* ── AVISO DE PRIVACIDAD (step intermedio) ── */
+        #step-privacy { display: none; }
+        .privacy-scroll-box {
+            max-height: 280px; overflow-y: auto;
+            background: var(--cream); border: 1.5px solid var(--border);
+            border-radius: 12px; padding: 16px 18px;
+            font-size: 13px; color: var(--muted); line-height: 1.75;
+            margin-bottom: 18px;
+        }
+        .privacy-scroll-box h3 {
+            font-family: 'DM Serif Display', serif; font-size: 14px;
+            color: var(--sage-dark); margin: 16px 0 6px; font-weight: 400;
+        }
+        .privacy-scroll-box h3:first-child { margin-top: 0; }
+        .privacy-scroll-box p  { margin-bottom: 8px; }
+        .privacy-scroll-box ul { padding-left: 16px; margin-bottom: 8px; }
+        .privacy-scroll-box li { margin-bottom: 3px; }
+        .privacy-scroll-box strong { color: var(--text); font-weight: 600; }
+        .privacy-check-row {
+            display: flex; align-items: flex-start; gap: 10px;
+            background: #e8f4f1; border-radius: 10px;
+            padding: 12px 14px; margin-bottom: 16px; cursor: pointer;
+        }
+        .privacy-check-row input[type="checkbox"] {
+            width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+            accent-color: var(--sage); cursor: pointer;
+        }
+        .privacy-check-row label {
+            font-size: 13px; color: var(--sage-dark); font-weight: 500;
+            cursor: pointer; text-transform: none; letter-spacing: 0;
+        }
         .quiz-progress { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
         .progress-bar { height: 4px; background: var(--border); border-radius: 99px; margin-bottom: 24px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--sage); border-radius: 99px; transition: width 0.3s ease; }
@@ -756,6 +788,64 @@
             <button class="btn-secondary" onclick="prevPsiQuestion()">← Atrás</button>
         </div>
 
+        <!-- AVISO DE PRIVACIDAD (paso intermedio) -->
+        <div id="step-privacy">
+            <h2 style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--sage-dark);margin-bottom:4px;">Aviso de Privacidad</h2>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Por favor lee y acepta nuestro aviso antes de crear tu cuenta.</p>
+
+            <div class="privacy-scroll-box">
+                <h3>Identidad y Domicilio del Responsable</h3>
+                <p>PsicoConecta, con domicilio en <strong>Av. Camino Real a San Andrés Cholula 4002, Emiliano Zapata, 72810 San Andrés Cholula, Pue.</strong>, es responsable del tratamiento y protección de sus datos personales, garantizando su buen uso, protección y confidencialidad.</p>
+
+                <h3>Servicios</h3>
+                <p>La finalidad principal es brindar servicios de calidad relacionados con la salud mental, ofreciendo un espacio donde los profesionales puedan presentar sus servicios y generar una vinculación con las necesidades de los pacientes, considerando distintos enfoques terapéuticos y especialidades.</p>
+
+                <h3>Datos Personales Tratados</h3>
+                <ul>
+                    <li><strong>Identificación:</strong> Nombre completo, fecha de nacimiento, sexo, ubicación geográfica.</li>
+                    <li><strong>Contacto:</strong> Correo electrónico, número telefónico.</li>
+                    <li><strong>Perfil y preferencias:</strong> Motivo de consulta, tipo de terapia, modalidad de consulta, creencias.</li>
+                    <li><strong>Profesionales:</strong> Cédula profesional, formación académica, especialidades, enfoque terapéutico, costos y disponibilidad.</li>
+                    <li><strong>Técnicos:</strong> Dirección IP, identificadores de dispositivo, sistema operativo, historial de navegación dentro de la app.</li>
+                </ul>
+
+                <h3>Finalidades del Tratamiento</h3>
+                <ul>
+                    <li>Crear y administrar la cuenta del usuario.</li>
+                    <li>Facilitar la búsqueda y conexión entre usuarios y profesionales.</li>
+                    <li>Generar recomendaciones de terapeutas según las preferencias del usuario.</li>
+                    <li>Verificar las credenciales profesionales de los psicólogos registrados.</li>
+                    <li>Garantizar el funcionamiento y seguridad de la plataforma.</li>
+                </ul>
+
+                <h3>Uso de Cookies</h3>
+                <p>Recopilamos información técnica básica mediante cookies para recordar preferencias, facilitar el inicio de sesión y mejorar la funcionalidad. El usuario puede configurar su navegador para rechazarlas, aunque algunas funciones podrían verse afectadas.</p>
+
+                <h3>Seguridad</h3>
+                <p>Aplicamos cifrado HTTPS, almacenamiento en servidores protegidos y controles de acceso restringido. Ningún sistema es completamente infalible frente a riesgos de seguridad.</p>
+
+                <h3>Actualizaciones</h3>
+                <p>Si realizamos cambios sustanciales a este Aviso, te notificaremos mediante un aviso destacado antes de que el cambio entre en vigencia.</p>
+
+                <h3>Consentimiento</h3>
+                <p>El registro de una cuenta implica que has leído, comprendido y aceptado este Aviso de Privacidad, otorgando tu consentimiento para el tratamiento de tus datos personales conforme a lo aquí establecido.</p>
+            </div>
+
+            <div class="privacy-check-row" onclick="document.getElementById('privacyCheck').click()">
+                <input type="checkbox" id="privacyCheck" onclick="event.stopPropagation();togglePrivacyBtn()" />
+                <label for="privacyCheck">He leído y acepto el Aviso de Privacidad de PsicoConecta y autorizo el tratamiento de mis datos personales.</label>
+            </div>
+
+            <button class="btn-primary" id="btnAceptarPrivacidad" onclick="aceptarPrivacidad()" disabled
+                style="opacity:0.5;cursor:not-allowed;">
+                Aceptar y crear cuenta
+            </button>
+            <button class="btn-secondary" onclick="rechazarPrivacidad()" style="margin-top:10px;">
+                ← Cancelar
+            </button>
+            <div id="privacy-error" class="error-msg"></div>
+        </div>
+
         <!-- FINAL -->
         <div id="final">
             <div class="final-icon">✅</div>
@@ -1322,7 +1412,49 @@ function prevPsiQuestion() {
     if (currentPsi > 0) { currentPsi--; respuestasPsi.pop(); showPsiQuestion(); }
 }
 
-async function finish() {
+// ── AVISO DE PRIVACIDAD ──────────────────────────────────────────────────────
+let _pendingFinish = null; // "paciente" | "psicologo"
+
+function showPrivacyScreen(tipo) {
+    _pendingFinish = tipo;
+    document.getElementById("step2").style.display     = "none";
+    document.getElementById("step2_psi").style.display = "none";
+    document.getElementById("step-privacy").style.display = "block";
+    document.getElementById("privacyCheck").checked    = false;
+    document.getElementById("privacy-error").innerText = "";
+    const btn = document.getElementById("btnAceptarPrivacidad");
+    btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed";
+}
+
+function togglePrivacyBtn() {
+    const checked = document.getElementById("privacyCheck").checked;
+    const btn = document.getElementById("btnAceptarPrivacidad");
+    btn.disabled = !checked;
+    btn.style.opacity = checked ? "1" : "0.5";
+    btn.style.cursor  = checked ? "pointer" : "not-allowed";
+}
+
+function rechazarPrivacidad() {
+    // Cancela: vuelve al quiz correspondiente
+    document.getElementById("step-privacy").style.display = "none";
+    if (_pendingFinish === "paciente") {
+        document.getElementById("step2").style.display = "block";
+    } else {
+        document.getElementById("step2_psi").style.display = "block";
+    }
+}
+
+async function aceptarPrivacidad() {
+    if (!document.getElementById("privacyCheck").checked) return;
+    document.getElementById("btnAceptarPrivacidad").innerText = "Guardando...";
+    if (_pendingFinish === "paciente") {
+        await _doFinishPaciente();
+    } else {
+        await _doFinishPsi();
+    }
+}
+
+async function _doFinishPaciente() {
     const user = auth.currentUser;
     if (!user) return alert("Error: usuario no autenticado");
     try {
@@ -1331,14 +1463,17 @@ async function finish() {
             nombre: document.getElementById("nombre").value + " " + document.getElementById("apellido").value,
             ubicacion: document.getElementById("ubicacion").value,
             motivo: document.getElementById("motivo").value,
-            respuestas, fecha: new Date()
+            respuestas, privacidadAceptada: true, fecha: new Date()
         });
-        document.getElementById("step2").style.display = "none";
+        document.getElementById("step-privacy").style.display = "none";
         document.getElementById("final").style.display = "block";
-    } catch(e) { alert("Error guardando datos"); }
+    } catch(e) {
+        document.getElementById("btnAceptarPrivacidad").innerText = "Aceptar y crear cuenta";
+        document.getElementById("privacy-error").innerText = "Error al guardar datos. Intenta de nuevo.";
+    }
 }
 
-async function finishPsi() {
+async function _doFinishPsi() {
     const user = auth.currentUser;
     if (!user) return alert("Error: usuario no autenticado");
     try {
@@ -1349,13 +1484,20 @@ async function finishPsi() {
             cedulaVerificada: cedulaVerificada,
             enfoque: document.getElementById("psi_enfoque").value,
             consultorio: document.getElementById("psi_consultorio").value,
-            sobreMi:     document.getElementById("psi_sobre_mi").value.trim(),
-            respuestas: respuestasPsi, fecha: new Date()
+            sobreMi: document.getElementById("psi_sobre_mi").value.trim(),
+            respuestas: respuestasPsi, privacidadAceptada: true, fecha: new Date()
         });
-        document.getElementById("step2_psi").style.display = "none";
+        document.getElementById("step-privacy").style.display = "none";
         document.getElementById("final").style.display = "block";
-    } catch(e) { alert("Error guardando datos"); }
+    } catch(e) {
+        document.getElementById("btnAceptarPrivacidad").innerText = "Aceptar y crear cuenta";
+        document.getElementById("privacy-error").innerText = "Error al guardar datos. Intenta de nuevo.";
+    }
 }
+
+// Las funciones finish / finishPsi ahora solo redirigen a la pantalla de privacidad
+async function finish()    { showPrivacyScreen("paciente");  }
+async function finishPsi() { showPrivacyScreen("psicologo"); }
 
 function goHome() { window.location.href = "dashboard.html"; }
 
