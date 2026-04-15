@@ -576,6 +576,9 @@
 </div>
 
 <!-- ── FIREBASE ── -->
+<!-- EmailJS (envío de correos sin backend) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -589,6 +592,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
+
+// ══════════════════════════════════════════════
+//  EMAILJS — Reemplaza con tus claves
+//  1. Crea cuenta gratis en emailjs.com
+//  2. Crea un Email Service (Gmail u otro)
+//  3. Crea un Email Template con las variables indicadas
+//  4. Copia tu Public Key, Service ID y Template ID aquí
+// ══════════════════════════════════════════════
+const EMAILJS_PUBLIC_KEY  = "IFb3_WZEaIAOQNSWL";
+const EMAILJS_SERVICE_ID  = "service_vbuyuyl";
+const EMAILJS_TEMPLATE_ID = "template_smm76ua";
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
 // ══════════════════════════════════════════════
 //  ⬇️  REEMPLAZA CON TU CORREO DE ADMINISTRADOR
@@ -928,7 +943,28 @@ function openReportFromCard() {
     openReport(uid, d.nombre||"Usuario");
 }
 
-async function likeProfile() {
+// ── ENVÍO DE CORREOS DE MATCH ─────────────────────────────────────────────────
+async function sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct) {
+    const siteUrl = window.location.origin + "/psicoconecta/dashboard.html";
+    const year    = new Date().getFullYear();
+
+    const sendOne = (toEmail, toNombre, matchNombre, role) =>
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email:     toEmail,
+            to_name:      toNombre,
+            match_name:   matchNombre,
+            compatibility: pct + "%",
+            role,                          // "psicólogo" o "paciente"
+            site_url:     siteUrl,
+            year
+        });
+
+    // Enviamos ambos correos en paralelo; si uno falla no bloquea al otro
+    await Promise.allSettled([
+        sendOne(pacEmail,  pacNombre,  psiNombre, "psicólogo"),
+        sendOne(psiEmail,  psiNombre,  pacNombre, "paciente")
+    ]);
+}
     if (profileIndex>=profilesQueue.length) return;
     const {uid:targetUid, data:targetData, pct} = profilesQueue[profileIndex];
     document.getElementById("swipe-card").classList.add("fly-right");
@@ -946,6 +982,23 @@ async function likeProfile() {
             else { const pd = await db.collection("psicologos").doc(psiUid).get(); if(pd.exists) greetingText=pd.data().saludoAutomatico||""; }
             await db.collection("chats").doc(matchId).set({ participants:[pacUid,psiUid], lastMessage:greetingText||"¡Es un match!", lastMessageTime:new Date(), unread:{[pacUid]:greetingText?1:0,[psiUid]:0} });
             if (greetingText) await db.collection("chats").doc(matchId).collection("messages").add({ sender:psiUid, text:greetingText, timestamp:new Date(), auto:true });
+
+            // ── CORREOS DE NOTIFICACIÓN ──
+            try {
+                // Obtener emails y nombres de ambos
+                const [pacDoc, psiDoc] = await Promise.all([
+                    db.collection("usuarios").doc(pacUid).get(),
+                    db.collection("psicologos").doc(psiUid).get()
+                ]);
+                const pacEmail  = pacDoc.exists  ? (pacDoc.data().email  || "") : "";
+                const pacNombre = pacDoc.exists  ? (pacDoc.data().nombre || "Paciente")    : "Paciente";
+                const psiEmail  = psiDoc.exists  ? (psiDoc.data().email  || "") : "";
+                const psiNombre = psiDoc.exists  ? (psiDoc.data().nombre || "Psicólogo/a") : "Psicólogo/a";
+                if (pacEmail && psiEmail) {
+                    sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct);
+                }
+            } catch(emailErr) { console.warn("No se pudo enviar email de match:", emailErr); }
+
             setTimeout(() => {
                 document.getElementById("matchModalText").innerText = `¡Tú y ${targetData.nombre||"tu nueva conexión"} hicieron match! ${greetingText?"El psicólogo ya te envió un saludo. 💬":"Ya pueden escribirse."}`;
                 document.getElementById("matchModal").classList.add("show");
