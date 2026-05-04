@@ -30,7 +30,7 @@
         }
 
         /* ══════════════════════════════════════════
-           STICKY N89jokjAV
+           STICKY N89jasddddokjAV
         ══════════════════════════════════════════ */
         .top-nav {
             position: sticky; top: 0; z-index: 200;
@@ -91,6 +91,39 @@
             margin-bottom: 20px;
         }
         .hero-title em { color: var(--sage); font-style: italic; }
+
+        /* ── TRANSICIÓN DE HERO SEGÚN TAB ── */
+        .hero-left { transition: none; }
+
+        .hero-badge { transition: background 0.35s, color 0.35s; }
+        .hero-title { transition: opacity 0.25s; }
+        .hero-desc  { transition: opacity 0.25s; }
+
+        /* Modo psicólogo: acento violeta */
+        .hero-left.mode-psi .hero-badge {
+            background: var(--admin-light);
+            color: var(--admin);
+        }
+        .hero-left.mode-psi .hero-title em {
+            color: var(--admin);
+        }
+        .hero-left.mode-psi .hero-trust {
+            background: var(--admin-light);
+            color: var(--admin);
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+        .hero-left.mode-psi .psi-slideshow {
+            border-color: #c4b8ff;
+        }
+        .hero-left.mode-psi .slideshow-eyebrow { color: var(--admin); }
+
+        /* Resaltar la pestaña de psicólogo en modo activo */
+        .auth-tab#tab-psicologo.active {
+            background: var(--warm-white);
+            color: var(--admin);
+            box-shadow: 0 2px 8px rgba(74,60,124,0.15);
+        }
 
         .hero-desc {
             font-size: 16px; color: var(--muted); line-height: 1.7;
@@ -546,15 +579,15 @@
 <section class="hero" id="registro">
 
     <!-- IZQUIERDA: copy -->
-    <div class="hero-left">
-        <div class="hero-badge">🇲🇽 Plataforma mexicana de salud mental</div>
+    <div class="hero-left" id="heroLeft">
+        <div class="hero-badge" id="heroBadge">🇲🇽 Plataforma mexicana de salud mental</div>
 
-        <h1 class="hero-title">
+        <h1 class="hero-title" id="heroTitle">
             Encuentra tu psicólogo<br>
-            <em>ideal para ti</em>
+            <em id="heroTitleEm">ideal para ti</em>
         </h1>
 
-        <p class="hero-desc">
+        <p class="hero-desc" id="heroDesc">
             PsicoConecta usa un algoritmo de compatibilidad para conectarte con el terapeuta cuyo enfoque, estilo y disponibilidad se alinean con lo que necesitas. Sin adivinar. Sin perder tiempo.
         </p>
 
@@ -605,8 +638,8 @@
 
         <div id="step1">
             <div class="auth-tabs">
-                <button class="auth-tab active" id="tab-paciente"  onclick="showAuthTab('paciente')">Crear perfil</button>
-                <button class="auth-tab"        id="tab-psicologo" onclick="showAuthTab('psicologo')">Soy psicólogo</button>
+                <button class="auth-tab active" id="tab-paciente"  onclick="showAuthTab('paciente')">Soy paciente</button>
+                <button class="auth-tab"        id="tab-psicologo" onclick="showAuthTab('psicologo')">Soy psicólogo/a</button>
                 <button class="auth-tab"        id="tab-login"     onclick="showAuthTab('login')">Iniciar sesión</button>
             </div>
 
@@ -1221,13 +1254,62 @@ async function verificarCedula() {
 // ══════════════════════════════════════════════════════
 //  AUTH TABS
 // ══════════════════════════════════════════════════════
+// ── Contenido del hero por modo ───────────────────────────────────────────────
+const heroContent = {
+    paciente: {
+        badge:  "🇲🇽 Plataforma mexicana de salud mental",
+        title:  "Encuentra tu psicólogo",
+        em:     "ideal para ti",
+        desc:   "PsicoConecta usa un algoritmo de compatibilidad para conectarte con el terapeuta cuyo enfoque, estilo y disponibilidad se alinean con lo que necesitas. Sin adivinar. Sin perder tiempo.",
+        trust:  "Tu información es privada y está protegida. Solo tu match puede ver tu contacto.",
+        mode:   ""
+    },
+    psicologo: {
+        badge:  "🧠 Plataforma para profesionales de salud mental",
+        title:  "Conecta con pacientes",
+        em:     "que puedas acompañar",
+        desc:   "PsicoConecta te muestra pacientes cuyas necesidades, preferencias y valores se alinean con tu enfoque y estilo terapéutico. Llena tu agenda con personas con las que realmente puedes trabajar.",
+        trust:  "Verificamos tu cédula y protegemos tus datos. Solo tus matches ven tu contacto.",
+        mode:   "mode-psi"
+    },
+    login: {
+        badge:  "🇲🇽 Plataforma mexicana de salud mental",
+        title:  "Bienvenido de",
+        em:     "vuelta",
+        desc:   "Inicia sesión para ver tus conexiones, explorar perfiles y continuar donde lo dejaste.",
+        trust:  "Tu información es privada y está protegida.",
+        mode:   ""
+    }
+};
+
 function showAuthTab(tab) {
+    // Formularios
     document.getElementById('view-paciente').style.display  = tab === 'paciente'  ? 'block' : 'none';
     document.getElementById('view-psicologo').style.display = tab === 'psicologo' ? 'block' : 'none';
     document.getElementById('view-login').style.display     = tab === 'login'     ? 'block' : 'none';
+
+    // Tabs activos
     document.getElementById('tab-paciente').classList.toggle('active',  tab === 'paciente');
     document.getElementById('tab-psicologo').classList.toggle('active', tab === 'psicologo');
     document.getElementById('tab-login').classList.toggle('active',     tab === 'login');
+
+    // Hero dinámico
+    const c = heroContent[tab] || heroContent.paciente;
+    const heroLeft  = document.getElementById("heroLeft");
+    const heroTitle = document.getElementById("heroTitle");
+
+    document.getElementById("heroBadge").innerText  = c.badge;
+    document.getElementById("heroTitleEm").innerText = c.em;
+    // Replace title text node (first child) without removing the <em>
+    heroTitle.childNodes[0].textContent = c.title + "\n";
+    document.getElementById("heroDesc").innerText   = c.desc;
+
+    const trustEl = document.querySelector("#heroLeft .hero-trust");
+    if (trustEl) trustEl.innerHTML = `<span class="trust-icon">🔒</span> ${c.trust}`;
+
+    // Clase de modo visual
+    heroLeft.classList.remove("mode-psi");
+    if (c.mode) heroLeft.classList.add(c.mode);
 }
 
 // ══════════════════════════════════════════════════════
