@@ -45,6 +45,31 @@
         .nav-tabs { background:var(--warm-white); border-bottom:1px solid var(--border); display:flex; padding:0 16px; overflow-x:auto; }
         .nav-tab { padding:14px 16px; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; position:relative; }
         .nav-tab.active { color:var(--sage-dark); border-bottom-color:var(--sage); }
+
+        /* Botón Explorar — destacado siempre */
+        #navExplorar {
+            background: var(--sage);
+            color: white !important;
+            border-radius: 20px;
+            padding: 8px 20px;
+            margin: 8px 6px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: none !important;
+            box-shadow: 0 3px 12px rgba(74,124,111,0.35);
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+        #navExplorar:hover {
+            background: var(--sage-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 16px rgba(74,124,111,0.45);
+        }
+        #navExplorar.active {
+            background: var(--sage-dark);
+            border-bottom: none !important;
+            color: white !important;
+        }
+        .nav-tab.active { color:var(--sage-dark); border-bottom-color:var(--sage); }
         .nav-tab.admin-tab { color:var(--admin); }
         .nav-tab.admin-tab.active { border-bottom-color:var(--admin); color:var(--admin); }
         .unread-dot { display:inline-block; width:8px; height:8px; background:#e74c3c; border-radius:50%; position:absolute; top:10px; right:6px; }
@@ -316,11 +341,11 @@
 
 <!-- ── NAV ── -->
 <nav class="nav-tabs" id="navBar">
-    <button class="nav-tab active" id="navFeed"       onclick="openTab('feed')">🏠 Conexiones</button>
-    <button class="nav-tab"        id="navMensajes"   onclick="openTab('mensajes')">💬 Mensajes</button>
-    <button class="nav-tab"        id="navExplorar"   onclick="openTab('explorar')">🔍 Explorar</button>
-    <button class="nav-tab"        id="navRespuestas" onclick="openTab('respuestas')">📋 Respuestas</button>
-    <button class="nav-tab"        id="navPerfil"     onclick="openTab('perfil')">👤 Mi perfil</button>
+    <button class="nav-tab"         id="navFeed"       onclick="openTab('feed')">🏠 Conexiones</button>
+    <button class="nav-tab"         id="navMensajes"   onclick="openTab('mensajes')">💬 Mensajes</button>
+    <button class="nav-tab active"  id="navExplorar"   onclick="openTab('explorar')">🔍 Explorar</button>
+    <button class="nav-tab"         id="navRespuestas" onclick="openTab('respuestas')">📋 Respuestas</button>
+    <button class="nav-tab"         id="navPerfil"     onclick="openTab('perfil')">👤 Mi perfil</button>
     <!-- Admin tab: hidden by default, shown for admins -->
     <button class="nav-tab admin-tab" id="navAdmin" onclick="openTab('admin')" style="display:none;">🛡️ Admin</button>
 </nav>
@@ -683,7 +708,7 @@ auth.onAuthStateChanged(async user => {
     updateLastSeen();
     lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
     document.getElementById("loading").style.display = "none";
-    openTab("feed");
+    openTab("explorar");
     checkUnreadMessages();
 });
 
