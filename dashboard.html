@@ -27,7 +27,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEADJEJEER ── */
+        /* ── HEAssDJEJEER ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -40,6 +40,86 @@
         .type-badge.admin     { background:#1a0a3c; color:#c4b8ff; letter-spacing:0.3px; }
         .btn-logout { background:transparent; border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; }
         .btn-logout:hover { border-color:var(--error); color:var(--error); }
+
+        /* ── LINK ENFOQUES EN HEADER ── */
+        .btn-enfoques {
+            background: transparent; border: 1px solid var(--border);
+            border-radius: 20px; padding: 5px 14px;
+            font-family: 'DM Sans', sans-serif; font-size: 13px;
+            color: var(--sage-dark); cursor: pointer; font-weight: 500;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .btn-enfoques:hover { background: #f0f6f4; border-color: var(--sage-light); }
+
+        /* ── PANEL DE ENFOQUES ── */
+        .enfoques-overlay {
+            display: none; position: fixed; inset: 0;
+            background: var(--cream); z-index: 200;
+            overflow-y: auto;
+        }
+        .enfoques-overlay.open { display: block; }
+
+        .enfoques-header {
+            position: sticky; top: 0; background: var(--warm-white);
+            border-bottom: 1px solid var(--border); padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            z-index: 10;
+        }
+        .enfoques-header-title {
+            font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark);
+        }
+        .btn-close-enfoques {
+            background: transparent; border: 1px solid var(--border);
+            border-radius: 8px; padding: 6px 14px; font-family: 'DM Sans', sans-serif;
+            font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s;
+        }
+        .btn-close-enfoques:hover { border-color: var(--error); color: var(--error); }
+
+        .enfoques-body { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+
+        .enfoques-intro {
+            text-align: center; margin-bottom: 40px;
+        }
+        .enfoques-intro h2 {
+            font-family: 'DM Serif Display', serif; font-size: clamp(26px,4vw,36px);
+            color: var(--sage-dark); margin-bottom: 12px;
+        }
+        .enfoques-intro p { font-size: 15px; color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+        .enfoques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .enfoque-card {
+            background: var(--warm-white); border-radius: 18px;
+            border: 1px solid var(--border); overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .enfoque-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+
+        .enfoque-illustration {
+            height: 140px; display: flex; align-items: center; justify-content: center;
+            font-size: 64px; position: relative; overflow: hidden;
+        }
+
+        .enfoque-body { padding: 20px; }
+        .enfoque-tag {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .enfoque-name {
+            font-family: 'DM Serif Display', serif; font-size: 19px;
+            color: var(--sage-dark); margin-bottom: 8px;
+        }
+        .enfoque-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+        .enfoque-util {
+            background: var(--cream); border-radius: 10px; padding: 12px 14px;
+            font-size: 13px; color: var(--text); line-height: 1.6;
+        }
+        .enfoque-util strong { color: var(--sage-dark); }
 
         /* ── NAV ── */
         .nav-tabs { background:var(--warm-white); border-bottom:1px solid var(--border); display:flex; padding:0 16px; overflow-x:auto; }
@@ -321,6 +401,81 @@
         .disc-row { background:var(--warm-white); border-radius:10px; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); font-size:13px; }
         .disc-row strong { color:var(--text); }
         .disc-row span { color:var(--muted); }
+        /* ══ PANEL MASCOTA ══ */
+        .mascota-overlay {
+            display:none; position:fixed; inset:0;
+            background:var(--cream); z-index:200; overflow-y:auto;
+        }
+        .mascota-overlay.open { display:block; }
+
+        .mascota-header {
+            position:sticky; top:0; background:var(--warm-white);
+            border-bottom:1px solid var(--border); padding:14px 24px;
+            display:flex; align-items:center; justify-content:space-between; z-index:10;
+        }
+        .mascota-header-title { font-family:'DM Serif Display',serif; font-size:20px; color:var(--sage-dark); }
+
+        .mascota-body { max-width:700px; margin:0 auto; padding:32px 20px 60px; }
+
+        /* STAGE */
+        .mascota-stage {
+            background: linear-gradient(160deg, #e8f4f1 0%, #f5f0ff 100%);
+            border-radius: 24px; border: 1px solid var(--border);
+            display:flex; flex-direction:column; align-items:center;
+            padding: 32px 24px 24px; margin-bottom: 28px; position:relative;
+        }
+        .mascota-level-badge {
+            position:absolute; top:14px; left:16px;
+            font-size:11px; font-weight:700; color:var(--sage-dark);
+            background:#d4edda; padding:3px 10px; border-radius:20px;
+        }
+
+        /* MASCOTA SVG CONTAINER */
+        .mascota-creature {
+            width:130px; height:130px; position:relative;
+            display:flex; align-items:center; justify-content:center;
+            margin-bottom:10px;
+        }
+        #mascotaSvg { width:120px; height:120px; transition:all 0.4s ease; }
+        #mascotaHat { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:36px; pointer-events:none; transition:all 0.3s; }
+
+        .mascota-name { font-family:'DM Serif Display',serif; font-size:20px; color:var(--sage-dark); margin-bottom:4px; }
+        .mascota-subtitle { font-size:13px; color:var(--muted); }
+
+        /* XP BAR */
+        .xp-wrap { width:100%; max-width:280px; margin-top:16px; }
+        .xp-label { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-weight:600; margin-bottom:5px; }
+        .xp-bar { height:8px; background:var(--border); border-radius:99px; overflow:hidden; }
+        .xp-fill { height:100%; background:var(--sage); border-radius:99px; transition:width 0.6s ease; }
+
+        /* CUSTOMIZAR */
+        .cust-section { margin-bottom:26px; }
+        .cust-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); margin-bottom:12px; }
+        .cust-options { display:flex; flex-wrap:wrap; gap:8px; }
+        .cust-btn {
+            padding:8px 16px; border:1.5px solid var(--border); border-radius:10px;
+            background:var(--warm-white); font-size:22px; cursor:pointer;
+            transition:all 0.18s; display:flex; flex-direction:column; align-items:center; gap:2px;
+        }
+        .cust-btn span { font-size:10px; color:var(--muted); font-family:'DM Sans',sans-serif; }
+        .cust-btn.selected { border-color:var(--sage); background:#f0f6f4; box-shadow:0 0 0 2px rgba(74,124,111,0.2); }
+        .cust-btn.locked { opacity:0.4; cursor:default; filter:grayscale(1); }
+        .cust-btn.locked:hover { border-color:var(--border); background:var(--warm-white); }
+
+        /* LOGROS */
+        .logros-list { display:flex; flex-direction:column; gap:10px; }
+        .logro-item {
+            display:flex; align-items:center; gap:14px;
+            background:var(--warm-white); border-radius:12px;
+            padding:14px 16px; border:1px solid var(--border);
+        }
+        .logro-icon { font-size:26px; flex-shrink:0; width:38px; text-align:center; }
+        .logro-info { flex:1; }
+        .logro-name { font-weight:600; font-size:14px; color:var(--text); margin-bottom:2px; }
+        .logro-desc { font-size:12px; color:var(--muted); }
+        .logro-check { font-size:20px; flex-shrink:0; }
+        .logro-item.done { border-color:var(--sage-light); background:#f4faf8; }
+        .logro-item.done .logro-name { color:var(--sage-dark); }
     </style>
 </head>
 
@@ -333,11 +488,210 @@
         <span class="logo-text">PsicoConecta</span>
     </div>
     <div class="header-right">
+        <button class="btn-enfoques" onclick="openMascota()" style="border-color:#dde8e5;">🐾 Tu mascota</button>
+        <button class="btn-enfoques" onclick="openEnfoques()">📚 Enfoques</button>
         <span class="user-email" id="headerEmail"></span>
         <span class="type-badge" id="typeBadge"></span>
         <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
 </header>
+
+<!-- ══ PANEL DE ENFOQUES ══════════════════════════════════════════════════════ -->
+<div class="enfoques-overlay" id="enfoquesPanel">
+
+    <div class="enfoques-header">
+        <span class="enfoques-header-title">🧠 Enfoques psicológicos</span>
+        <button class="btn-close-enfoques" onclick="closeEnfoques()">✕ Cerrar</button>
+    </div>
+
+    <div class="enfoques-body">
+
+        <div class="enfoques-intro">
+            <h2>¿Qué tipo de terapia<br><em style="font-style:italic;color:var(--sage);">es para ti?</em></h2>
+            <p>Existen muchos enfoques terapéuticos y ninguno es mejor que otro — cada uno funciona diferente según la persona y lo que necesita. Aquí te explicamos los más comunes en palabras simples.</p>
+        </div>
+
+        <div class="enfoques-grid">
+
+            <!-- TCC -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#e8f4f1,#c8e6de);">🧩</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#d4edda;color:#1a6b37;">Estructurado · Práctico</span>
+                    <div class="enfoque-name">Terapia Cognitivo-Conductual (TCC)</div>
+                    <p class="enfoque-desc">Es como un entrenamiento mental. Trabajas junto al terapeuta para identificar pensamientos que te hacen daño ("no soy suficiente", "todo me sale mal") y aprendes a cambiarlos por otros más útiles. Incluye tareas prácticas entre sesiones.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes ansiedad, fobias, depresión, pensamientos negativos repetitivos o quieres ver resultados rápidos y concretos.</div>
+                </div>
+            </div>
+
+            <!-- Humanista -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#fff8e8,#fde8c0);">🌱</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#fff3cd;color:#856404;">Empático · Crecimiento</span>
+                    <div class="enfoque-name">Terapia Humanista</div>
+                    <p class="enfoque-desc">Se enfoca en quién eres tú, no solo en tus síntomas. El terapeuta no te juzga — crea un espacio seguro donde puedas explorar tus sentimientos y encontrar tu propio camino. La idea es que tú tienes la capacidad de crecer y sanar.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> sientes que no te conoces bien, tienes baja autoestima, quieres entenderte mejor o buscas un espacio donde simplemente ser escuchado.</div>
+                </div>
+            </div>
+
+            <!-- Psicoanalítica -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#ede8f4,#d8d0ee);">🔍</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#ede8f4;color:#4a3c7c;">Profundo · Exploratorio</span>
+                    <div class="enfoque-name">Psicoanálisis / Psicodinámica</div>
+                    <p class="enfoque-desc">Explora las raíces profundas de tus emociones y comportamientos. Muchas de las cosas que hacemos vienen de experiencias pasadas que no siempre recordamos conscientemente. Este enfoque te ayuda a descubrir esas conexiones.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> sientes que repites los mismos patrones en tus relaciones, quieres entender por qué eres como eres o buscas un proceso de autoconocimiento profundo.</div>
+                </div>
+            </div>
+
+            <!-- Sistémica -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#e8f0ff,#c8d8ff);">👥</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#e0e8ff;color:#2a3c8c;">Relacional · Familiar</span>
+                    <div class="enfoque-name">Terapia Sistémica</div>
+                    <p class="enfoque-desc">Ve los problemas como parte de un sistema de relaciones, no solo como algo individual. Tus problemas no existen en el vacío — están conectados con tu familia, tus parejas o tu entorno. La terapia trabaja esas conexiones.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes conflictos familiares, de pareja o con personas cercanas, o sientes que tu entorno afecta mucho tu bienestar.</div>
+                </div>
+            </div>
+
+            <!-- ACT / Contextual -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#e8faf4,#b8edd8);">🎯</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#d4edda;color:#1a6b37;">Mindfulness · Aceptación</span>
+                    <div class="enfoque-name">Terapia Contextual (ACT, DBT, Mindfulness)</div>
+                    <p class="enfoque-desc">En lugar de luchar contra tus emociones difíciles, aprendes a aceptarlas sin que te controlen. Usas técnicas de atención plena (mindfulness) para observar tus pensamientos sin quedarte atrapado en ellos y actuar según tus valores.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes dificultad para manejar emociones intensas, ansiedad crónica, o quieres vivir más conectado con lo que realmente importa para ti.</div>
+                </div>
+            </div>
+
+            <!-- Gestalt -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#fff0f5,#ffd0e0);">✨</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#fde8f0;color:#8c2a4c;">Presente · Experiencial</span>
+                    <div class="enfoque-name">Gestalt</div>
+                    <p class="enfoque-desc">Se centra en el aquí y el ahora. En lugar de hablar solo del pasado, el terapeuta te invita a notar lo que sientes en este momento — en tu cuerpo, tus emociones, tus reacciones. Es muy vivencial y activo.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> te disconnectas de tus emociones, vives demasiado en el pasado o el futuro, o buscas una terapia más viva y menos solo de hablar.</div>
+                </div>
+            </div>
+
+            <!-- Breve / Soluciones -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#f0f8ff,#c8e4ff);">⚡</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#cce5ff;color:#0047ab;">Corto plazo · Efectivo</span>
+                    <div class="enfoque-name">Terapia Breve / Enfocada en Soluciones</div>
+                    <p class="enfoque-desc">Va directo al grano. En lugar de pasar meses explorando el pasado, se enfoca en qué quieres cambiar y cómo lograrlo. El terapeuta te ayuda a encontrar tus propios recursos para resolver el problema específico que te trajo.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes un problema concreto que resolver, poco tiempo o presupuesto, o simplemente quieres resultados prácticos y rápidos.</div>
+                </div>
+            </div>
+
+            <!-- Neuropsicológica -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#f5e8ff,#ddb8ff);">🔬</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#ede8f4;color:#6a2c9c;">Evaluación · Cerebro</span>
+                    <div class="enfoque-name">Evaluación y Terapia Neuropsicológica</div>
+                    <p class="enfoque-desc">Combina psicología y neurociencia para entender cómo funciona tu cerebro. Incluye evaluaciones para identificar dificultades de memoria, atención, aprendizaje u otras funciones cognitivas, y planes de rehabilitación.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes problemas de memoria o atención, sospechas de TDAH o dislexia, o estás recuperándote de una lesión cerebral o enfermedad neurológica.</div>
+                </div>
+            </div>
+
+        </div><!-- /grid -->
+
+        <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:40px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;">
+            Recuerda que muchos psicólogos trabajan con enfoques integrativos, combinando técnicas de varias corrientes según lo que cada persona necesita. Lo más importante es encontrar a alguien con quien te sientas cómodo.
+        </p>
+
+    </div><!-- /body -->
+
+</div><!-- /panel -->
+
+<!-- ══ PANEL MASCOTA ══════════════════════════════════════════════════════ -->
+<div class="mascota-overlay" id="mascotaPanel">
+
+    <div class="mascota-header">
+        <span class="mascota-header-title">🐾 Tu mascota</span>
+        <button class="btn-close-enfoques" onclick="closeMascota()">✕ Cerrar</button>
+    </div>
+
+    <div class="mascota-body">
+
+        <!-- STAGE -->
+        <div class="mascota-stage">
+            <div class="mascota-level-badge" id="levelBadge">Nivel 1 ⭐</div>
+
+            <div class="mascota-creature">
+                <span id="mascotaHat"></span>
+                <svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="60" r="50" fill="#4a7c6f"/>
+                    <circle cx="44" cy="50" r="7" fill="white" opacity="0.9"/>
+                    <circle cx="76" cy="50" r="7" fill="white" opacity="0.9"/>
+                    <circle cx="46" cy="50" r="3.5" fill="#1e2d2b"/>
+                    <circle cx="78" cy="50" r="3.5" fill="#1e2d2b"/>
+                    <path d="M44 72 Q60 84 76 72" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <div class="mascota-name" id="mascotaDisplayName">Sabi</div>
+            <div class="mascota-subtitle" id="mascotaSubtitle">Tu compañero de bienestar</div>
+
+            <div class="xp-wrap">
+                <div class="xp-label">
+                    <span>Progreso</span>
+                    <span id="xpText">0 / 4 logros</span>
+                </div>
+                <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+            </div>
+        </div>
+
+        <!-- ELEGIR FORMA -->
+        <div class="cust-section">
+            <div class="cust-title">🎨 Forma de tu mascota</div>
+            <div class="cust-options" id="shapeOptions">
+                <button class="cust-btn selected" onclick="setShape('circle')" id="shape-circle">⬤<span>Bola</span></button>
+                <button class="cust-btn" onclick="setShape('flower')" id="shape-flower">🌸<span>Flor</span></button>
+                <button class="cust-btn" onclick="setShape('star')" id="shape-star">⭐<span>Estrella</span></button>
+                <button class="cust-btn" onclick="setShape('triangle')" id="shape-triangle">🔺<span>Triángulo</span></button>
+                <button class="cust-btn" onclick="setShape('square')" id="shape-square">⬛<span>Cuadrado</span></button>
+                <button class="cust-btn" onclick="setShape('diamond')" id="shape-diamond">💎<span>Diamante</span></button>
+            </div>
+        </div>
+
+        <!-- SOMBRERO (desbloqueado en nivel 2) -->
+        <div class="cust-section">
+            <div class="cust-title">🎩 Sombrero <span id="hatLockLabel" style="font-size:10px;color:var(--error);">— Completa el nivel 1 para desbloquear</span></div>
+            <div class="cust-options" id="hatOptions">
+                <button class="cust-btn locked" onclick="setHat('')"    id="hat-none">🚫<span>Ninguno</span></button>
+                <button class="cust-btn locked" onclick="setHat('🎩')"  id="hat-1">🎩<span>Elegante</span></button>
+                <button class="cust-btn locked" onclick="setHat('👒')"  id="hat-2">👒<span>Casual</span></button>
+                <button class="cust-btn locked" onclick="setHat('🪖')"  id="hat-3">🪖<span>Explorador</span></button>
+                <button class="cust-btn locked" onclick="setHat('👑')"  id="hat-4">👑<span>Corona</span></button>
+                <button class="cust-btn locked" onclick="setHat('🎓')"  id="hat-5">🎓<span>Graduado</span></button>
+            </div>
+        </div>
+
+        <!-- LOGROS NIVEL 1 -->
+        <div class="cust-section">
+            <div class="cust-title">🏆 Logros — Nivel 1</div>
+            <div class="logros-list" id="logrosList"></div>
+        </div>
+
+        <!-- LOGROS NIVEL 2 (bloqueado) -->
+        <div class="cust-section" id="nivel2Section" style="opacity:0.5;">
+            <div class="cust-title">🔒 Nivel 2 — Próximamente</div>
+            <div style="background:var(--warm-white);border-radius:12px;padding:20px;border:1px solid var(--border);text-align:center;">
+                <div style="font-size:36px;margin-bottom:10px;">🔒</div>
+                <p style="font-size:13px;color:var(--muted);line-height:1.6;">Completa todos los logros del Nivel 1 para desbloquear nuevas misiones, accesorios y sorpresas.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <!-- ── NAV ── -->
 <nav class="nav-tabs" id="navBar">
@@ -1425,6 +1779,190 @@ async function resolveReport(reportId, status) {
 // ── MODAL ────────────────────────────────────────────────────────────────────
 function closeModal()    { document.getElementById("matchModal").classList.remove("show"); }
 function goToMensajes()  { closeModal(); openTab("mensajes"); }
+
+// ── PANEL DE ENFOQUES ────────────────────────────────────────────────────────
+function openEnfoques() {
+    document.getElementById("enfoquesPanel").classList.add("open");
+    document.body.style.overflow = "hidden";
+}
+function closeEnfoques() {
+    document.getElementById("enfoquesPanel").classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+// ══════════════════════════════════════════════════════
+//  MASCOTA
+// ══════════════════════════════════════════════════════
+const MASCOTA_KEY_SHAPE = "mascota_shape";
+const MASCOTA_KEY_HAT   = "mascota_hat";
+
+const SHAPES = {
+    circle: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" fill="#4a7c6f"/><circle cx="44" cy="50" r="7" fill="white" opacity="0.9"/><circle cx="76" cy="50" r="7" fill="white" opacity="0.9"/><circle cx="46" cy="50" r="3.5" fill="#1e2d2b"/><circle cx="78" cy="50" r="3.5" fill="#1e2d2b"/><path d="M44 72 Q60 84 76 72" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`,
+    flower:  `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="30" rx="18" ry="24" fill="#e87fa0"/><ellipse cx="60" cy="90" rx="18" ry="24" fill="#e87fa0"/><ellipse cx="30" cy="60" rx="24" ry="18" fill="#e87fa0"/><ellipse cx="90" cy="60" rx="24" ry="18" fill="#e87fa0"/><ellipse cx="37" cy="37" rx="16" ry="22" fill="#f4a0c0" transform="rotate(45 37 37)"/><ellipse cx="83" cy="37" rx="16" ry="22" fill="#f4a0c0" transform="rotate(-45 83 37)"/><ellipse cx="37" cy="83" rx="16" ry="22" fill="#f4a0c0" transform="rotate(-45 37 83)"/><ellipse cx="83" cy="83" rx="16" ry="22" fill="#f4a0c0" transform="rotate(45 83 83)"/><circle cx="60" cy="60" r="22" fill="#ffd166"/><circle cx="52" cy="56" r="4" fill="#1e2d2b"/><circle cx="68" cy="56" r="4" fill="#1e2d2b"/><path d="M50 68 Q60 76 70 68" stroke="#1e2d2b" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+    star:    `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><polygon points="60,8 74,45 115,45 83,68 94,105 60,82 26,105 37,68 5,45 46,45" fill="#f9c74f"/><circle cx="50" cy="56" r="5" fill="#1e2d2b"/><circle cx="70" cy="56" r="5" fill="#1e2d2b"/><path d="M46 72 Q60 82 74 72" stroke="#1e2d2b" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+    triangle:`<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><polygon points="60,8 112,108 8,108" fill="#7b68ee" rx="8"/><circle cx="48" cy="72" r="6" fill="white" opacity="0.9"/><circle cx="72" cy="72" r="6" fill="white" opacity="0.9"/><circle cx="50" cy="72" r="3" fill="#1e2d2b"/><circle cx="74" cy="72" r="3" fill="#1e2d2b"/><path d="M48 86 Q60 95 72 86" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+    square:  `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="100" rx="16" fill="#ff6b6b"/><circle cx="44" cy="50" r="7" fill="white" opacity="0.9"/><circle cx="76" cy="50" r="7" fill="white" opacity="0.9"/><circle cx="46" cy="50" r="3.5" fill="#1e2d2b"/><circle cx="78" cy="50" r="3.5" fill="#1e2d2b"/><path d="M44 72 Q60 84 76 72" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`,
+    diamond: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><polygon points="60,4 116,60 60,116 4,60" fill="#06d6a0"/><circle cx="48" cy="56" r="6" fill="white" opacity="0.9"/><circle cx="72" cy="56" r="6" fill="white" opacity="0.9"/><circle cx="50" cy="56" r="3" fill="#1e2d2b"/><circle cx="74" cy="56" r="3" fill="#1e2d2b"/><path d="M46 72 Q60 82 74 72" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`
+};
+
+const LOGROS_DEF = [
+    { id:"created_account", icon:"🎉", name:"¡Bienvenido!", desc:"Crea tu cuenta en PsicoConecta" },
+    { id:"first_match",     icon:"💚", name:"Primer match",  desc:"Haz match con un psicólogo o paciente" },
+    { id:"sobre_mi",        icon:"✍️", name:"Cuéntate",      desc:"Escribe tu sección 'Sobre mí'" },
+    { id:"first_message",   icon:"💬", name:"Rompe el hielo", desc:"Envía tu primer mensaje a un match" }
+];
+
+let mascotaState = {
+    shape: "circle",
+    hat:   "",
+    logros: {}
+};
+let hatsUnlocked = false;
+
+function openMascota() {
+    document.getElementById("mascotaPanel").classList.add("open");
+    document.body.style.overflow = "hidden";
+    loadMascotaState();
+}
+function closeMascota() {
+    document.getElementById("mascotaPanel").classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+async function loadMascotaState() {
+    if (!currentUser) return;
+    try {
+        const coll = userType === "psicologo" ? "psicologos" : "usuarios";
+        const snap = await db.collection(coll).doc(currentUser.uid).get();
+        if (snap.exists) {
+            const d = snap.data();
+            mascotaState.shape  = d.mascotaShape  || "circle";
+            mascotaState.hat    = d.mascotaHat    || "";
+            mascotaState.logros = d.mascotaLogros || {};
+
+            // Auto-detectar logros
+            if (!mascotaState.logros.created_account) {
+                mascotaState.logros.created_account = true;
+            }
+            if (!mascotaState.logros.first_match) {
+                const myF = userType === "paciente" ? "paciente" : "psicologo";
+                const mSnap = await db.collection("matches").where(myF,"==",currentUser.uid).limit(1).get();
+                if (!mSnap.empty) mascotaState.logros.first_match = true;
+            }
+            if (!mascotaState.logros.sobre_mi && d.sobreMi && d.sobreMi.trim().length > 0) {
+                mascotaState.logros.sobre_mi = true;
+            }
+            if (!mascotaState.logros.first_message) {
+                const myF = userType === "paciente" ? "paciente" : "psicologo";
+                const mSnap = await db.collection("matches").where(myF,"==",currentUser.uid).limit(5).get();
+                for (const mdoc of mSnap.docs) {
+                    const msgSnap = await db.collection("chats").doc(mdoc.id).collection("messages")
+                        .where("sender","==",currentUser.uid).limit(1).get();
+                    if (!msgSnap.empty) { mascotaState.logros.first_message = true; break; }
+                }
+            }
+
+            // Guardar logros actualizados
+            await db.collection(coll).doc(currentUser.uid).set({
+                mascotaShape:  mascotaState.shape,
+                mascotaHat:    mascotaState.hat,
+                mascotaLogros: mascotaState.logros
+            }, { merge: true });
+        }
+    } catch(e) { console.warn("Mascota load error:", e); }
+
+    renderMascota();
+}
+
+function renderMascota() {
+    // Shape
+    const svgWrap = document.getElementById("mascotaSvg");
+    if (svgWrap && svgWrap.parentNode) {
+        svgWrap.outerHTML = SHAPES[mascotaState.shape] || SHAPES.circle;
+    }
+
+    // Hat
+    document.getElementById("mascotaHat").innerText = mascotaState.hat;
+
+    // Shape buttons selected state
+    document.querySelectorAll("#shapeOptions .cust-btn").forEach(b => {
+        b.classList.toggle("selected", b.id === "shape-" + mascotaState.shape);
+    });
+
+    // XP / logros
+    const completados = LOGROS_DEF.filter(l => mascotaState.logros[l.id]).length;
+    const total       = LOGROS_DEF.length;
+    hatsUnlocked      = completados >= total;
+
+    document.getElementById("xpText").innerText = completados + " / " + total + " logros";
+    document.getElementById("xpFill").style.width = Math.round((completados/total)*100) + "%";
+
+    if (hatsUnlocked) {
+        document.getElementById("levelBadge").innerText = "Nivel 2 🌟";
+        document.getElementById("hatLockLabel").style.display = "none";
+        document.querySelectorAll("#hatOptions .cust-btn").forEach(b => {
+            b.classList.remove("locked");
+        });
+        document.getElementById("nivel2Section").style.opacity = "1";
+    } else {
+        document.getElementById("levelBadge").innerText = "Nivel 1 ⭐";
+    }
+
+    // Hat selected state
+    document.querySelectorAll("#hatOptions .cust-btn").forEach(b => {
+        if (!b.classList.contains("locked")) {
+            const hatVal = b.id === "hat-none" ? "" : b.innerText.trim().charAt(0);
+            // compare via onclick attribute
+        }
+    });
+    // simpler: mark selected by hat value
+    document.querySelectorAll("#hatOptions .cust-btn").forEach(b => {
+        const emoji = b.querySelector ? b.childNodes[0]?.textContent?.trim() : "";
+        b.classList.toggle("selected",
+            (b.id === "hat-none" && mascotaState.hat === "") ||
+            (b.id !== "hat-none" && emoji === mascotaState.hat)
+        );
+    });
+
+    // Render logros list
+    const list = document.getElementById("logrosList");
+    list.innerHTML = LOGROS_DEF.map(l => {
+        const done = !!mascotaState.logros[l.id];
+        return `<div class="logro-item ${done?"done":""}">
+            <div class="logro-icon">${l.icon}</div>
+            <div class="logro-info">
+                <div class="logro-name">${l.name}</div>
+                <div class="logro-desc">${l.desc}</div>
+            </div>
+            <div class="logro-check">${done ? "✅" : "⬜"}</div>
+        </div>`;
+    }).join("");
+}
+
+async function saveMascotaPrefs() {
+    if (!currentUser) return;
+    const coll = userType === "psicologo" ? "psicologos" : "usuarios";
+    try {
+        await db.collection(coll).doc(currentUser.uid).set({
+            mascotaShape:  mascotaState.shape,
+            mascotaHat:    mascotaState.hat,
+            mascotaLogros: mascotaState.logros
+        }, { merge: true });
+    } catch(e) { console.warn("Mascota save error:", e); }
+}
+
+function setShape(shape) {
+    mascotaState.shape = shape;
+    renderMascota();
+    saveMascotaPrefs();
+}
+
+function setHat(hat) {
+    if (!hatsUnlocked) return;
+    mascotaState.hat = hat;
+    renderMascota();
+    saveMascotaPrefs();
+}
 
 // ── LOGOUT ───────────────────────────────────────────────────────────────────
 function logout() {
