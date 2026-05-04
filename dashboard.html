@@ -27,7 +27,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEAssDJEJEER ── */
+        /* ── HEADJsxxxEJEER ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -935,6 +935,7 @@
 </div>
 
 <!-- ── FIREBASE ── -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -948,6 +949,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
+
+// ── EMAILJS ──────────────────────────────────────────────────────────────────
+emailjs.init("IFb3_WZEaIAOQNSWL");
+
+async function sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct) {
+    const siteUrl = "https://puchipuchi89.github.io/psicoconecta/dashboard.html";
+    const params  = (toEmail, toNombre, matchNombre, role) => ({
+        to_email:     toEmail,
+        to_name:      toNombre,
+        match_name:   matchNombre,
+        compatibility: pct + "%",
+        role,
+        site_url:     siteUrl,
+        year:         new Date().getFullYear()
+    });
+    await Promise.allSettled([
+        emailjs.send("service_vbuyuyl", "template_smm76ua", params(pacEmail, pacNombre, psiNombre, "psicólogo")),
+        emailjs.send("service_vbuyuyl", "template_smm76ua", params(psiEmail, psiNombre, pacNombre, "paciente"))
+    ]);
+}
 
 // ══════════════════════════════════════════════
 //  ⬇️  REEMPLAZA CON TU CORREO DE ADMINISTRADOR
@@ -1288,6 +1309,20 @@ async function likeProfile() {
             else { const pd = await db.collection("psicologos").doc(psiUid).get(); if(pd.exists) greetingText=pd.data().saludoAutomatico||""; }
             await db.collection("chats").doc(matchId).set({ participants:[pacUid,psiUid], lastMessage:greetingText||"¡Es un match!", lastMessageTime:new Date(), unread:{[pacUid]:greetingText?1:0,[psiUid]:0} });
             if (greetingText) await db.collection("chats").doc(matchId).collection("messages").add({ sender:psiUid, text:greetingText, timestamp:new Date(), auto:true });
+
+            // ── CORREOS DE NOTIFICACIÓN ──
+            try {
+                const [pacDoc, psiDoc] = await Promise.all([
+                    db.collection("usuarios").doc(pacUid).get(),
+                    db.collection("psicologos").doc(psiUid).get()
+                ]);
+                const pacEmail  = pacDoc.exists  ? (pacDoc.data().email  || "") : "";
+                const pacNombre = pacDoc.exists  ? (pacDoc.data().nombre || "Paciente") : "Paciente";
+                const psiEmail  = psiDoc.exists  ? (psiDoc.data().email  || "") : "";
+                const psiNombre = psiDoc.exists  ? (psiDoc.data().nombre || "Psicólogo/a") : "Psicólogo/a";
+                if (pacEmail && psiEmail) sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct);
+            } catch(emailErr) { console.warn("Email error:", emailErr); }
+
             setTimeout(() => {
                 document.getElementById("matchModalText").innerText = `¡Tú y ${targetData.nombre||"tu nueva conexión"} hicieron match! ${greetingText?"El psicólogo ya te envió un saludo. 💬":"Ya pueden escribirse."}`;
                 document.getElementById("matchModal").classList.add("show");
