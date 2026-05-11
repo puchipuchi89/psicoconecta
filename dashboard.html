@@ -27,7 +27,7 @@
 
         body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
 
-        /* ── HEADJsxxxEJEER ── */
+        /* ── HEADJcacaxxxEJEER ── */
         .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
         .logo { display:flex; align-items:center; gap:8px; }
         .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -1193,7 +1193,7 @@ async function loadFeed() {
         card.className = "match-card";
         card.innerHTML = `
             <div class="match-card-header">
-                <div class="avatar">${cardIsPsi?"🧠":"👤"}</div>
+                <div class="avatar">${getMascotaAvatar(d.mascotaShape,d.mascotaHat)}</div>
                 <div>
                     <div class="match-name">${d.nombre||"Usuario"}</div>
                     <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
@@ -1204,7 +1204,7 @@ async function loadFeed() {
             <div class="contact-row">
                 <span style="color:var(--muted);">📧</span>
                 <span class="contact-email">${d.email||"—"}</span>
-                <button class="btn-chat" onclick="openTab('mensajes');setTimeout(()=>openChat('${matchId}','${otherUid}','${safeName}','${cardIsPsi?"🧠":"👤"}'),200)">💬 Mensaje</button>
+                <button class="btn-chat" onclick="openTab('mensajes');setTimeout(()=>openChat('${matchId}','${otherUid}','${safeName}','${getMascotaAvatar(d.mascotaShape,d.mascotaHat)}'),200)">💬 Mensaje</button>
                 <button class="btn-report-sm" onclick="openReport('${otherUid}','${safeName}')">⚑ Reportar</button>
                 <button class="btn-break" onclick="openBreakModal('${matchId}','${otherUid}','${safeName}')">💔 Romper</button>
             </div>`;
@@ -1269,7 +1269,7 @@ function renderSwipeCard() {
     `;
     card.innerHTML = `
         <div class="sc-top">
-            <div class="sc-avatar">${cardIsPsi?"🧠":"👤"}</div>
+            <div class="sc-avatar">${getMascotaAvatar(d.mascotaShape,d.mascotaHat)}</div>
             <div><div class="sc-name">${d.nombre||"Usuario"}</div><span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span></div>
         </div>
         <div class="compat-bar-wrap">
@@ -1521,7 +1521,7 @@ function renderMyProfile() {
     container.innerHTML=`
         <div class="profile-card">
             <div class="profile-header">
-                <div class="profile-av">${isPsi?"🧠":"👤"}</div>
+                <div class="profile-av">${getMascotaAvatar(d.mascotaShape,d.mascotaHat)}</div>
                 <div><div class="profile-name">${d.nombre||"—"}</div><span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
             </div>
             <div class="profile-section"><div class="ps-title">Información general</div>${infoFields}</div>
@@ -1707,7 +1707,7 @@ function renderFilteredUsers() {
         const cedulaBadge = isPsi ? ` · Cédula: <span class="sbadge ${u.cedulaVerificada===true?"verified":u.cedulaVerificada==="pendiente"?"pending":"rejected"}">${u.cedulaVerificada===true?"✓ Verificada":u.cedulaVerificada==="pendiente"?"⏳ Pendiente":"✗ Rechazada"}</span>` : "";
         const row = document.createElement("div"); row.className="admin-row";
         row.innerHTML=`
-            <div class="admin-row-av">${isPsi?"🧠":"👤"}</div>
+            <div class="admin-row-av">${getMascotaAvatar(d.mascotaShape,d.mascotaHat)}</div>
             <div class="admin-row-info">
                 <div class="admin-row-name">${u.nombre||"—"} <span style="font-size:11px;color:var(--muted);font-weight:400;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
                 <div class="admin-row-email">${u.email||"—"}</div>
@@ -1832,6 +1832,12 @@ const MASCOTA_KEY_SHAPE = "mascota_shape";
 const MASCOTA_KEY_HAT   = "mascota_hat";
 
 const SHAPES = {
+
+heart: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><path d="M60 104 C20 78 6 52 18 32 C28 14 50 16 60 34 C70 16 92 14 102 32 C114 52 100 78 60 104" fill="#ff6b9d"/></svg>`,
+cloud: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="68" rx="40" ry="24" fill="#8ecae6"/></svg>`,
+moon: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><path d="M75 14 A46 46 0 1 0 75 106 A34 34 0 1 1 75 14" fill="#ffd166"/></svg>`,
+leaf: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><path d="M60 10 C100 30 100 90 60 110 C20 90 20 30 60 10" fill="#52b788"/></svg>`,
+
     circle: `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" fill="#4a7c6f"/><circle cx="44" cy="50" r="7" fill="white" opacity="0.9"/><circle cx="76" cy="50" r="7" fill="white" opacity="0.9"/><circle cx="46" cy="50" r="3.5" fill="#1e2d2b"/><circle cx="78" cy="50" r="3.5" fill="#1e2d2b"/><path d="M44 72 Q60 84 76 72" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`,
     flower:  `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="30" rx="18" ry="24" fill="#e87fa0"/><ellipse cx="60" cy="90" rx="18" ry="24" fill="#e87fa0"/><ellipse cx="30" cy="60" rx="24" ry="18" fill="#e87fa0"/><ellipse cx="90" cy="60" rx="24" ry="18" fill="#e87fa0"/><ellipse cx="37" cy="37" rx="16" ry="22" fill="#f4a0c0" transform="rotate(45 37 37)"/><ellipse cx="83" cy="37" rx="16" ry="22" fill="#f4a0c0" transform="rotate(-45 83 37)"/><ellipse cx="37" cy="83" rx="16" ry="22" fill="#f4a0c0" transform="rotate(-45 37 83)"/><ellipse cx="83" cy="83" rx="16" ry="22" fill="#f4a0c0" transform="rotate(45 83 83)"/><circle cx="60" cy="60" r="22" fill="#ffd166"/><circle cx="52" cy="56" r="4" fill="#1e2d2b"/><circle cx="68" cy="56" r="4" fill="#1e2d2b"/><path d="M50 68 Q60 76 70 68" stroke="#1e2d2b" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
     star:    `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><polygon points="60,8 74,45 115,45 83,68 94,105 60,82 26,105 37,68 5,45 46,45" fill="#f9c74f"/><circle cx="50" cy="56" r="5" fill="#1e2d2b"/><circle cx="70" cy="56" r="5" fill="#1e2d2b"/><path d="M46 72 Q60 82 74 72" stroke="#1e2d2b" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
@@ -2219,7 +2225,13 @@ async function loadAdminDesconexiones() {
         });
     } catch(e) { container.innerHTML = "<p style='color:var(--error);'>Error al cargar.</p>"; }
 }
+function getMascotaAvatar(shape, hat=""){
+const icons={circle:"🟢",flower:"🌸",star:"⭐",triangle:"🔺",square:"⬛",diamond:"💎",heart:"💖",cloud:"☁️",moon:"🌙",leaf:"🍃"};
+return (hat||"")+(icons[shape]||"🐾");
+}
 </script>
 
 </body>
 </html>
+
+
