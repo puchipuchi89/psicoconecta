@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PsicoConecta - Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --sage:       #4a7c6f;
+            --sage-light: #6a9e90;
+            --sage-dark:  #2f5248;
+            --cream:      #faf8f4;
+            --warm-white: #ffffff;
+            --text:       #1e2d2b;
+            --muted:      #6b7e7a;
+            --border:     #dde8e5;
+            --error:      #c0392b;
+            --shadow:     0 8px 40px rgba(74,124,111,0.12);
+            --shadow-sm:  0 2px 12px rgba(74,124,111,0.08);
+            --admin:      #4a3c7c;
+            --admin-light:#ede8f4;
+        }
+
+        body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; color:var(--text); padding-bottom:60px; }
+
+        /* ── HEADJsxxxEJEER ── */
+        .dash-header { background:var(--warm-white); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
+        .logo { display:flex; align-items:center; gap:8px; }
+        .logo-icon { width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .logo-text { font-family:'DM Serif Display',serif; font-size:20px; color:var(--sage-dark); }
+        .header-right { display:flex; align-items:center; gap:10px; }
+        .user-email { font-size:12px; color:var(--muted); background:var(--cream); padding:5px 10px; border-radius:20px; border:1px solid var(--border); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .type-badge { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; }
+        .type-badge.paciente  { background:#e8f4f1; color:var(--sage-dark); }
+        .type-badge.psicologo { background:var(--admin-light); color:var(--admin); }
+        .type-badge.admin     { background:#1a0a3c; color:#c4b8ff; letter-spacing:0.3px; }
+        .btn-logout { background:transparent; border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+        .btn-logout:hover { border-color:var(--error); color:var(--error); }
+
+        /* ── LINK ENFOQUES EN HEADER ── */
+        .btn-enfoques {
+            background: transparent; border: 1px solid var(--border);
+            border-radius: 20px; padding: 5px 14px;
+            font-family: 'DM Sans', sans-serif; font-size: 13px;
+            color: var(--sage-dark); cursor: pointer; font-weight: 500;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .btn-enfoques:hover { background: #f0f6f4; border-color: var(--sage-light); }
+
+        /* ── PANEL DE ENFOQUES ── */
+        .enfoques-overlay {
+            display: none; position: fixed; inset: 0;
+            background: var(--cream); z-index: 200;
+            overflow-y: auto;
+        }
+        .enfoques-overlay.open { display: block; }
+
+        .enfoques-header {
+            position: sticky; top: 0; background: var(--warm-white);
+            border-bottom: 1px solid var(--border); padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            z-index: 10;
+        }
+        .enfoques-header-title {
+            font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--sage-dark);
+        }
+        .btn-close-enfoques {
+            background: transparent; border: 1px solid var(--border);
+            border-radius: 8px; padding: 6px 14px; font-family: 'DM Sans', sans-serif;
+            font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s;
+        }
+        .btn-close-enfoques:hover { border-color: var(--error); color: var(--error); }
+
+        .enfoques-body { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+
+        .enfoques-intro {
+            text-align: center; margin-bottom: 40px;
+        }
+        .enfoques-intro h2 {
+            font-family: 'DM Serif Display', serif; font-size: clamp(26px,4vw,36px);
+            color: var(--sage-dark); margin-bottom: 12px;
+        }
+        .enfoques-intro p { font-size: 15px; color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+        .enfoques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .enfoque-card {
+            background: var(--warm-white); border-radius: 18px;
+            border: 1px solid var(--border); overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .enfoque-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+
+        .enfoque-illustration {
+            height: 140px; display: flex; align-items: center; justify-content: center;
+            font-size: 64px; position: relative; overflow: hidden;
+        }
+
+        .enfoque-body { padding: 20px; }
+        .enfoque-tag {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .enfoque-name {
+            font-family: 'DM Serif Display', serif; font-size: 19px;
+            color: var(--sage-dark); margin-bottom: 8px;
+        }
+        .enfoque-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+        .enfoque-util {
+            background: var(--cream); border-radius: 10px; padding: 12px 14px;
+            font-size: 13px; color: var(--text); line-height: 1.6;
+        }
+        .enfoque-util strong { color: var(--sage-dark); }
+
+        /* ── NAV ── */
+        .nav-tabs { background:var(--warm-white); border-bottom:1px solid var(--border); display:flex; padding:0 16px; overflow-x:auto; }
+        .nav-tab { padding:14px 16px; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; position:relative; }
+        .nav-tab.active { color:var(--sage-dark); border-bottom-color:var(--sage); }
+
+        /* Botón Explorar — destacado siempre */
+        #navExplorar {
+            background: var(--sage);
+            color: white !important;
+            border-radius: 20px;
+            padding: 8px 20px;
+            margin: 8px 6px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: none !important;
+            box-shadow: 0 3px 12px rgba(74,124,111,0.35);
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+        #navExplorar:hover {
+            background: var(--sage-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 16px rgba(74,124,111,0.45);
+        }
+        #navExplorar.active {
+            background: var(--sage-dark);
+            border-bottom: none !important;
+            color: white !important;
+        }
+        .nav-tab.active { color:var(--sage-dark); border-bottom-color:var(--sage); }
+        .nav-tab.admin-tab { color:var(--admin); }
+        .nav-tab.admin-tab.active { border-bottom-color:var(--admin); color:var(--admin); }
+        .unread-dot { display:inline-block; width:8px; height:8px; background:#e74c3c; border-radius:50%; position:absolute; top:10px; right:6px; }
+
+        /* ── MAIN ── */
+        .main { max-width:580px; margin:0 auto; padding:24px 16px; }
+        .main.wide { max-width:960px; }
+        .tab-section { display:none; }
+        .tab-section.active { display:block; }
+
+        /* ── LOADING ── */
+        #loading { text-align:center; padding:80px 20px; color:var(--muted); }
+        .spinner { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--sage); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        .section-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:4px; }
+        .section-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
+
+        .empty-state { text-align:center; padding:48px 20px; color:var(--muted); }
+        .empty-icon { font-size:48px; margin-bottom:14px; }
+        .empty-state h3 { font-family:'DM Serif Display',serif; color:var(--sage-dark); margin-bottom:8px; }
+        .empty-state p { font-size:14px; line-height:1.6; }
+
+        /* ── FEED MATCH CARDS ── */
+        .match-card { background:var(--warm-white); border-radius:16px; padding:20px; margin-bottom:16px; border:1px solid var(--border); box-shadow:var(--shadow-sm); animation:fadeUp 0.3s ease; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+        .match-card-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+        .avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+        .match-name { font-family:'DM Serif Display',serif; font-size:17px; color:var(--sage-dark); margin-bottom:3px; }
+        .compat-pill { display:inline-block; padding:2px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+        .c-high { background:#d4edda; color:#1a6b37; }
+        .c-mid  { background:#fff3cd; color:#856404; }
+        .c-low  { background:#f8d7da; color:#842029; }
+        .match-label { margin-left:auto; font-size:12px; color:#c0768a; font-weight:600; }
+        .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+        .detail-chip { background:var(--cream); border-radius:8px; padding:8px 12px; }
+        .chip-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px; }
+        .chip-val { font-size:13px; color:var(--text); }
+        .contact-row { display:flex; align-items:center; gap:8px; padding-top:12px; border-top:1px solid var(--border); font-size:13px; flex-wrap:wrap; }
+        .contact-email { color:var(--sage); font-weight:500; }
+        .btn-chat { margin-left:auto; padding:7px 16px; background:var(--sage); color:white; border:none; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:background 0.2s; }
+        .btn-chat:hover { background:var(--sage-dark); }
+        .btn-report-sm { padding:6px 12px; background:transparent; border:1px solid #ffb3b3; color:#e05555; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; }
+        .btn-report-sm:hover { background:#fff0f0; }
+
+        /* ── SWIPE ── */
+        .swipe-wrap { display:flex; flex-direction:column; align-items:center; }
+        .swipe-card { background:var(--warm-white); border-radius:20px; box-shadow:var(--shadow); padding:26px 22px; width:100%; max-width:420px; margin-bottom:18px; transition:transform 0.32s ease,opacity 0.32s ease; touch-action:pan-y; cursor:grab; }
+        .swipe-card:active { cursor:grabbing; }
+        .swipe-card.fly-right { transform:translateX(150%) rotate(20deg)!important; opacity:0; }
+        .swipe-card.fly-left  { transform:translateX(-150%) rotate(-20deg)!important; opacity:0; }
+        .sc-top { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+        .sc-avatar { width:62px; height:62px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+        .sc-name { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:4px; }
+        .compat-bar-wrap { margin-bottom:18px; }
+        .compat-bar-row { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:5px; }
+        .compat-pct { font-weight:700; font-size:14px; color:var(--sage-dark); }
+        .compat-bar { height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
+        .compat-fill { height:100%; border-radius:99px; transition:width 0.5s ease; }
+        .sc-details { margin-bottom:4px; }
+        .sc-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:9px; font-size:14px; }
+        .sc-icon { font-size:15px; flex-shrink:0; }
+        .sc-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px; margin-right:4px; }
+        .sc-val { color:var(--text); }
+        .action-btns { display:flex; gap:14px; width:100%; max-width:420px; }
+        .btn-pass { flex:1; padding:14px; background:var(--warm-white); border:2px solid #ffb3b3; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; color:#e05555; cursor:pointer; transition:all 0.2s; }
+        .btn-pass:hover { background:#fff0f0; }
+        .btn-like { flex:1; padding:14px; background:var(--sage); border:2px solid var(--sage); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; color:white; cursor:pointer; transition:all 0.2s; }
+        .btn-like:hover { background:var(--sage-dark); border-color:var(--sage-dark); }
+        .swipe-hint { font-size:12px; color:var(--muted); text-align:center; margin-top:10px; }
+        .btn-report-card { margin-top:10px; width:100%; max-width:420px; padding:9px; background:transparent; border:1px solid #ffb3b3; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; color:#e05555; cursor:pointer; transition:all 0.2s; }
+        .btn-report-card:hover { background:#fff0f0; }
+
+        /* ── MENSAJES ── */
+        .convo-item { background:var(--warm-white); border-radius:14px; padding:16px; margin-bottom:10px; border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; gap:14px; transition:box-shadow 0.2s,border-color 0.2s; }
+        .convo-item:hover { box-shadow:var(--shadow-sm); border-color:var(--sage-light); }
+        .convo-av { width:48px; height:48px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:22px; position:relative; }
+        .online-dot { width:11px; height:11px; background:#2ecc71; border:2px solid white; border-radius:50%; position:absolute; bottom:1px; right:1px; }
+        .convo-body { flex:1; min-width:0; }
+        .convo-name { font-weight:600; font-size:14px; color:var(--text); margin-bottom:3px; }
+        .convo-preview { font-size:13px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .convo-meta { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+        .convo-time { font-size:11px; color:var(--muted); }
+        .unread-badge { background:var(--sage); color:white; border-radius:50%; width:20px; height:20px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+        .convo-lastseen { font-size:11px; color:var(--muted); }
+        #chatView { display:none; flex-direction:column; height:calc(100vh - 130px); }
+        #chatView.open { display:flex; }
+        .chat-header { display:flex; align-items:center; gap:12px; padding:12px 0 14px; border-bottom:1px solid var(--border); margin-bottom:12px; }
+        .btn-back { background:transparent; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; transition:all 0.2s; flex-shrink:0; }
+        .btn-back:hover { border-color:var(--sage); color:var(--sage); }
+        .chat-header-av { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+        .chat-header-info { flex:1; }
+        .chat-header-name { font-weight:600; font-size:15px; color:var(--text); }
+        .chat-header-seen { font-size:12px; color:var(--muted); }
+        .chat-messages { flex:1; overflow-y:auto; padding:4px 0 12px; display:flex; flex-direction:column; gap:8px; }
+        .msg-row { display:flex; }
+        .msg-row.mine { justify-content:flex-end; }
+        .msg-row.theirs { justify-content:flex-start; }
+        .msg-bubble { max-width:72%; padding:10px 14px; border-radius:16px; font-size:14px; line-height:1.45; position:relative; }
+        .msg-row.mine .msg-bubble { background:var(--sage); color:white; border-bottom-right-radius:4px; }
+        .msg-row.theirs .msg-bubble { background:var(--warm-white); color:var(--text); border:1px solid var(--border); border-bottom-left-radius:4px; }
+        .msg-time { font-size:10px; opacity:0.65; margin-top:4px; display:block; text-align:right; }
+        .msg-row.theirs .msg-time { text-align:left; }
+        .msg-auto-tag { font-size:10px; background:rgba(255,255,255,0.25); padding:1px 6px; border-radius:10px; display:inline-block; margin-bottom:4px; }
+        .chat-input-area { display:flex; gap:10px; padding-top:12px; border-top:1px solid var(--border); }
+        .chat-input { flex:1; padding:11px 14px; border:1.5px solid var(--border); border-radius:22px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); outline:none; transition:all 0.2s; }
+        .chat-input:focus { border-color:var(--sage-light); background:white; box-shadow:0 0 0 3px rgba(74,124,111,0.1); }
+        .btn-send { padding:11px 20px; background:var(--sage); color:white; border:none; border-radius:22px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+        .btn-send:hover { background:var(--sage-dark); }
+
+        /* ── PROFILE ── */
+        .profile-card { background:var(--warm-white); border-radius:16px; padding:26px; border:1px solid var(--border); box-shadow:var(--shadow-sm); }
+        .profile-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+        .profile-av { width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; }
+        .profile-name { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:4px; }
+        .profile-section { margin-bottom:22px; }
+        .ps-title { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+        .pf-row { display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; }
+        .pf-label { font-size:12px; font-weight:600; color:var(--muted); min-width:130px; flex-shrink:0; padding-top:1px; }
+        .pf-val { font-size:14px; color:var(--text); }
+        .corriente-tag { display:inline-block; background:#e8f4f1; color:var(--sage-dark); padding:5px 12px; border-radius:20px; font-size:13px; font-weight:500; }
+        .field-label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
+        .saludo-textarea { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); resize:vertical; min-height:80px; outline:none; transition:all 0.2s; }
+        .saludo-textarea:focus { border-color:var(--sage-light); background:white; box-shadow:0 0 0 3px rgba(74,124,111,0.1); }
+        .btn-save-saludo { margin-top:10px; padding:10px 20px; background:var(--sage); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:background 0.2s; }
+        .btn-save-saludo:hover { background:var(--sage-dark); }
+        .save-confirm { font-size:12px; color:var(--sage); margin-top:6px; display:none; }
+
+        /* ── RESPUESTAS ── */
+        .resp-item { background:var(--warm-white); border-radius:10px; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); }
+        .resp-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:3px; }
+        .resp-val { font-size:14px; color:var(--text); }
+
+        /* ════════════════════════════════════════
+           ADMIN PANEL
+        ════════════════════════════════════════ */
+        .admin-subnav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:24px; }
+        .admin-subbtn {
+            padding:8px 16px; border:1.5px solid var(--border); border-radius:10px;
+            background:transparent; font-family:'DM Sans',sans-serif; font-size:13px;
+            font-weight:500; color:var(--muted); cursor:pointer; transition:all 0.2s;
+        }
+        .admin-subbtn.active { background:var(--admin); color:white; border-color:var(--admin); }
+        .admin-subbtn:hover:not(.active) { border-color:var(--admin); color:var(--admin); }
+
+        .admin-sub { display:none; }
+        .admin-sub.active { display:block; }
+
+        /* Stats grid */
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
+        .stat-box { background:var(--warm-white); border-radius:14px; padding:18px; border:1px solid var(--border); text-align:center; }
+        .stat-num { font-family:'DM Serif Display',serif; font-size:32px; color:var(--sage-dark); }
+        .stat-lbl { font-size:12px; color:var(--muted); margin-top:4px; }
+        .stat-box.danger .stat-num { color:var(--error); }
+        .stat-box.warn   .stat-num { color:#856404; }
+
+        /* Admin rows */
+        .admin-row {
+            background:var(--warm-white); border-radius:12px; padding:16px;
+            margin-bottom:10px; border:1px solid var(--border);
+            display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;
+        }
+        .admin-row-av { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,var(--sage-light),var(--sage-dark)); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .admin-row-info { flex:1; min-width:0; }
+        .admin-row-name { font-weight:600; font-size:14px; margin-bottom:2px; }
+        .admin-row-email { font-size:12px; color:var(--muted); margin-bottom:4px; word-break:break-all; }
+        .admin-row-meta { font-size:12px; color:var(--muted); }
+        .admin-row-actions { display:flex; gap:6px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
+
+        /* Admin action buttons */
+        .btn-adm { padding:6px 12px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+        .btn-adm.approve { background:#d4edda; color:#1a6b37; }
+        .btn-adm.approve:hover { background:#b8dfc5; }
+        .btn-adm.reject  { background:#f8d7da; color:#842029; }
+        .btn-adm.reject:hover  { background:#f1b8bc; }
+        .btn-adm.warn    { background:#fff3cd; color:#856404; }
+        .btn-adm.warn:hover    { background:#ffe69c; }
+        .btn-adm.suspend { background:#fde8d8; color:#7c3a00; }
+        .btn-adm.suspend:hover { background:#f9ceaf; }
+        .btn-adm.ban     { background:#842029; color:white; }
+        .btn-adm.ban:hover     { background:#6b1a21; }
+        .btn-adm.lift    { background:#e8f4f1; color:var(--sage-dark); }
+        .btn-adm.lift:hover    { background:#c8e6de; }
+        .btn-adm.view    { background:var(--admin-light); color:var(--admin); }
+        .btn-adm.view:hover    { background:#d8d0ee; }
+        .btn-adm.dismiss { background:var(--cream); color:var(--muted); border:1px solid var(--border); }
+
+        /* Status badges */
+        .sbadge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+        .sbadge.pending  { background:#fff3cd; color:#856404; }
+        .sbadge.verified { background:#d4edda; color:#1a6b37; }
+        .sbadge.rejected { background:#f8d7da; color:#842029; }
+        .sbadge.active   { background:#e8f4f1; color:var(--sage-dark); }
+        .sbadge.warned   { background:#fff3cd; color:#856404; }
+        .sbadge.suspended{ background:#fde8d8; color:#7c3a00; }
+        .sbadge.banned   { background:#842029; color:white; }
+        .sbadge.report   { background:#f8d7da; color:#842029; }
+        .sbadge.reviewed { background:#e8f4f1; color:var(--sage-dark); }
+
+        /* Report reason box */
+        .report-reason { background:var(--cream); border-radius:8px; padding:10px 12px; font-size:13px; color:var(--text); margin-bottom:8px; border-left:3px solid #e74c3c; }
+
+        /* Sanction note */
+        .sanction-note { background:#fde8d8; border-radius:8px; padding:8px 12px; font-size:12px; color:#7c3a00; margin-top:6px; }
+
+        /* ── MODALS ── */
+        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); display:none; align-items:center; justify-content:center; z-index:999; }
+        .modal-overlay.show { display:flex; }
+        .modal-box { background:var(--warm-white); border-radius:24px; padding:40px 30px; text-align:center; max-width:340px; width:90%; animation:popIn 0.3s ease; }
+        .modal-box.wide { max-width:480px; text-align:left; }
+        @keyframes popIn { from{transform:scale(0.75);opacity:0;}to{transform:scale(1);opacity:1;} }
+        .modal-emoji { font-size:60px; margin-bottom:14px; }
+        .modal-box h2 { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:8px; }
+        .modal-box p { font-size:14px; color:var(--muted); margin-bottom:22px; line-height:1.5; }
+        .btn-modal-primary { width:100%; padding:12px; background:var(--sage); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; margin-bottom:10px; transition:background 0.2s; }
+        .btn-modal-primary:hover { background:var(--sage-dark); }
+        .btn-modal-secondary { width:100%; padding:11px; background:transparent; color:var(--muted); border:1px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; }
+
+        /* Report modal inputs */
+        .rfield { margin-bottom:14px; }
+        .rfield label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
+        .rfield select, .rfield textarea { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); outline:none; transition:all 0.2s; }
+        .rfield select:focus, .rfield textarea:focus { border-color:var(--sage-light); background:white; }
+        .rfield textarea { min-height:80px; resize:vertical; }
+        .btn-submit-report { width:100%; padding:12px; background:#e74c3c; color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; transition:background 0.2s; }
+        .btn-submit-report:hover { background:#c0392b; }
+
+        /* Admin sanction modal */
+        .rfield textarea.sanc-textarea { min-height:60px; }
+
+        /* ── EDITAR PERFIL ── */
+        .edit-field { margin-bottom:14px; }
+        .edit-field label { display:block; font-size:11px; font-weight:700; color:var(--sage-dark); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
+        .edit-field input, .edit-field select, .edit-field textarea { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); background:var(--cream); outline:none; transition:all 0.2s; appearance:none; }
+        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color:var(--sage-light); background:white; }
+        .edit-field textarea { min-height:72px; resize:vertical; }
+        .btn-save-edit { padding:10px 22px; background:var(--sage); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; transition:background 0.2s; }
+        .btn-save-edit:hover { background:var(--sage-dark); }
+
+        /* ── RE-QUIZ ── */
+        .btn-requiz { width:100%; padding:11px; background:transparent; color:var(--sage); border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; margin-top:12px; transition:all 0.2s; }
+        .btn-requiz:hover { border-color:var(--sage); background:#f0f6f4; }
+
+        /* ── ROMPER CONEXIÓN ── */
+        .btn-break { padding:6px 12px; background:transparent; border:1px solid #ffb3b3; color:#e05555; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; }
+        .btn-break:hover { background:#fff0f0; }
+
+        /* ── ADMIN DESCONEXIONES ── */
+        .disc-row { background:var(--warm-white); border-radius:10px; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); font-size:13px; }
+        .disc-row strong { color:var(--text); }
+        .disc-row span { color:var(--muted); }
+        /* ══ PANEL MASCOTA ══ */
+        .mascota-overlay {
+            display:none; position:fixed; inset:0;
+            background:var(--cream); z-index:200; overflow-y:auto;
+        }
+        .mascota-overlay.open { display:block; }
+
+        .mascota-header {
+            position:sticky; top:0; background:var(--warm-white);
+            border-bottom:1px solid var(--border); padding:14px 24px;
+            display:flex; align-items:center; justify-content:space-between; z-index:10;
+        }
+        .mascota-header-title { font-family:'DM Serif Display',serif; font-size:20px; color:var(--sage-dark); }
+
+        .mascota-body { max-width:700px; margin:0 auto; padding:32px 20px 60px; }
+
+        /* STAGE */
+        .mascota-stage {
+            background: linear-gradient(160deg, #e8f4f1 0%, #f5f0ff 100%);
+            border-radius: 24px; border: 1px solid var(--border);
+            display:flex; flex-direction:column; align-items:center;
+            padding: 32px 24px 24px; margin-bottom: 28px; position:relative;
+        }
+        .mascota-level-badge {
+            position:absolute; top:14px; left:16px;
+            font-size:11px; font-weight:700; color:var(--sage-dark);
+            background:#d4edda; padding:3px 10px; border-radius:20px;
+        }
+
+        /* MASCOTA SVG CONTAINER */
+        .mascota-creature {
+            width:130px; height:130px; position:relative;
+            display:flex; align-items:center; justify-content:center;
+            margin-bottom:10px;
+        }
+        #mascotaSvg { width:120px; height:120px; transition:all 0.4s ease; }
+        #mascotaHat { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:36px; pointer-events:none; transition:all 0.3s; }
+
+        .mascota-name { font-family:'DM Serif Display',serif; font-size:20px; color:var(--sage-dark); margin-bottom:4px; }
+        .mascota-subtitle { font-size:13px; color:var(--muted); }
+
+        /* XP BAR */
+        .xp-wrap { width:100%; max-width:280px; margin-top:16px; }
+        .xp-label { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-weight:600; margin-bottom:5px; }
+        .xp-bar { height:8px; background:var(--border); border-radius:99px; overflow:hidden; }
+        .xp-fill { height:100%; background:var(--sage); border-radius:99px; transition:width 0.6s ease; }
+
+        /* CUSTOMIZAR */
+        .cust-section { margin-bottom:26px; }
+        .cust-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); margin-bottom:12px; }
+        .cust-options { display:flex; flex-wrap:wrap; gap:8px; }
+        .cust-btn {
+            padding:8px 16px; border:1.5px solid var(--border); border-radius:10px;
+            background:var(--warm-white); font-size:22px; cursor:pointer;
+            transition:all 0.18s; display:flex; flex-direction:column; align-items:center; gap:2px;
+        }
+        .cust-btn span { font-size:10px; color:var(--muted); font-family:'DM Sans',sans-serif; }
+        .cust-btn.selected { border-color:var(--sage); background:#f0f6f4; box-shadow:0 0 0 2px rgba(74,124,111,0.2); }
+        .cust-btn.locked { opacity:0.4; cursor:default; filter:grayscale(1); }
+        .cust-btn.locked:hover { border-color:var(--border); background:var(--warm-white); }
+
+        /* LOGROS */
+        .logros-list { display:flex; flex-direction:column; gap:10px; }
+        .logro-item {
+            display:flex; align-items:center; gap:14px;
+            background:var(--warm-white); border-radius:12px;
+            padding:14px 16px; border:1px solid var(--border);
+        }
+        .logro-icon { font-size:26px; flex-shrink:0; width:38px; text-align:center; }
+        .logro-info { flex:1; }
+        .logro-name { font-weight:600; font-size:14px; color:var(--text); margin-bottom:2px; }
+        .logro-desc { font-size:12px; color:var(--muted); }
+        .logro-check { font-size:20px; flex-shrink:0; }
+        .logro-item.done { border-color:var(--sage-light); background:#f4faf8; }
+        .logro-item.done .logro-name { color:var(--sage-dark); }
+        /* ══ ID VERIFICATION MODAL ══ */
+        .idv-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.7);
+            display:none; align-items:center; justify-content:center;
+            z-index:1000; padding:20px;
+        }
+        .idv-overlay.show { display:flex; }
+        .idv-box {
+            background:var(--warm-white); border-radius:24px;
+            padding:36px 30px; max-width:480px; width:100%;
+            max-height:90vh; overflow-y:auto;
+            animation:popIn 0.3s ease;
+        }
+        .idv-step { display:none; }
+        .idv-step.active { display:block; }
+        .idv-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--sage-dark); margin-bottom:8px; }
+        .idv-subtitle { font-size:14px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
+        /* Graphic guide */
+        .idv-guide {
+            display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap;
+        }
+        .idv-guide-item {
+            flex:1; min-width:120px; background:var(--cream);
+            border-radius:14px; padding:16px; text-align:center;
+            border:1px solid var(--border);
+        }
+        .idv-guide-item .guide-ok   { border:2px solid #2ecc71; }
+        .idv-guide-item .guide-no   { border:2px solid #e74c3c; opacity:0.75; }
+        .idv-guide-graphic {
+            width:100%; height:90px; border-radius:10px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:42px; margin-bottom:8px; position:relative;
+        }
+        .idv-guide-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:3px; }
+        .idv-guide-desc  { font-size:12px; color:var(--muted); line-height:1.5; }
+        .idv-badge-ok  { background:#d4edda; color:#1a6b37; }
+        .idv-badge-no  { background:#f8d7da; color:#842029; }
+        /* Upload area */
+        .idv-upload-area {
+            border:2px dashed var(--border); border-radius:14px;
+            padding:32px 20px; text-align:center; cursor:pointer;
+            transition:all 0.2s; margin-bottom:16px;
+        }
+        .idv-upload-area:hover { border-color:var(--sage-light); background:#f0f6f4; }
+        .idv-upload-area.has-file { border-color:var(--sage); background:#f0f6f4; }
+        .idv-upload-icon { font-size:40px; margin-bottom:10px; }
+        .idv-upload-text { font-size:14px; color:var(--muted); }
+        .idv-preview { width:100%; border-radius:10px; max-height:200px; object-fit:contain; display:none; margin-bottom:12px; }
+        .idv-progress { height:4px; background:var(--border); border-radius:99px; overflow:hidden; display:none; margin-bottom:10px; }
+        .idv-progress-fill { height:100%; background:var(--sage); border-radius:99px; width:0%; transition:width 0.2s; }
+        .idv-status { font-size:13px; margin-bottom:12px; }
+        .btn-idv-submit {
+            width:100%; padding:13px; background:var(--sage); color:white;
+            border:none; border-radius:10px; font-family:'DM Sans',sans-serif;
+            font-size:15px; font-weight:600; cursor:pointer; transition:background 0.2s;
+        }
+        .btn-idv-submit:hover { background:var(--sage-dark); }
+        .btn-idv-submit:disabled { opacity:0.5; cursor:default; }
+        .btn-idv-skip {
+            width:100%; padding:11px; background:transparent; color:var(--muted);
+            border:1px solid var(--border); border-radius:10px;
+            font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; margin-top:8px;
+        }
+        /* Identity badges shown on cards */
+        .id-badge-verified   { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; background:#d4edda; color:#1a6b37; padding:2px 8px; border-radius:20px; }
+        .id-badge-pending    { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; background:#fff3cd; color:#856404; padding:2px 8px; border-radius:20px; }
+        .id-badge-unverified { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; background:#f8d7da; color:#842029; padding:2px 8px; border-radius:20px; }
+    </style>
+</head>
+
+<body>
+
+<!-- ── HEADER ── -->
+<header class="dash-header">
+    <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <span class="logo-text">PsicoConecta</span>
+    </div>
+    <div class="header-right">
+        <button class="btn-enfoques" onclick="openMascota()" style="border-color:#dde8e5;">🐾 Tu mascota</button>
+        <button class="btn-enfoques" onclick="openEnfoques()">📚 Enfoques</button>
+        <span class="user-email" id="headerEmail"></span>
+        <span class="type-badge" id="typeBadge"></span>
+        <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+</header>
+
+<!-- ══ PANEL DE ENFOQUES ══════════════════════════════════════════════════════ -->
+<div class="enfoques-overlay" id="enfoquesPanel">
+
+    <div class="enfoques-header">
+        <span class="enfoques-header-title">🧠 Enfoques psicológicos</span>
+        <button class="btn-close-enfoques" onclick="closeEnfoques()">✕ Cerrar</button>
+    </div>
+
+    <div class="enfoques-body">
+
+        <div class="enfoques-intro">
+            <h2>¿Qué tipo de terapia<br><em style="font-style:italic;color:var(--sage);">es para ti?</em></h2>
+            <p>Existen muchos enfoques terapéuticos y ninguno es mejor que otro — cada uno funciona diferente según la persona y lo que necesita. Aquí te explicamos los más comunes en palabras simples.</p>
+        </div>
+
+        <div class="enfoques-grid">
+
+            <!-- TCC -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#e8f4f1,#c8e6de);">🧩</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#d4edda;color:#1a6b37;">Estructurado · Práctico</span>
+                    <div class="enfoque-name">Terapia Cognitivo-Conductual (TCC)</div>
+                    <p class="enfoque-desc">Es como un entrenamiento mental. Trabajas junto al terapeuta para identificar pensamientos que te hacen daño ("no soy suficiente", "todo me sale mal") y aprendes a cambiarlos por otros más útiles. Incluye tareas prácticas entre sesiones.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes ansiedad, fobias, depresión, pensamientos negativos repetitivos o quieres ver resultados rápidos y concretos.</div>
+                </div>
+            </div>
+
+            <!-- Humanista -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#fff8e8,#fde8c0);">🌱</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#fff3cd;color:#856404;">Empático · Crecimiento</span>
+                    <div class="enfoque-name">Terapia Humanista</div>
+                    <p class="enfoque-desc">Se enfoca en quién eres tú, no solo en tus síntomas. El terapeuta no te juzga — crea un espacio seguro donde puedas explorar tus sentimientos y encontrar tu propio camino. La idea es que tú tienes la capacidad de crecer y sanar.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> sientes que no te conoces bien, tienes baja autoestima, quieres entenderte mejor o buscas un espacio donde simplemente ser escuchado.</div>
+                </div>
+            </div>
+
+            <!-- Psicoanalítica -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#ede8f4,#d8d0ee);">🔍</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#ede8f4;color:#4a3c7c;">Profundo · Exploratorio</span>
+                    <div class="enfoque-name">Psicoanálisis / Psicodinámica</div>
+                    <p class="enfoque-desc">Explora las raíces profundas de tus emociones y comportamientos. Muchas de las cosas que hacemos vienen de experiencias pasadas que no siempre recordamos conscientemente. Este enfoque te ayuda a descubrir esas conexiones.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> sientes que repites los mismos patrones en tus relaciones, quieres entender por qué eres como eres o buscas un proceso de autoconocimiento profundo.</div>
+                </div>
+            </div>
+
+            <!-- Sistémica -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#e8f0ff,#c8d8ff);">👥</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#e0e8ff;color:#2a3c8c;">Relacional · Familiar</span>
+                    <div class="enfoque-name">Terapia Sistémica</div>
+                    <p class="enfoque-desc">Ve los problemas como parte de un sistema de relaciones, no solo como algo individual. Tus problemas no existen en el vacío — están conectados con tu familia, tus parejas o tu entorno. La terapia trabaja esas conexiones.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes conflictos familiares, de pareja o con personas cercanas, o sientes que tu entorno afecta mucho tu bienestar.</div>
+                </div>
+            </div>
+
+            <!-- ACT / Contextual -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#e8faf4,#b8edd8);">🎯</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#d4edda;color:#1a6b37;">Mindfulness · Aceptación</span>
+                    <div class="enfoque-name">Terapia Contextual (ACT, DBT, Mindfulness)</div>
+                    <p class="enfoque-desc">En lugar de luchar contra tus emociones difíciles, aprendes a aceptarlas sin que te controlen. Usas técnicas de atención plena (mindfulness) para observar tus pensamientos sin quedarte atrapado en ellos y actuar según tus valores.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes dificultad para manejar emociones intensas, ansiedad crónica, o quieres vivir más conectado con lo que realmente importa para ti.</div>
+                </div>
+            </div>
+
+            <!-- Gestalt -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#fff0f5,#ffd0e0);">✨</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#fde8f0;color:#8c2a4c;">Presente · Experiencial</span>
+                    <div class="enfoque-name">Gestalt</div>
+                    <p class="enfoque-desc">Se centra en el aquí y el ahora. En lugar de hablar solo del pasado, el terapeuta te invita a notar lo que sientes en este momento — en tu cuerpo, tus emociones, tus reacciones. Es muy vivencial y activo.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> te disconnectas de tus emociones, vives demasiado en el pasado o el futuro, o buscas una terapia más viva y menos solo de hablar.</div>
+                </div>
+            </div>
+
+            <!-- Breve / Soluciones -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#f0f8ff,#c8e4ff);">⚡</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#cce5ff;color:#0047ab;">Corto plazo · Efectivo</span>
+                    <div class="enfoque-name">Terapia Breve / Enfocada en Soluciones</div>
+                    <p class="enfoque-desc">Va directo al grano. En lugar de pasar meses explorando el pasado, se enfoca en qué quieres cambiar y cómo lograrlo. El terapeuta te ayuda a encontrar tus propios recursos para resolver el problema específico que te trajo.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes un problema concreto que resolver, poco tiempo o presupuesto, o simplemente quieres resultados prácticos y rápidos.</div>
+                </div>
+            </div>
+
+            <!-- Neuropsicológica -->
+            <div class="enfoque-card">
+                <div class="enfoque-illustration" style="background:linear-gradient(135deg,#f5e8ff,#ddb8ff);">🔬</div>
+                <div class="enfoque-body">
+                    <span class="enfoque-tag" style="background:#ede8f4;color:#6a2c9c;">Evaluación · Cerebro</span>
+                    <div class="enfoque-name">Evaluación y Terapia Neuropsicológica</div>
+                    <p class="enfoque-desc">Combina psicología y neurociencia para entender cómo funciona tu cerebro. Incluye evaluaciones para identificar dificultades de memoria, atención, aprendizaje u otras funciones cognitivas, y planes de rehabilitación.</p>
+                    <div class="enfoque-util"><strong>Te puede ayudar si:</strong> tienes problemas de memoria o atención, sospechas de TDAH o dislexia, o estás recuperándote de una lesión cerebral o enfermedad neurológica.</div>
+                </div>
+            </div>
+
+        </div><!-- /grid -->
+
+        <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:40px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;">
+            Recuerda que muchos psicólogos trabajan con enfoques integrativos, combinando técnicas de varias corrientes según lo que cada persona necesita. Lo más importante es encontrar a alguien con quien te sientas cómodo.
+        </p>
+
+    </div><!-- /body -->
+
+</div><!-- /panel -->
+
+<!-- ══ PANEL MASCOTA ══════════════════════════════════════════════════════ -->
+<div class="mascota-overlay" id="mascotaPanel">
+
+    <div class="mascota-header">
+        <span class="mascota-header-title">🐾 Tu mascota</span>
+        <button class="btn-close-enfoques" onclick="closeMascota()">✕ Cerrar</button>
+    </div>
+
+    <div class="mascota-body">
+
+        <!-- STAGE -->
+        <div class="mascota-stage">
+            <div class="mascota-level-badge" id="levelBadge">Nivel 1 ⭐</div>
+
+            <div class="mascota-creature">
+                <span id="mascotaHat"></span>
+                <svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="60" r="50" fill="#4a7c6f"/>
+                    <circle cx="44" cy="50" r="7" fill="white" opacity="0.9"/>
+                    <circle cx="76" cy="50" r="7" fill="white" opacity="0.9"/>
+                    <circle cx="46" cy="50" r="3.5" fill="#1e2d2b"/>
+                    <circle cx="78" cy="50" r="3.5" fill="#1e2d2b"/>
+                    <path d="M44 72 Q60 84 76 72" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <div class="mascota-name" id="mascotaDisplayName">Sabi</div>
+            <div class="mascota-subtitle" id="mascotaSubtitle">Tu compañero de bienestar</div>
+
+            <div class="xp-wrap">
+                <div class="xp-label">
+                    <span>Progreso</span>
+                    <span id="xpText">0 / 4 logros</span>
+                </div>
+                <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+            </div>
+        </div>
+
+        <!-- ELEGIR FORMA -->
+        <div class="cust-section">
+            <div class="cust-title">🎨 Forma de tu mascota</div>
+            <div class="cust-options" id="shapeOptions">
+                <button class="cust-btn selected" onclick="setShape('circle')"   id="shape-circle">⬤<span>Bola</span></button>
+                <button class="cust-btn" onclick="setShape('flower')"   id="shape-flower">🌸<span>Flor</span></button>
+                <button class="cust-btn" onclick="setShape('star')"     id="shape-star">⭐<span>Estrella</span></button>
+                <button class="cust-btn" onclick="setShape('triangle')" id="shape-triangle">🔺<span>Triángulo</span></button>
+                <button class="cust-btn" onclick="setShape('square')"   id="shape-square">⬛<span>Cuadrado</span></button>
+                <button class="cust-btn" onclick="setShape('diamond')"  id="shape-diamond">💎<span>Diamante</span></button>
+                <button class="cust-btn" onclick="setShape('cloud')"    id="shape-cloud">☁️<span>Nube</span></button>
+                <button class="cust-btn" onclick="setShape('heart')"    id="shape-heart">❤️<span>Corazón</span></button>
+                <button class="cust-btn" onclick="setShape('hexagon')"  id="shape-hexagon">⬡<span>Hexágono</span></button>
+                <button class="cust-btn" onclick="setShape('moon')"     id="shape-moon">🌙<span>Luna</span></button>
+                <button class="cust-btn" onclick="setShape('ghost')"    id="shape-ghost">👻<span>Fantasma</span></button>
+            </div>
+        </div>
+
+        <!-- ELEGIR EXPRESIÓN -->
+        <div class="cust-section">
+            <div class="cust-title">😊 Expresión</div>
+            <div class="cust-options" id="exprOptions">
+                <button class="cust-btn selected" onclick="setExpr('feliz')"       id="expr-feliz">😊<span>Feliz</span></button>
+                <button class="cust-btn" onclick="setExpr('muy_feliz')"    id="expr-muy_feliz">😄<span>Muy feliz</span></button>
+                <button class="cust-btn" onclick="setExpr('asombrado')"    id="expr-asombrado">😮<span>Asombrado</span></button>
+                <button class="cust-btn" onclick="setExpr('dormido')"      id="expr-dormido">😴<span>Dormido</span></button>
+                <button class="cust-btn" onclick="setExpr('neutral')"      id="expr-neutral">😐<span>Neutral</span></button>
+                <button class="cust-btn" onclick="setExpr('triste')"       id="expr-triste">😢<span>Triste</span></button>
+                <button class="cust-btn" onclick="setExpr('enamorado')"    id="expr-enamorado">😍<span>Enamorado</span></button>
+                <button class="cust-btn" onclick="setExpr('sorprendido')"  id="expr-sorprendido">😲<span>Sorprendido</span></button>
+                <button class="cust-btn" onclick="setExpr('guiño')"        id="expr-guiño">😉<span>Guiño</span></button>
+                <button class="cust-btn" onclick="setExpr('estrellado')"   id="expr-estrellado">🤩<span>Estrellado</span></button>
+            </div>
+        </div>
+
+        <!-- SOMBRERO (desbloqueado en nivel 2) -->
+        <div class="cust-section">
+            <div class="cust-title">🎩 Sombrero <span id="hatLockLabel" style="font-size:10px;color:var(--error);">— Completa el nivel 1 para desbloquear</span></div>
+            <div class="cust-options" id="hatOptions">
+                <button class="cust-btn locked" onclick="setHat('')"    id="hat-none">🚫<span>Ninguno</span></button>
+                <button class="cust-btn locked" onclick="setHat('🎩')"  id="hat-1">🎩<span>Elegante</span></button>
+                <button class="cust-btn locked" onclick="setHat('👒')"  id="hat-2">👒<span>Casual</span></button>
+                <button class="cust-btn locked" onclick="setHat('🪖')"  id="hat-3">🪖<span>Explorador</span></button>
+                <button class="cust-btn locked" onclick="setHat('👑')"  id="hat-4">👑<span>Corona</span></button>
+                <button class="cust-btn locked" onclick="setHat('🎓')"  id="hat-5">🎓<span>Graduado</span></button>
+            </div>
+        </div>
+
+        <!-- LOGROS NIVEL 1 -->
+        <div class="cust-section">
+            <div class="cust-title">🏆 Logros — Nivel 1</div>
+            <div class="logros-list" id="logrosList"></div>
+        </div>
+
+        <!-- LOGROS NIVEL 2 (bloqueado) -->
+        <div class="cust-section" id="nivel2Section" style="opacity:0.5;">
+            <div class="cust-title">🔒 Nivel 2 — Próximamente</div>
+            <div style="background:var(--warm-white);border-radius:12px;padding:20px;border:1px solid var(--border);text-align:center;">
+                <div style="font-size:36px;margin-bottom:10px;">🔒</div>
+                <p style="font-size:13px;color:var(--muted);line-height:1.6;">Completa todos los logros del Nivel 1 para desbloquear nuevas misiones, accesorios y sorpresas.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav class="nav-tabs" id="navBar">
+    <button class="nav-tab"         id="navFeed"       onclick="openTab('feed')">🏠 Conexiones</button>
+    <button class="nav-tab"         id="navMensajes"   onclick="openTab('mensajes')">💬 Mensajes</button>
+    <button class="nav-tab active"  id="navExplorar"   onclick="openTab('explorar')">🔍 Explorar</button>
+    <button class="nav-tab"         id="navRespuestas" onclick="openTab('respuestas')">📋 Respuestas</button>
+    <button class="nav-tab"         id="navPerfil"     onclick="openTab('perfil')">👤 Mi perfil</button>
+    <!-- Admin tab: hidden by default, shown for admins -->
+    <button class="nav-tab admin-tab" id="navAdmin" onclick="openTab('admin')" style="display:none;">🛡️ Admin</button>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="main" id="mainContainer">
+
+    <div id="loading"><div class="spinner"></div><p>Cargando tu espacio...</p></div>
+
+    <!-- CONEXIONES -->
+    <div class="tab-section" id="tab-feed">
+        <h2 class="section-title">Mis Conexiones</h2>
+        <p class="section-sub">Personas con las que hiciste match</p>
+        <div id="feedList"></div>
+    </div>
+
+    <!-- MENSAJES -->
+    <div class="tab-section" id="tab-mensajes">
+        <div id="msgList">
+            <h2 class="section-title">Mensajes</h2>
+            <p class="section-sub">Tus conversaciones activas</p>
+            <div id="convoList"></div>
+        </div>
+        <div id="chatView">
+            <div class="chat-header">
+                <button class="btn-back" onclick="closeChat()">← Volver</button>
+                <div class="chat-header-av" id="chatAv"></div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="chatName"></div>
+                    <div class="chat-header-seen" id="chatLastSeen"></div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <input class="chat-input" id="chatInput" type="text" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter') sendMessage()" />
+                <button class="btn-send" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPLORAR -->
+    <div class="tab-section" id="tab-explorar">
+        <h2 class="section-title">Explorar</h2>
+        <p class="section-sub" id="explorarSub"></p>
+        <div class="swipe-wrap">
+            <div id="swipe-card" class="swipe-card"></div>
+            <div class="action-btns" id="action-btns" style="display:none;">
+                <button class="btn-pass" onclick="passProfile()">✕ Pasar</button>
+                <button class="btn-like" onclick="likeProfile()">♥ Me interesa</button>
+            </div>
+            <button class="btn-report-card" id="btnReportCard" style="display:none;" onclick="openReportFromCard()">⚑ Reportar este perfil</button>
+            <p class="swipe-hint" id="swipe-hint"></p>
+        </div>
+    </div>
+
+    <!-- RESPUESTAS -->
+    <div class="tab-section" id="tab-respuestas">
+        <h2 class="section-title">Mis Respuestas</h2>
+        <p class="section-sub">Tu cuestionario de compatibilidad</p>
+        <div id="respuestasList"></div>
+    </div>
+
+    <!-- PERFIL -->
+    <div class="tab-section" id="tab-perfil">
+        <h2 class="section-title">Mi Perfil</h2>
+        <div id="perfilContent"></div>
+    </div>
+
+    <!-- ════════════ ADMIN PANEL ════════════ -->
+    <div class="tab-section" id="tab-admin">
+        <h2 class="section-title">🛡️ Panel de Administración</h2>
+        <p class="section-sub">Moderación, reportes y gestión de la plataforma</p>
+
+        <div class="admin-subnav">
+            <button class="admin-subbtn active" onclick="openAdminSub('stats')">📊 Estadísticas</button>
+            <button class="admin-subbtn"        onclick="openAdminSub('cedulas')">🔍 Cédulas pendientes</button>
+            <button class="admin-subbtn"        onclick="openAdminSub('usuarios')">👥 Usuarios</button>
+            <button class="admin-subbtn"        onclick="openAdminSub('reportes')">🚨 Reportes</button>
+            <button class="admin-subbtn"        onclick="openAdminSub('desconexiones')">💔 Desconexiones</button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="admin-sub active" id="asub-stats">
+            <div class="stat-grid" id="adminStatGrid">
+                <div class="stat-box"><div class="stat-num" id="as-psi">—</div><div class="stat-lbl">Psicólogos</div></div>
+                <div class="stat-box"><div class="stat-num" id="as-pac">—</div><div class="stat-lbl">Pacientes</div></div>
+                <div class="stat-box"><div class="stat-num" id="as-match">—</div><div class="stat-lbl">Matches</div></div>
+                <div class="stat-box warn"><div class="stat-num" id="as-ced">—</div><div class="stat-lbl">Cédulas pendientes</div></div>
+                <div class="stat-box danger"><div class="stat-num" id="as-rep">—</div><div class="stat-lbl">Reportes activos</div></div>
+                <div class="stat-box danger"><div class="stat-num" id="as-san">—</div><div class="stat-lbl">Usuarios sancionados</div></div>
+            </div>
+        </div>
+
+        <!-- Cédulas pendientes -->
+        <div class="admin-sub" id="asub-cedulas">
+            <div id="cedulasList"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+
+        <!-- Usuarios -->
+        <div class="admin-sub" id="asub-usuarios">
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <button class="admin-subbtn active" id="ufilterAll"    onclick="filterUsers('all')">Todos</button>
+                <button class="admin-subbtn"        id="ufilterPsi"    onclick="filterUsers('psicologo')">Psicólogos</button>
+                <button class="admin-subbtn"        id="ufilterPac"    onclick="filterUsers('paciente')">Pacientes</button>
+                <button class="admin-subbtn"        id="ufilterSanc"   onclick="filterUsers('sancionado')">Sancionados</button>
+            </div>
+            <div id="usuariosList"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+
+        <!-- Reportes -->
+        <div class="admin-sub" id="asub-reportes">
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <button class="admin-subbtn active" id="rfilterPending"  onclick="filterReports('pending')">Pendientes</button>
+                <button class="admin-subbtn"        id="rfilterAll"      onclick="filterReports('all')">Todos</button>
+            </div>
+            <div id="reportesList"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+
+        <!-- Desconexiones -->
+        <div class="admin-sub" id="asub-desconexiones">
+            <div id="desconexionesList"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ── MATCH MODAL ── -->
+<div class="modal-overlay" id="matchModal">
+    <div class="modal-box">
+        <div class="modal-emoji">🎉</div>
+        <h2>¡Es un Match!</h2>
+        <p id="matchModalText">Han mostrado interés mutuo.</p>
+        <button class="btn-modal-primary" onclick="goToMensajes()">💬 Ver mensajes →</button>
+        <button class="btn-modal-secondary" onclick="closeModal()">Seguir explorando</button>
+    </div>
+</div>
+
+<!-- ── REPORT MODAL ── -->
+<div class="modal-overlay" id="reportModal">
+    <div class="modal-box wide">
+        <h2 style="margin-bottom:6px;">⚑ Reportar perfil</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Reportando a: <strong id="reportTargetName"></strong></p>
+        <div class="rfield">
+            <label>Razón del reporte</label>
+            <select id="reportReason">
+                <option value="informacion_falsa">Información falsa o engañosa</option>
+                <option value="comportamiento_inapropiado">Comportamiento inapropiado</option>
+                <option value="fraude">Fraude o estafa</option>
+                <option value="acoso">Acoso o amenazas</option>
+                <option value="cedula_invalida">Cédula profesional inválida</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+        <div class="rfield">
+            <label>Descripción (opcional)</label>
+            <textarea id="reportDetails" placeholder="Cuéntanos qué pasó..."></textarea>
+        </div>
+        <button class="btn-submit-report" onclick="submitReport()">Enviar reporte</button>
+        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeReportModal()">Cancelar</button>
+        <div id="reportSent" style="display:none;font-size:13px;color:var(--sage);margin-top:10px;text-align:center;">✅ Reporte enviado. Nuestro equipo lo revisará.</div>
+    </div>
+</div>
+
+<!-- ── ADMIN SANCTION MODAL ── -->
+<div class="modal-overlay" id="sanctionModal">
+    <div class="modal-box wide">
+        <h2 style="margin-bottom:6px;">⚖️ Aplicar sanción</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Usuario: <strong id="sanctionTargetName"></strong></p>
+        <input type="hidden" id="sanctionTargetUid" />
+        <input type="hidden" id="sanctionTargetType" />
+        <div class="rfield">
+            <label>Tipo de sanción</label>
+            <select id="sanctionType">
+                <option value="warning">⚠️ Advertencia</option>
+                <option value="suspended">🚫 Suspensión temporal</option>
+                <option value="banned">🔴 Baneo permanente</option>
+            </select>
+        </div>
+        <div class="rfield">
+            <label>Motivo interno</label>
+            <textarea class="sanc-textarea" id="sanctionReason" placeholder="Razón de la sanción (visible solo para admins)..."></textarea>
+        </div>
+        <button class="btn-submit-report" onclick="applySanction()">Aplicar sanción</button>
+        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeSanctionModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- ── BREAK MATCH MODAL ── -->
+<div class="modal-overlay" id="breakModal">
+    <div class="modal-box wide">
+        <h2 style="margin-bottom:6px;">💔 Romper conexión</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Con: <strong id="breakTargetName"></strong></p>
+        <div class="rfield">
+            <label>¿Por qué deseas romper esta conexión?</label>
+            <select id="breakReason" onchange="checkBreakReason()">
+                <option value="">Elige una razón...</option>
+                <option value="ya_no_necesito">Ya no necesito el servicio</option>
+                <option value="encontre_algo_mejor">Encontré algo mejor</option>
+                <option value="muy_lejos">El psicólogo está muy lejos</option>
+                <option value="informacion_no_precisa">La información no es precisa</option>
+                <option value="problema_psicologo">Tuve un problema con el psicólogo</option>
+            </select>
+        </div>
+        <div id="breakReportNote" style="display:none;background:#fff3cd;border-radius:8px;padding:10px 12px;font-size:13px;color:#856404;margin-bottom:14px;">
+            ⚠️ Al confirmar, también se abrirá el formulario de reporte para que puedas detallar el problema.
+        </div>
+        <button class="btn-submit-report" onclick="confirmBreakMatch()">Confirmar</button>
+        <button class="btn-modal-secondary" style="margin-top:8px;" onclick="closeBreakModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- ── RE-QUIZ MODAL ── -->
+<div class="modal-overlay" id="requizModal">
+    <div class="modal-box" style="max-width:480px;text-align:left;">
+        <h2 style="margin-bottom:6px;font-size:20px;">🔄 Actualizar respuestas</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;" id="requizSubtitle"></p>
+        <p class="quiz-progress" id="rq_progress" style="font-size:12px;color:var(--muted);margin-bottom:6px;"></p>
+        <div style="height:4px;background:var(--border);border-radius:99px;margin-bottom:20px;overflow:hidden;">
+            <div id="rq_fill" style="height:100%;background:var(--sage);border-radius:99px;transition:width 0.3s ease;width:0%;"></div>
+        </div>
+        <h3 id="rq_question" style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--sage-dark);margin-bottom:16px;line-height:1.4;"></h3>
+        <div id="rq_options" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+        <div id="rq_religion_sub" style="display:none;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;">
+            <p style="font-size:13px;margin-bottom:8px;font-weight:600;">¿Cuál tradición o creencia?</p>
+            <select id="rq_religion_select" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:white;outline:none;appearance:none;">
+                <option>Cristianismo</option><option>Judaísmo</option><option>Islam</option>
+                <option>Budismo</option><option>Espiritualidad no religiosa</option><option>Otra</option>
+            </select>
+            <button onclick="rqConfirmReligion()" style="margin-top:10px;padding:9px 18px;background:var(--sage);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Confirmar →</button>
+        </div>
+        <button class="btn-modal-secondary" onclick="rqPrev()">← Atrás</button>
+    </div>
+</div>
+
+<!-- ── FIREBASE ── -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyCHyqyi3cBQRm_Z9xeYDxQQa0BGTB8n1HQ",
+    authDomain: "psicoconecta-a507d.firebaseapp.com",
+    projectId: "psicoconecta-a507d",
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── EMAILJS ──────────────────────────────────────────────────────────────────
+emailjs.init("IFb3_WZEaIAOQNSWL");
+
+async function sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct) {
+    const siteUrl = "https://puchipuchi89.github.io/psicoconecta/dashboard.html";
+    const params  = (toEmail, toNombre, matchNombre, role) => ({
+        to_email:     toEmail,
+        to_name:      toNombre,
+        match_name:   matchNombre,
+        compatibility: pct + "%",
+        role,
+        site_url:     siteUrl,
+        year:         new Date().getFullYear()
+    });
+    await Promise.allSettled([
+        emailjs.send("service_vbuyuyl", "template_smm76ua", params(pacEmail, pacNombre, psiNombre, "psicólogo")),
+        emailjs.send("service_vbuyuyl", "template_smm76ua", params(psiEmail, psiNombre, pacNombre, "paciente"))
+    ]);
+}
+
+// ══════════════════════════════════════════════
+//  ⬇️  REEMPLAZA CON TU CORREO DE ADMINISTRADOR
+//  También puedes crear el documento admins/{tu_uid}
+//  en Firestore manualmente para activar el acceso.
+// ══════════════════════════════════════════════
+const ADMIN_EMAILS = [
+    "yuma.01browni@gmail.com"   // ← Reemplaza esto con tu correo
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let currentUser   = null;
+let userType      = null;
+let userData      = null;
+let isAdmin       = false;
+let profilesQueue = [];
+let profileIndex  = 0;
+let likedSet      = new Set();
+let passedSet     = new Set();
+let activeChatId  = null;
+let chatUnsub     = null;
+let lastSeenTimer = null;
+let reportTargetUid  = null;
+let reportTargetName = "";
+let allUsersCache = [];
+let allPsisCache  = [];
+let currentUserFilter  = "all";
+let currentReportFilter = "pending";
+
+// ─── QUESTION ARRAYS ─────────────────────────────────────────────────────────
+const qPac = [
+    {opts:["Presencial","En línea","Me da igual"]},
+    {opts:["Solo en mi ciudad","En cualquier lugar del país","En cualquier parte del mundo"]},
+    {opts:["Niño o adolescente","Adulto o adulto mayor","Grupo de distintas edades"]},
+    {opts:["Individual","Pareja o familiar","Grupal"]},
+    {opts:["Ansiedad, depresión, regulación emocional, duelo","Evaluación y terapia neuropsicológica","Trastornos conductuales o de personalidad"]},
+    {opts:["Con ejercicios y tareas prácticas","Mezcla de conversación y herramientas","Conversación profunda y reflexión"]},
+    {opts:["Que me enseñe estrategias para cambiar pensamientos, hábitos y dinámicas, enfocado en soluciones","Que me ayude a aumentar la conciencia, la aceptación y el crecimiento personal","Que exploremos mi historia personal y patrones relacionales"]},
+    {opts:["Directo y orientado a soluciones","Colaborativo","Más reflexivo"]},
+    {opts:["Herramientas prácticas","Escucha y comprensión","Análisis profundo de mis patrones"]},
+    {opts:["No, prefiero una terapia sin enfoque religioso","Podría estar bien si se usan elementos espirituales de forma general","Sí, me gustaría que la terapia incluya mi religión o creencias espirituales"]},
+    {opts:["Pocas sesiones","Algunos meses","Proceso largo"]},
+    {opts:["Cada semana","Cada 15 días","Flexible"]},
+    {opts:["Mujer","Hombre","Indistinto"]},
+    {opts:["Prefiero una terapia enfocada principalmente en herramientas psicológicas clínicas","Me gustaría que el terapeuta también considere mi contexto cultural o social","Me gustaría que el terapeuta pueda integrar mis creencias espirituales o religiosas"]},
+    {opts:["Mañana","Tarde","Noche o fines de semana"]},
+    {opts:["Menos de $500","$500–$1,000","Más de $700"]},
+    {opts:["No mucho","Algo","Mucho"]},
+    {opts:["Licenciatura","Maestría","Doctorado o especialización avanzada"]},
+    {opts:["No","Tal vez talleres o grupos","Sí, ambas"]},
+    {opts:["Puedo esperar","Pronto","Lo antes posible"]}
+];
+const qPsi = [
+    {opts:["Presencial","En línea","Híbrida (ambas)"]},
+    {opts:["Local","Nacional","Internacional"]},
+    {opts:["Niños/adolescentes","Adultos/Adultos mayores","Todas las edades"]},
+    {opts:["Individual","Pareja/familiar","Grupal"]},
+    {opts:["Ansiedad, depresión, regulación emocional, duelo","Evaluación y terapia neuropsicológica","Trastornos conductuales o de personalidad"]},
+    {opts:["Muy estructurada con tareas y ejercicios","Moderadamente estructurada","Más reflexiva y exploratoria"]},
+    {opts:["TCC, Breve o Sistémica","Humanista o Contextual (ACT, DBT, FAP, AC, Mindfulness)","Psicoanálisis o Psicodinámica"]},
+    {opts:["Directivo (orientación clara y estrategias)","Colaborativo","Exploratorio"]},
+    {opts:["Enseñar herramientas prácticas","Escuchar y reflexionar juntos","Analizar patrones profundos"]},
+    {opts:["No, mi práctica es completamente secular","Sí, integro principios espirituales de manera general cuando el paciente lo solicita","Sí, mi práctica se basa o se inspira en una tradición religiosa específica"]},
+    {opts:["Corto plazo (1–3 meses)","Mediano plazo (3–12 meses)","Largo plazo"]},
+    {opts:["Semanal","Quincenal","Flexible"]},
+    {opts:["Mujeres","Hombres","Indistinto"]},
+    {opts:["Enfoque general clínico","Enfoque con sensibilidad cultural y social","Enfoque que integra valores religiosos o espirituales"]},
+    {opts:["Mañana","Tarde","Noche/fines de semana"]},
+    {opts:["Menos de $500 MXN","$500–$1,000 MXN","Más de $1,000 MXN"]},
+    {opts:["1–3 años","4–10 años","Más de 10 años"]},
+    {opts:["Licenciatura","Maestría o especialidad","Doctorado o certificaciones avanzadas"]},
+    {opts:["Solo sesiones individuales","Talleres o grupos","Ambas"]},
+    {opts:["Limitada","Moderada","Alta"]}
+];
+const lblPac = ["Modalidad preferida","Alcance","Para quién","Tipo de terapia","Motivo principal","Estilo de terapia","Enfoque deseado","Estilo del terapeuta","Expectativa","Espiritualidad","Duración esperada","Frecuencia","Género del terapeuta","Contexto","Horario","Presupuesto","Importancia de la experiencia","Formación preferida","Otras actividades","Urgencia"];
+const lblPsi = ["Modalidad de atención","Alcance geográfico","Población","Tipo de terapia","Áreas de atención","Estructura terapéutica","Enfoque predominante","Estilo de intervención","Rol en sesión","Religión/Espiritualidad","Duración del proceso","Frecuencia","Género de pacientes","Enfoque cultural","Horario","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad"];
+
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+// Timeout de seguridad: si en 8s el loader sigue visible, lo oculta forzosamente
+setTimeout(() => {
+    const el = document.getElementById("loading");
+    if (el && el.style.display !== "none") {
+        el.style.display = "none";
+        if (currentUser) openTab("explorar");
+        else window.location.href = "index.html";
+    }
+}, 8000);
+
+auth.onAuthStateChanged(async user => {
+    try {
+        if (!user) { window.location.href = "index.html"; return; }
+        currentUser = user;
+
+        let doc = await db.collection("usuarios").doc(user.uid).get();
+        if (doc.exists) { userType = "paciente"; userData = doc.data(); }
+        else {
+            doc = await db.collection("psicologos").doc(user.uid).get();
+            if (doc.exists) { userType = "psicologo"; userData = doc.data(); }
+            else { userType = "paciente"; userData = { nombre:user.email, respuestas:[], email:user.email }; }
+        }
+
+        // ── ADMIN CHECK ──
+        const emailAdmin = ADMIN_EMAILS.includes(user.email);
+        let firestoreAdmin = false;
+        try {
+            const adminDoc = await db.collection("admins").doc(user.uid).get();
+            firestoreAdmin = adminDoc.exists;
+        } catch(e) {}
+        isAdmin = emailAdmin || firestoreAdmin;
+
+        document.getElementById("headerEmail").innerText = user.email;
+        const tb = document.getElementById("typeBadge");
+        if (isAdmin) {
+            tb.innerText = "Administrador";
+            tb.className = "type-badge admin";
+            document.getElementById("navAdmin").style.display = "block";
+            document.getElementById("mainContainer").classList.add("wide");
+        } else {
+            tb.innerText = userType === "paciente" ? "Paciente" : "Psicólogo/a";
+            tb.className = "type-badge " + userType;
+        }
+
+        updateLastSeen();
+        lastSeenTimer = setInterval(updateLastSeen, 4 * 60 * 1000);
+        document.getElementById("loading").style.display = "none";
+        openTab("explorar");
+        checkUnreadMessages();
+
+    } catch(e) {
+        console.error("Error al cargar el dashboard:", e);
+        document.getElementById("loading").style.display = "none";
+        if (currentUser) openTab("explorar");
+        else window.location.href = "index.html";
+    }
+});
+
+async function updateLastSeen() {
+    if (!currentUser) return;
+    const coll = userType === "psicologo" ? "psicologos" : "usuarios";
+    try { await db.collection(coll).doc(currentUser.uid).update({ lastSeen: new Date() }); } catch(e) {}
+}
+
+function formatLastSeen(ts) {
+    if (!ts) return "Desconectado";
+    const diff = Date.now() - (ts.toMillis ? ts.toMillis() : ts);
+    const mins = Math.floor(diff / 60000);
+    if (mins < 2)  return "🟢 En línea";
+    if (mins < 60) return `Última conexión hace ${mins} min`;
+    const hrs = Math.floor(mins/60);
+    if (hrs < 24)  return `Última conexión hace ${hrs}h`;
+    return `Última conexión hace ${Math.floor(hrs/24)} día(s)`;
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function openTab(id) {
+    document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+    document.getElementById("tab-"+id).classList.add("active");
+    const nel = document.getElementById("nav"+id.charAt(0).toUpperCase()+id.slice(1));
+    if (nel) nel.classList.add("active");
+
+    if (id === "feed")       loadFeed();
+    if (id === "mensajes")   loadConvoList();
+    if (id === "explorar")   loadExplorar();
+    if (id === "respuestas") renderRespuestas();
+    if (id === "perfil")     renderMyProfile();
+    if (id === "admin")      loadAdminPanel();
+}
+
+// ─── COMPATIBILITY ────────────────────────────────────────────────────────────
+function ansIdx(ans, qi, isPsi) {
+    if (!ans) return -1;
+    const opts = isPsi ? qPsi[qi].opts : qPac[qi].opts;
+    const i = opts.indexOf(ans);
+    if (i !== -1) return i;
+    if (ans.startsWith("Sí, integra") || ans.startsWith("Sí, práctica")) return 2;
+    return -1;
+}
+function calcCompat(rPac, rPsi) {
+    if (!rPac || !rPsi || !rPac.length || !rPsi.length) return 0;
+    let score = 0;
+    const n = Math.min(rPac.length, rPsi.length, 20);
+    for (let i = 0; i < n; i++) {
+        const p = ansIdx(rPac[i],i,false), t = ansIdx(rPsi[i],i,true);
+        if (p === -1 || t === -1) { score += 1; continue; }
+        if (p === t) score += 2; else if (Math.abs(p-t) === 1) score += 1;
+    }
+    return Math.round((score/(n*2))*100);
+}
+function compatClass(pct) { return pct>=70?"c-high":pct>=45?"c-mid":"c-low"; }
+function compatColor(pct) { return pct>=70?"#2ecc71":pct>=45?"#f39c12":"#e74c3c"; }
+function getCorriente(resp, isPsi) {
+    if (!resp||resp.length<7) return "🔄 Integrativa";
+    const r = resp[6]||"";
+    if (isPsi) {
+        if (r.includes("TCC"))          return "🧩 TCC / Sistémica";
+        if (r.includes("Humanista"))    return "🌱 Humanista / Contextual";
+        if (r.includes("Psicoanálisis")) return "🧠 Psicoanalítica";
+    } else {
+        if (r.includes("estrategias"))  return "🧩 TCC";
+        if (r.includes("conciencia"))   return "🌱 Humanista";
+        if (r.includes("historia"))     return "🧠 Psicoanalítica";
+    }
+    return "🔄 Integrativa";
+}
+
+// ─── FEED ────────────────────────────────────────────────────────────────────
+async function loadFeed() {
+    const list = document.getElementById("feedList");
+    list.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
+    const myF = userType==="paciente"?"paciente":"psicologo";
+    const othF = userType==="paciente"?"psicologo":"paciente";
+    const othC = userType==="paciente"?"psicologos":"usuarios";
+    let snap;
+    try { snap = await db.collection("matches").where(myF,"==",currentUser.uid).orderBy("fecha","desc").get(); }
+    catch(e) { snap = await db.collection("matches").where(myF,"==",currentUser.uid).get(); }
+    if (!snap||snap.empty) { list.innerHTML=`<div class="empty-state"><div class="empty-icon">🌱</div><h3>Aún no tienes conexiones</h3><p>Ve a <strong>Explorar</strong> para descubrir perfiles.</p></div>`; return; }
+    list.innerHTML="";
+    for (const doc of snap.docs) {
+        const md=doc.data(), pct=md.compatibility||0;
+        const od = await db.collection(othC).doc(md[othF]).get();
+        if (!od.exists) continue;
+        const d=od.data(), resp=d.respuestas||[], cardIsPsi=userType==="paciente";
+        const matchId=doc.id, otherUid=md[othF];
+        const safeName = (d.nombre||"Usuario").replace(/'/g,"\\'");
+        let extra = cardIsPsi ? `
+            <div class="detail-chip"><div class="chip-label">Enfoque</div><div class="chip-val">${getCorriente(resp,true)}</div></div>
+            <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Costo/sesión</div><div class="chip-val">${resp[15]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
+            ${d.cedula?`<div class="detail-chip"><div class="chip-label">Cédula</div><div class="chip-val">${d.cedula}</div></div>`:""}
+            ${d.consultorio?`<div class="detail-chip"><div class="chip-label">Consultorio</div><div class="chip-val">${d.consultorio}</div></div>`:""}
+        ` : `
+            <div class="detail-chip"><div class="chip-label">Corriente</div><div class="chip-val">${getCorriente(resp,false)}</div></div>
+            <div class="detail-chip"><div class="chip-label">Modalidad</div><div class="chip-val">${resp[0]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Presupuesto</div><div class="chip-val">${resp[15]||"—"}</div></div>
+            <div class="detail-chip"><div class="chip-label">Horario</div><div class="chip-val">${resp[14]||"—"}</div></div>
+        `;
+        const card = document.createElement("div");
+        card.className = "match-card";
+        card.innerHTML = `
+            <div class="match-card-header">
+                <div class="avatar">${d.mascotaShape ? buildSvgMascota(d.mascotaShape, d.mascotaExpr||"feliz").replace(' id="mascotaSvg"','').replace(/width="120" height="120"/,'width="48" height="48"') : (cardIsPsi?"🧠":"👤")}</div>
+                <div>
+                    <div class="match-name">${d.nombre||"Usuario"}</div>
+                    <span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span>
+                </div>
+                <div class="match-label">❤️ Match</div>
+            </div>
+            <div class="detail-grid">${extra}</div>
+            <div class="contact-row">
+                <span style="color:var(--muted);">📧</span>
+                <span class="contact-email">${d.email||"—"}</span>
+                <button class="btn-chat" onclick="openTab('mensajes');setTimeout(()=>openChat('${matchId}','${otherUid}','${safeName}','${cardIsPsi?"🧠":"👤"}'),200)">💬 Mensaje</button>
+                <button class="btn-report-sm" onclick="openReport('${otherUid}','${safeName}')">⚑ Reportar</button>
+                <button class="btn-break" onclick="openBreakModal('${matchId}','${otherUid}','${safeName}')">💔 Romper</button>
+            </div>`;
+        list.appendChild(card);
+    }
+}
+
+// ─── EXPLORAR ────────────────────────────────────────────────────────────────
+async function loadExplorar() {
+    const card = document.getElementById("swipe-card");
+    document.getElementById("action-btns").style.display = "none";
+    document.getElementById("btnReportCard").style.display = "none";
+    document.getElementById("explorarSub").innerText = userType==="paciente" ? "Perfiles de psicólogos ordenados por compatibilidad" : "Perfiles de pacientes ordenados por compatibilidad";
+    card.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><div class="spinner" style="margin:0 auto 14px;"></div><p>Cargando perfiles...</p></div>';
+    const othC = userType==="paciente"?"psicologos":"usuarios";
+    const [lk,ps] = await Promise.all([db.collection("likes").where("from","==",currentUser.uid).get(), db.collection("passes").where("from","==",currentUser.uid).get()]);
+    likedSet  = new Set(lk.docs.map(d => d.data().to));
+    passedSet = new Set(ps.docs.map(d => d.data().to));
+    const snap = await db.collection(othC).limit(60).get();
+    const profiles = [];
+    snap.forEach(doc => {
+        const uid = doc.id;
+        if (uid===currentUser.uid||likedSet.has(uid)||passedSet.has(uid)) return;
+        const data = doc.data();
+        if (data.sanctionStatus === "banned") return; // hide banned users
+        const rPac = userType==="paciente"?(userData.respuestas||[]):(data.respuestas||[]);
+        const rPsi = userType==="paciente"?(data.respuestas||[]):(userData.respuestas||[]);
+        profiles.push({ uid, data, pct: calcCompat(rPac, rPsi) });
+    });
+    profiles.sort((a,b) => b.pct - a.pct);
+    profilesQueue = profiles; profileIndex = 0;
+    renderSwipeCard();
+}
+
+function renderSwipeCard() {
+    const card = document.getElementById("swipe-card");
+    const btns = document.getElementById("action-btns");
+    const hint = document.getElementById("swipe-hint");
+    const rBtn = document.getElementById("btnReportCard");
+    if (profileIndex >= profilesQueue.length) {
+        card.innerHTML = `<div class="empty-state"><div class="empty-icon">🌿</div><h3>¡Has visto todos los perfiles!</h3><p>Vuelve más tarde para nuevas conexiones.</p></div>`;
+        btns.style.display="none"; rBtn.style.display="none"; hint.innerText=""; return;
+    }
+    const {data:d, pct} = profilesQueue[profileIndex];
+    const cardIsPsi = (userType==="paciente");
+    const resp = d.respuestas||[];
+    const det = cardIsPsi ? `
+        <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,true)}</span></div>
+        <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${resp[0]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${resp[14]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Costo</span>${resp[15]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">📚</span><span class="sc-val"><span class="sc-lbl">Especialización</span>${resp[17]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">✅</span><span class="sc-val"><span class="sc-lbl">Disponibilidad</span>${resp[19]||"—"}</span></div>
+        ${d.consultorio?`<div class="sc-row"><span class="sc-icon">📍</span><span class="sc-val"><span class="sc-lbl">Consultorio</span>${d.consultorio}</span></div>`:""}
+        ${d.sobreMi?`<div class="sc-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"><span class="sc-icon">💬</span><span class="sc-val" style="font-size:13px;color:var(--muted);line-height:1.55;">${d.sobreMi}</span></div>`:""}
+    ` : `
+        <div class="sc-row"><span class="sc-icon">🎯</span><span class="sc-val"><span class="sc-lbl">Corriente</span>${getCorriente(resp,false)}</span></div>
+        <div class="sc-row"><span class="sc-icon">💭</span><span class="sc-val"><span class="sc-lbl">Busca</span>${resp[4]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">🏥</span><span class="sc-val"><span class="sc-lbl">Modalidad</span>${resp[0]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">🕐</span><span class="sc-val"><span class="sc-lbl">Horario</span>${resp[14]||"—"}</span></div>
+        <div class="sc-row"><span class="sc-icon">💰</span><span class="sc-val"><span class="sc-lbl">Presupuesto</span>${resp[15]||"—"}</span></div>
+    `;
+    card.innerHTML = `
+        <div class="sc-top">
+            <div class="sc-avatar">${d.mascotaShape ? buildSvgMascota(d.mascotaShape, d.mascotaExpr||"feliz").replace(' id="mascotaSvg"','').replace(/width="120" height="120"/,'width="62" height="62"') : (cardIsPsi?"🧠":"👤")}</div>
+            <div><div class="sc-name">${d.nombre||"Usuario"}</div><span class="compat-pill ${compatClass(pct)}">${pct}% compatibilidad</span></div>
+        </div>
+        <div class="compat-bar-wrap">
+            <div class="compat-bar-row"><span>Compatibilidad</span><span class="compat-pct">${pct}%</span></div>
+            <div class="compat-bar"><div class="compat-fill" style="width:${pct}%;background:${compatColor(pct)};"></div></div>
+        </div>
+        <div class="sc-details">${det}</div>`;
+    btns.style.display="flex"; rBtn.style.display="block";
+    hint.innerText = "← Pasar  |  → Me interesa  |  Desliza la tarjeta";
+    let tx=0;
+    card.ontouchstart = e => { tx=e.touches[0].clientX; };
+    card.ontouchend   = e => { const dx=e.changedTouches[0].clientX-tx; if(dx>80) likeProfile(); else if(dx<-80) passProfile(); };
+    document.onkeydown = e => { if(e.key==="ArrowRight") likeProfile(); if(e.key==="ArrowLeft") passProfile(); };
+}
+
+function openReportFromCard() {
+    if (profileIndex >= profilesQueue.length) return;
+    const {uid, data:d} = profilesQueue[profileIndex];
+    openReport(uid, d.nombre||"Usuario");
+}
+
+async function likeProfile() {
+    if (profileIndex>=profilesQueue.length) return;
+    const {uid:targetUid, data:targetData, pct} = profilesQueue[profileIndex];
+    document.getElementById("swipe-card").classList.add("fly-right");
+    try {
+        await db.collection("likes").doc(currentUser.uid+"_"+targetUid).set({ from:currentUser.uid, to:targetUid, fromType:userType, fecha:new Date() });
+        likedSet.add(targetUid);
+        const rev = await db.collection("likes").doc(targetUid+"_"+currentUser.uid).get();
+        if (rev.exists) {
+            const pacUid = userType==="paciente"?currentUser.uid:targetUid;
+            const psiUid = userType==="psicologo"?currentUser.uid:targetUid;
+            const matchId = [pacUid,psiUid].sort().join("_");
+            await db.collection("matches").doc(matchId).set({ paciente:pacUid, psicologo:psiUid, compatibility:pct, fecha:new Date() });
+            let greetingText = "";
+            if (userType==="psicologo") greetingText = userData.saludoAutomatico||"";
+            else { const pd = await db.collection("psicologos").doc(psiUid).get(); if(pd.exists) greetingText=pd.data().saludoAutomatico||""; }
+            await db.collection("chats").doc(matchId).set({ participants:[pacUid,psiUid], lastMessage:greetingText||"¡Es un match!", lastMessageTime:new Date(), unread:{[pacUid]:greetingText?1:0,[psiUid]:0} });
+            if (greetingText) await db.collection("chats").doc(matchId).collection("messages").add({ sender:psiUid, text:greetingText, timestamp:new Date(), auto:true });
+
+            // ── CORREOS DE NOTIFICACIÓN ──
+            try {
+                const [pacDoc, psiDoc] = await Promise.all([
+                    db.collection("usuarios").doc(pacUid).get(),
+                    db.collection("psicologos").doc(psiUid).get()
+                ]);
+                const pacEmail  = pacDoc.exists  ? (pacDoc.data().email  || "") : "";
+                const pacNombre = pacDoc.exists  ? (pacDoc.data().nombre || "Paciente") : "Paciente";
+                const psiEmail  = psiDoc.exists  ? (psiDoc.data().email  || "") : "";
+                const psiNombre = psiDoc.exists  ? (psiDoc.data().nombre || "Psicólogo/a") : "Psicólogo/a";
+                if (pacEmail && psiEmail) sendMatchEmails(pacEmail, pacNombre, psiEmail, psiNombre, pct);
+            } catch(emailErr) { console.warn("Email error:", emailErr); }
+
+            setTimeout(() => {
+                document.getElementById("matchModalText").innerText = `¡Tú y ${targetData.nombre||"tu nueva conexión"} hicieron match! ${greetingText?"El psicólogo ya te envió un saludo. 💬":"Ya pueden escribirse."}`;
+                document.getElementById("matchModal").classList.add("show");
+            }, 340);
+        }
+    } catch(e) { console.error(e); }
+    setTimeout(() => { document.getElementById("swipe-card").classList.remove("fly-right"); profileIndex++; renderSwipeCard(); }, 340);
+}
+
+async function passProfile() {
+    if (profileIndex>=profilesQueue.length) return;
+    const {uid:targetUid} = profilesQueue[profileIndex];
+    document.getElementById("swipe-card").classList.add("fly-left");
+    try { await db.collection("passes").doc(currentUser.uid+"_"+targetUid).set({ from:currentUser.uid, to:targetUid, fecha:new Date() }); passedSet.add(targetUid); } catch(e) {}
+    setTimeout(() => { document.getElementById("swipe-card").classList.remove("fly-left"); profileIndex++; renderSwipeCard(); }, 340);
+}
+
+// ─── MENSAJES ────────────────────────────────────────────────────────────────
+async function loadConvoList() {
+    document.getElementById("msgList").style.display = "block";
+    document.getElementById("chatView").classList.remove("open");
+    const container = document.getElementById("convoList");
+    container.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto 12px;"></div></div>';
+    const myF=userType==="paciente"?"paciente":"psicologo", othF=userType==="paciente"?"psicologo":"paciente", othC=userType==="paciente"?"psicologos":"usuarios";
+    let matchSnap;
+    try { matchSnap = await db.collection("matches").where(myF,"==",currentUser.uid).get(); } catch(e) { container.innerHTML=""; return; }
+    if (!matchSnap||matchSnap.empty) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">💬</div><h3>Sin conversaciones</h3><p>Haz match con alguien en <strong>Explorar</strong>.</p></div>`; return; }
+    container.innerHTML=""; const rows=[];
+    for (const doc of matchSnap.docs) {
+        const md=doc.data(), matchId=doc.id, otherUid=md[othF];
+        const [od,chatDoc] = await Promise.all([db.collection(othC).doc(otherUid).get(), db.collection("chats").doc(matchId).get()]);
+        if (!od.exists) continue;
+        const d=od.data(), chat=chatDoc.exists?chatDoc.data():{};
+        const unread=(chat.unread||{})[currentUser.uid]||0, lastMsg=chat.lastMessage||"Inicia la conversación", lastTime=chat.lastMessageTime?formatMsgTime(chat.lastMessageTime):"", lastSeen=d.lastSeen?formatLastSeen(d.lastSeen):"Desconectado", isOnline=d.lastSeen&&(Date.now()-d.lastSeen.toMillis())<5*60*1000, emoji=userType==="paciente"?"🧠":"👤", safeName=(d.nombre||"Usuario").replace(/'/g,"\\'");
+        rows.push({ lastTime:chat.lastMessageTime?chat.lastMessageTime.toMillis():0, html:`<div class="convo-item" onclick="openChat('${matchId}','${otherUid}','${safeName}','${emoji}')"><div class="convo-av">${emoji}${isOnline?'<div class="online-dot"></div>':""}</div><div class="convo-body"><div class="convo-name">${d.nombre||"Usuario"}</div><div class="convo-preview">${lastMsg}</div><div class="convo-lastseen">${lastSeen}</div></div><div class="convo-meta"><div class="convo-time">${lastTime}</div>${unread>0?`<div class="unread-badge">${unread}</div>`:""}</div></div>` });
+    }
+    rows.sort((a,b)=>b.lastTime-a.lastTime);
+    container.innerHTML = rows.map(r=>r.html).join("") || `<div class="empty-state"><div class="empty-icon">💬</div><h3>Sin conversaciones aún</h3></div>`;
+}
+
+async function openChat(matchId, otherUid, otherName, emoji) {
+    activeChatId = matchId;
+    document.getElementById("msgList").style.display="none";
+    document.getElementById("chatView").classList.add("open");
+    document.getElementById("chatName").innerText = otherName;
+    document.getElementById("chatAv").innerText   = emoji||"👤";
+    document.getElementById("chatMessages").innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">Cargando...</div>';
+    document.getElementById("chatLastSeen").innerText = "";
+    const othC = userType==="paciente"?"psicologos":"usuarios";
+    try { const od=await db.collection(othC).doc(otherUid).get(); if(od.exists&&od.data().lastSeen) document.getElementById("chatLastSeen").innerText=formatLastSeen(od.data().lastSeen); } catch(e) {}
+    try { await db.collection("chats").doc(matchId).update({[`unread.${currentUser.uid}`]:0}); } catch(e) {}
+    const dot = document.querySelector("#navMensajes .unread-dot"); if(dot) dot.remove();
+    if (chatUnsub) chatUnsub();
+    chatUnsub = db.collection("chats").doc(matchId).collection("messages").orderBy("timestamp","asc").onSnapshot(snap => {
+        const c = document.getElementById("chatMessages"); c.innerHTML="";
+        snap.forEach(doc => {
+            const m=doc.data(), isMine=m.sender===currentUser.uid, time=m.timestamp?formatMsgTime(m.timestamp):"";
+            const div=document.createElement("div"); div.className="msg-row "+(isMine?"mine":"theirs");
+            div.innerHTML=`<div class="msg-bubble">${!isMine&&m.auto?'<div class="msg-auto-tag">✉️ saludo automático</div>':""}${m.text}<span class="msg-time">${time}</span></div>`;
+            c.appendChild(div);
+        });
+        c.scrollTop = c.scrollHeight;
+    });
+    document.getElementById("chatInput").focus();
+}
+
+function closeChat() {
+    if (chatUnsub) { chatUnsub(); chatUnsub=null; }
+    activeChatId=null;
+    document.getElementById("chatView").classList.remove("open");
+    document.getElementById("msgList").style.display="block";
+    loadConvoList();
+}
+
+async function sendMessage() {
+    const input=document.getElementById("chatInput"), text=input.value.trim();
+    if (!text||!activeChatId) return;
+    input.value="";
+    try {
+        await db.collection("chats").doc(activeChatId).collection("messages").add({ sender:currentUser.uid, text, timestamp:new Date(), auto:false });
+        const chatDoc = await db.collection("chats").doc(activeChatId).get();
+        const participants = chatDoc.exists?(chatDoc.data().participants||[]):[];
+        const otherUid = participants.find(uid=>uid!==currentUser.uid);
+        const update = { lastMessage:text, lastMessageTime:new Date() };
+        if (otherUid) update[`unread.${otherUid}`] = firebase.firestore.FieldValue.increment(1);
+        await db.collection("chats").doc(activeChatId).update(update);
+    } catch(e) { console.error(e); input.value=text; }
+}
+
+async function checkUnreadMessages() {
+    const myF = userType==="paciente"?"paciente":"psicologo";
+    try {
+        const matches = await db.collection("matches").where(myF,"==",currentUser.uid).get();
+        let total=0;
+        for (const doc of matches.docs) { const cd=await db.collection("chats").doc(doc.id).get(); if(cd.exists) total+=(cd.data().unread||{})[currentUser.uid]||0; }
+        const btn=document.getElementById("navMensajes");
+        if (total>0&&!btn.querySelector(".unread-dot")) { const dot=document.createElement("span"); dot.className="unread-dot"; btn.appendChild(dot); }
+    } catch(e) {}
+}
+
+function formatMsgTime(ts) {
+    if (!ts) return "";
+    const d = ts.toDate?ts.toDate():new Date(ts), now=new Date();
+    if (d.toDateString()===now.toDateString()) return d.toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"});
+    return d.toLocaleDateString("es-MX",{day:"2-digit",month:"short"});
+}
+
+// ─── RESPUESTAS ──────────────────────────────────────────────────────────────
+function renderRespuestas() {
+    const list=document.getElementById("respuestasList"), resp=userData.respuestas||[], labels=userType==="paciente"?lblPac:lblPsi;
+    const btn = `<button class="btn-requiz" onclick="startReQuiz()">🔄 Volver a contestar el cuestionario</button>`;
+    if (!resp.length) { list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><h3>Sin respuestas</h3></div>${btn}`; return; }
+    list.innerHTML = resp.map((r,i)=>`<div class="resp-item"><div class="resp-lbl">${labels[i]||"Pregunta "+(i+1)}</div><div class="resp-val">${r}</div></div>`).join("") + btn;
+}
+
+// ─── MI PERFIL ───────────────────────────────────────────────────────────────
+function renderMyProfile() {
+    const container=document.getElementById("perfilContent"), d=userData, resp=d.respuestas||[], isPsi=userType==="psicologo", corriente=getCorriente(resp,isPsi);
+
+    const STATES = ["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Ciudad de México","Coahuila","Colima","Durango","Estado de México","Guanajuato","Guerrero","Hidalgo","Jalisco","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"];
+
+    const editSection = isPsi ? `
+        <div class="profile-section">
+            <div class="ps-title">✏️ Editar información</div>
+            <div class="edit-field">
+                <label>Enfoque a trabajar</label>
+                <input type="text" id="edit_enfoque" value="${(d.enfoque||"").replace(/"/g,"&quot;")}" placeholder="Ej. TCC, Humanista..." />
+            </div>
+            <div class="edit-field">
+                <label>Dirección del consultorio</label>
+                <input type="text" id="edit_consultorio" value="${(d.consultorio||"").replace(/"/g,"&quot;")}" placeholder="Calle, colonia, ciudad..." />
+            </div>
+            <button class="btn-save-edit" onclick="saveEditInfo()">Guardar cambios</button>
+            <p class="save-confirm" id="editInfoConfirm">✅ Guardado</p>
+        </div>
+    ` : `
+        <div class="profile-section">
+            <div class="ps-title">✏️ Editar información</div>
+            <div class="edit-field">
+                <label>Estado</label>
+                <select id="edit_ubicacion">
+                    ${STATES.map(s=>`<option${d.ubicacion===s?" selected":""}>${s}</option>`).join("")}
+                </select>
+            </div>
+            <div class="edit-field">
+                <label>Motivo de consulta</label>
+                <textarea id="edit_motivo" placeholder="Actualiza tu motivo de consulta...">${d.motivo||""}</textarea>
+            </div>
+            <button class="btn-save-edit" onclick="saveEditInfo()">Guardar cambios</button>
+            <p class="save-confirm" id="editInfoConfirm">✅ Guardado</p>
+        </div>
+    `;
+
+    const infoFields = isPsi ? `
+        <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
+        <div class="pf-row"><span class="pf-label">Cédula profesional</span><span class="pf-val">${d.cedula||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Enfoque declarado</span><span class="pf-val">${d.enfoque||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Consultorio</span><span class="pf-val">${d.consultorio||"—"}</span></div>
+    ` : `
+        <div class="pf-row"><span class="pf-label">Correo</span><span class="pf-val">${d.email||currentUser.email}</span></div>
+        <div class="pf-row"><span class="pf-label">Estado</span><span class="pf-val">${d.ubicacion||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Motivo de consulta</span><span class="pf-val">${d.motivo||"—"}</span></div>
+    `;
+    const quizFields = resp.length===0?"":isPsi?`
+        <div class="pf-row"><span class="pf-label">Modalidad</span><span class="pf-val">${resp[0]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Áreas</span><span class="pf-val">${resp[4]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Enfoque terapéutico</span><span class="pf-val">${resp[6]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Costo/sesión</span><span class="pf-val">${resp[15]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Experiencia</span><span class="pf-val">${resp[16]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Especialización</span><span class="pf-val">${resp[17]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Disponibilidad</span><span class="pf-val">${resp[19]||"—"}</span></div>
+    `:`
+        <div class="pf-row"><span class="pf-label">Modalidad preferida</span><span class="pf-val">${resp[0]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Lo que busca</span><span class="pf-val">${resp[4]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Horario</span><span class="pf-val">${resp[14]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Presupuesto</span><span class="pf-val">${resp[15]||"—"}</span></div>
+        <div class="pf-row"><span class="pf-label">Urgencia</span><span class="pf-val">${resp[19]||"—"}</span></div>
+    `;
+    const saludoSection = isPsi?`
+        <div class="profile-section">
+            <div class="ps-title">✏️ Sobre mí</div>
+            <textarea class="saludo-textarea" id="sobreMiInput" placeholder="Escribe algo sobre ti para que los demás te conozcan...">${d.sobreMi||""}</textarea>
+            <button class="btn-save-saludo" onclick="saveSobreMi()">Guardar</button>
+            <p class="save-confirm" id="sobreMiConfirm">✅ Guardado</p>
+        </div>
+        <div class="profile-section">
+            <div class="ps-title">⚙️ Ajustes de mensajería</div>
+            <label class="field-label">Saludo automático al hacer match</label>
+            <textarea class="saludo-textarea" id="saludoInput" placeholder="Ej: Hola, soy el Dr. López...">${d.saludoAutomatico||""}</textarea>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px;">Este mensaje se enviará automáticamente cuando hagas match con un paciente.</p>
+            <button class="btn-save-saludo" onclick="saveAutoGreeting()">Guardar saludo</button>
+            <p class="save-confirm" id="saveConfirm">✅ Guardado correctamente</p>
+        </div>
+    `:"";
+    container.innerHTML=`
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-av">${isPsi?"🧠":"👤"}</div>
+                <div><div class="profile-name">${d.nombre||"—"}</div><span class="type-badge ${userType}" style="display:inline-block;margin-top:4px;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
+            </div>
+            <div class="profile-section"><div class="ps-title">Información general</div>${infoFields}</div>
+            ${editSection}
+            <div class="profile-section"><div class="ps-title">Perfil psicológico</div><div class="pf-row"><span class="pf-label">Corriente</span><span class="pf-val"><span class="corriente-tag">${corriente}</span></span></div>${quizFields}</div>
+            ${saludoSection}
+        </div>`;
+}
+
+async function saveAutoGreeting() {
+    const text = document.getElementById("saludoInput").value.trim();
+    try {
+        await db.collection("psicologos").doc(currentUser.uid).set({ saludoAutomatico: text }, { merge: true });
+        userData.saludoAutomatico = text;
+        const c = document.getElementById("saveConfirm"); c.style.display="block"; setTimeout(()=>{c.style.display="none";},3000);
+    } catch(e) { console.error(e); alert("Error al guardar: " + (e.message||e.code||e)); }
+}
+
+async function saveSobreMi() {
+    const text = document.getElementById("sobreMiInput").value.trim();
+    try {
+        await db.collection("psicologos").doc(currentUser.uid).set({ sobreMi: text }, { merge: true });
+        userData.sobreMi = text;
+        const c = document.getElementById("sobreMiConfirm");
+        c.style.display = "block";
+        setTimeout(() => { c.style.display = "none"; }, 3000);
+    } catch(e) { console.error(e); alert("Error al guardar: " + (e.message||e.code||e)); }
+}
+
+// ══════════════════════════════════════════════════════
+//  REPORT SYSTEM
+// ══════════════════════════════════════════════════════
+function openReport(uid, name) {
+    reportTargetUid  = uid;
+    reportTargetName = name;
+    document.getElementById("reportTargetName").innerText = name;
+    document.getElementById("reportDetails").value = "";
+    document.getElementById("reportSent").style.display = "none";
+    document.getElementById("reportModal").classList.add("show");
+}
+function closeReportModal() { document.getElementById("reportModal").classList.remove("show"); }
+
+async function submitReport() {
+    const reason  = document.getElementById("reportReason").value;
+    const details = document.getElementById("reportDetails").value.trim();
+    if (!reportTargetUid) return;
+    try {
+        await db.collection("reports").add({
+            reportedUid:  reportTargetUid,
+            reportedName: reportTargetName,
+            reportedBy:   currentUser.uid,
+            reporterEmail: currentUser.email,
+            reason, details,
+            timestamp: new Date(),
+            status: "pending"
+        });
+        document.getElementById("reportSent").style.display = "block";
+        setTimeout(() => closeReportModal(), 2500);
+    } catch(e) { alert("Error al enviar el reporte. Intenta de nuevo."); }
+}
+
+// ══════════════════════════════════════════════════════
+//  ADMIN PANEL
+// ══════════════════════════════════════════════════════
+function openAdminSub(id) {
+    if (!isAdmin) return;
+    document.querySelectorAll(".admin-sub").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".admin-subbtn").forEach(b => b.classList.remove("active"));
+    document.getElementById("asub-"+id).classList.add("active");
+    // activate the button
+    document.querySelectorAll(".admin-subbtn").forEach(b => { if(b.getAttribute("onclick")===`openAdminSub('${id}')`) b.classList.add("active"); });
+
+    if (id==="stats")    loadAdminStats();
+    if (id==="cedulas")  loadCedulasPendientes();
+    if (id==="usuarios") loadAdminUsers("all");
+    if (id==="reportes") loadAdminReports("pending");
+    if (id==="desconexiones") loadAdminDesconexiones();
+}
+
+async function loadAdminPanel() {
+    openAdminSub("stats");
+}
+
+// ─── Stats ───────────────────────────────────────────────────────────────────
+async function loadAdminStats() {
+    try {
+        const [psiSnap, pacSnap, matchSnap, repSnap, sancSnap] = await Promise.all([
+            db.collection("psicologos").get(),
+            db.collection("usuarios").get(),
+            db.collection("matches").get(),
+            db.collection("reports").where("status","==","pending").get(),
+            db.collection("sanctions").get()
+        ]);
+        const cedPend = psiSnap.docs.filter(d => d.data().cedulaVerificada === "pendiente").length;
+        document.getElementById("as-psi").innerText   = psiSnap.size;
+        document.getElementById("as-pac").innerText   = pacSnap.size;
+        document.getElementById("as-match").innerText = matchSnap.size;
+        document.getElementById("as-ced").innerText   = cedPend;
+        document.getElementById("as-rep").innerText   = repSnap.size;
+        document.getElementById("as-san").innerText   = sancSnap.size;
+    } catch(e) { console.error(e); }
+}
+
+// ─── Cédulas ─────────────────────────────────────────────────────────────────
+async function loadCedulasPendientes() {
+    const container = document.getElementById("cedulasList");
+    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
+    try {
+        const snap = await db.collection("psicologos").where("cedulaVerificada","==","pendiente").get();
+        if (snap.empty) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">✅</div><h3>Sin cédulas pendientes</h3><p>Todas las cédulas están revisadas.</p></div>`; return; }
+        container.innerHTML="";
+        snap.forEach(doc => {
+            const d=doc.data(), uid=doc.id;
+            const row=document.createElement("div"); row.className="admin-row";
+            row.innerHTML=`
+                <div class="admin-row-av">🧠</div>
+                <div class="admin-row-info">
+                    <div class="admin-row-name">${d.nombre||"—"}</div>
+                    <div class="admin-row-email">${d.email||"—"}</div>
+                    <div class="admin-row-meta">Cédula: <strong>${d.cedula||"—"}</strong> · Enfoque: ${d.enfoque||"—"}</div>
+                    <div style="margin-top:4px;"><span class="sbadge pending">⏳ Pendiente</span></div>
+                </div>
+                <div class="admin-row-actions">
+                    <button class="btn-adm approve" onclick="setCedulaStatus('${uid}',true)">✅ Aprobar</button>
+                    <button class="btn-adm reject"  onclick="setCedulaStatus('${uid}',false)">❌ Rechazar</button>
+                </div>`;
+            container.appendChild(row);
+        });
+    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; }
+}
+
+async function setCedulaStatus(uid, approved) {
+    try {
+        await db.collection("psicologos").doc(uid).update({ cedulaVerificada: approved });
+        loadCedulasPendientes();
+        loadAdminStats();
+    } catch(e) { alert("Error al actualizar."); }
+}
+
+// ─── Usuarios ────────────────────────────────────────────────────────────────
+async function loadAdminUsers(filter) {
+    currentUserFilter = filter;
+    const container = document.getElementById("usuariosList");
+    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
+    try {
+        const [psiSnap, pacSnap, sancSnap] = await Promise.all([
+            db.collection("psicologos").limit(80).get(),
+            db.collection("usuarios").limit(80).get(),
+            db.collection("sanctions").get()
+        ]);
+        const sancMap = {};
+        sancSnap.forEach(d => { sancMap[d.id] = d.data(); });
+
+        allPsisCache  = psiSnap.docs.map(d => ({ uid:d.id, tipo:"psicologo", ...d.data(), sanc:sancMap[d.id]||null }));
+        allUsersCache = pacSnap.docs.map(d => ({ uid:d.id, tipo:"paciente",  ...d.data(), sanc:sancMap[d.id]||null }));
+
+        renderFilteredUsers();
+    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar.</p>"; }
+}
+
+function filterUsers(filter) {
+    currentUserFilter = filter;
+    document.querySelectorAll("#asub-usuarios .admin-subbtn").forEach(b => b.classList.remove("active"));
+    document.getElementById("ufilter"+filter.charAt(0).toUpperCase()+filter.slice(1)).classList.add("active");
+    renderFilteredUsers();
+}
+
+function renderFilteredUsers() {
+    const container = document.getElementById("usuariosList");
+    let list = [...allPsisCache, ...allUsersCache];
+
+    if (currentUserFilter==="psicologo") list = allPsisCache;
+    else if (currentUserFilter==="paciente") list = allUsersCache;
+    else if (currentUserFilter==="sancionado") list = [...allPsisCache,...allUsersCache].filter(u => u.sanc);
+
+    container.innerHTML="";
+    if (!list.length) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><h3>Sin resultados</h3></div>`; return; }
+
+    list.forEach(u => {
+        const isPsi = u.tipo==="psicologo";
+        const sanc  = u.sanc;
+        const sancBadge = sanc ? `<span class="sbadge ${sanc.type}">${sanc.type==="warning"?"⚠️ Advertido":sanc.type==="suspended"?"🚫 Suspendido":"🔴 Baneado"}</span>` : `<span class="sbadge active">✅ Activo</span>`;
+        const cedulaBadge = isPsi ? ` · Cédula: <span class="sbadge ${u.cedulaVerificada===true?"verified":u.cedulaVerificada==="pendiente"?"pending":"rejected"}">${u.cedulaVerificada===true?"✓ Verificada":u.cedulaVerificada==="pendiente"?"⏳ Pendiente":"✗ Rechazada"}</span>` : "";
+        const row = document.createElement("div"); row.className="admin-row";
+        row.innerHTML=`
+            <div class="admin-row-av">${isPsi?"🧠":"👤"}</div>
+            <div class="admin-row-info">
+                <div class="admin-row-name">${u.nombre||"—"} <span style="font-size:11px;color:var(--muted);font-weight:400;">${isPsi?"Psicólogo/a":"Paciente"}</span></div>
+                <div class="admin-row-email">${u.email||"—"}</div>
+                <div class="admin-row-meta" style="margin-top:4px;">${sancBadge}${cedulaBadge}</div>
+                ${sanc?`<div class="sanction-note">Motivo: ${sanc.reason||"—"} · ${sanc.date?new Date(sanc.date.toDate()).toLocaleDateString("es-MX"):""}</div>`:""}
+            </div>
+            <div class="admin-row-actions">
+                ${!sanc ? `<button class="btn-adm warn"    onclick="openSanctionModal('${u.uid}','${(u.nombre||'').replace(/'/g,"\\'")}','${u.tipo}')">⚖️ Sancionar</button>` : `<button class="btn-adm lift" onclick="liftSanction('${u.uid}','${u.tipo}')">↩ Levantar</button>`}
+                ${isPsi&&u.cedulaVerificada==="pendiente"?`<button class="btn-adm approve" onclick="setCedulaStatus('${u.uid}',true)">✅ Cédula</button>`:""}
+                <button class="btn-adm ban" onclick="deleteUserAccount('${u.uid}','${u.tipo}','${(u.nombre||'Usuario').replace(/'/g,"\\'")}')">🗑 Borrar</button>
+            </div>`;
+        container.appendChild(row);
+    });
+}
+
+async function liftSanction(uid, tipo) {
+    if (!confirm("¿Levantar sanción de este usuario?")) return;
+    try {
+        await db.collection("sanctions").doc(uid).delete();
+        const coll = tipo==="psicologo"?"psicologos":"usuarios";
+        await db.collection(coll).doc(uid).update({ sanctionStatus: firebase.firestore.FieldValue.delete() });
+        loadAdminUsers(currentUserFilter);
+        loadAdminStats();
+    } catch(e) { alert("Error al levantar sanción."); }
+}
+
+async function deleteUserAccount(uid, tipo, nombre) {
+    if (!isSuper) { alert("Solo el administrador principal puede borrar cuentas."); return; }
+    if (!confirm(`⚠️ ¿Borrar permanentemente la cuenta de "${nombre}"?\n\nEsto eliminará su perfil de Firestore. La cuenta de autenticación debe borrarse manualmente en Firebase Console → Authentication.`)) return;
+
+    const coll = tipo === "psicologo" ? "psicologos" : "usuarios";
+    try {
+        // Borrar perfil
+        await db.collection(coll).doc(uid).delete();
+        // Borrar sanciones si existen
+        try { await db.collection("sanctions").doc(uid).delete(); } catch(e) {}
+        // Borrar likes y passes del usuario
+        try {
+            const likesSnap = await db.collection("likes").where("from","==",uid).get();
+            await Promise.all(likesSnap.docs.map(d => d.ref.delete()));
+            const passesSnap = await db.collection("passes").where("from","==",uid).get();
+            await Promise.all(passesSnap.docs.map(d => d.ref.delete()));
+        } catch(e) {}
+        // Borrar matches
+        try {
+            const mField = tipo === "psicologo" ? "psicologo" : "paciente";
+            const matchSnap = await db.collection("matches").where(mField,"==",uid).get();
+            await Promise.all(matchSnap.docs.map(d => d.ref.delete()));
+        } catch(e) {}
+
+        alert(`✅ Perfil de "${nombre}" eliminado de Firestore.\n\nRecuerda borrar también la cuenta en Firebase Console → Authentication → Users.`);
+        loadAdminUsers(currentUserFilter);
+        loadAdminStats();
+    } catch(e) {
+        alert("Error al borrar cuenta: " + (e.message || e.code));
+        console.error(e);
+    }
+}
+
+// ─── Sanction Modal ──────────────────────────────────────────────────────────
+function openSanctionModal(uid, name, tipo) {
+    document.getElementById("sanctionTargetUid").value  = uid;
+    document.getElementById("sanctionTargetName").innerText = name;
+    document.getElementById("sanctionTargetType").value = tipo;
+    document.getElementById("sanctionReason").value = "";
+    document.getElementById("sanctionModal").classList.add("show");
+}
+function closeSanctionModal() { document.getElementById("sanctionModal").classList.remove("show"); }
+
+async function applySanction() {
+    const uid    = document.getElementById("sanctionTargetUid").value;
+    const tipo   = document.getElementById("sanctionTargetType").value;
+    const type   = document.getElementById("sanctionType").value;
+    const reason = document.getElementById("sanctionReason").value.trim();
+    if (!uid) return;
+    try {
+        await db.collection("sanctions").doc(uid).set({ uid, tipo, type, reason, adminUid:currentUser.uid, date:new Date() });
+        const coll = tipo==="psicologo"?"psicologos":"usuarios";
+        await db.collection(coll).doc(uid).update({ sanctionStatus: type });
+        closeSanctionModal();
+        loadAdminUsers(currentUserFilter);
+        loadAdminStats();
+        alert(`Sanción "${type}" aplicada correctamente.`);
+    } catch(e) { alert("Error al aplicar sanción."); }
+}
+
+// ─── Reports ─────────────────────────────────────────────────────────────────
+async function loadAdminReports(filter) {
+    currentReportFilter = filter;
+    const container = document.getElementById("reportesList");
+    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
+    try {
+        let query = db.collection("reports").orderBy("timestamp","desc");
+        if (filter==="pending") query = db.collection("reports").where("status","==","pending");
+        const snap = await query.get();
+        if (snap.empty) { container.innerHTML=`<div class="empty-state"><div class="empty-icon">✅</div><h3>Sin reportes ${filter==="pending"?"pendientes":""}</h3></div>`; return; }
+        container.innerHTML="";
+        snap.forEach(doc => {
+            const r=doc.data(), rid=doc.id;
+            const ts = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}) : "—";
+            const reasonLabels = { informacion_falsa:"Información falsa", comportamiento_inapropiado:"Comportamiento inapropiado", fraude:"Fraude/Estafa", acoso:"Acoso", cedula_invalida:"Cédula inválida", otro:"Otro" };
+            const row=document.createElement("div"); row.className="admin-row";
+            row.innerHTML=`
+                <div class="admin-row-av">🚨</div>
+                <div class="admin-row-info">
+                    <div class="admin-row-name">Reporte contra: <strong>${r.reportedName||r.reportedUid||"—"}</strong></div>
+                    <div class="admin-row-email">Por: ${r.reporterEmail||"—"} · ${ts}</div>
+                    <div class="report-reason">${reasonLabels[r.reason]||r.reason}: ${r.details||"Sin descripción"}</div>
+                    <span class="sbadge ${r.status==="pending"?"report":"reviewed"}">${r.status==="pending"?"🔴 Pendiente":"✅ Revisado"}</span>
+                </div>
+                <div class="admin-row-actions">
+                    ${r.status==="pending"?`
+                        <button class="btn-adm warn"    onclick="openSanctionModal('${r.reportedUid}','${(r.reportedName||"usuario").replace(/'/g,"\\'")}','')">⚖️ Sancionar</button>
+                        <button class="btn-adm dismiss" onclick="resolveReport('${rid}','reviewed')">✅ Marcar revisado</button>
+                        <button class="btn-adm reject"  onclick="resolveReport('${rid}','dismissed')">Desestimar</button>
+                    `:`<span style="font-size:12px;color:var(--muted);">Resuelto</span>`}
+                </div>`;
+            container.appendChild(row);
+        });
+    } catch(e) { container.innerHTML="<p style='color:var(--error);'>Error al cargar reportes.</p>"; }
+}
+
+function filterReports(filter) {
+    currentReportFilter = filter;
+    document.querySelectorAll("#asub-reportes .admin-subbtn").forEach(b => b.classList.remove("active"));
+    document.getElementById("rfilter"+filter.charAt(0).toUpperCase()+filter.slice(1)).classList.add("active");
+    loadAdminReports(filter);
+}
+
+async function resolveReport(reportId, status) {
+    try {
+        await db.collection("reports").doc(reportId).update({ status, resolvedBy:currentUser.uid, resolvedAt:new Date() });
+        loadAdminReports(currentReportFilter);
+        loadAdminStats();
+    } catch(e) { alert("Error al actualizar reporte."); }
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+function closeModal()    { document.getElementById("matchModal").classList.remove("show"); }
+function goToMensajes()  { closeModal(); openTab("mensajes"); }
+
+// ── PANEL DE ENFOQUES ────────────────────────────────────────────────────────
+function openEnfoques() {
+    document.getElementById("enfoquesPanel").classList.add("open");
+    document.body.style.overflow = "hidden";
+}
+function closeEnfoques() {
+    document.getElementById("enfoquesPanel").classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+// ══════════════════════════════════════════════════════
+//  MASCOTA
+// ══════════════════════════════════════════════════════
+const MASCOTA_KEY_SHAPE = "mascota_shape";
+const MASCOTA_KEY_HAT   = "mascota_hat";
+
+// Función helper: genera SVG de mascota con forma + expresión
+function buildSvgMascota(shape, expr) {
+    const E = EXPRESSIONS[expr] || EXPRESSIONS.feliz;
+    const bodies = {
+        circle:   `<circle cx="60" cy="60" r="50" fill="#4a7c6f"/>`,
+        flower:   `<ellipse cx="60" cy="30" rx="18" ry="24" fill="#e87fa0"/><ellipse cx="60" cy="90" rx="18" ry="24" fill="#e87fa0"/><ellipse cx="30" cy="60" rx="24" ry="18" fill="#e87fa0"/><ellipse cx="90" cy="60" rx="24" ry="18" fill="#e87fa0"/><ellipse cx="37" cy="37" rx="16" ry="22" fill="#f4a0c0" transform="rotate(45 37 37)"/><ellipse cx="83" cy="37" rx="16" ry="22" fill="#f4a0c0" transform="rotate(-45 83 37)"/><ellipse cx="37" cy="83" rx="16" ry="22" fill="#f4a0c0" transform="rotate(-45 37 83)"/><ellipse cx="83" cy="83" rx="16" ry="22" fill="#f4a0c0" transform="rotate(45 83 83)"/><circle cx="60" cy="60" r="22" fill="#ffd166"/>`,
+        star:     `<polygon points="60,8 74,45 115,45 83,68 94,105 60,82 26,105 37,68 5,45 46,45" fill="#f9c74f"/>`,
+        triangle: `<polygon points="60,8 112,108 8,108" fill="#7b68ee"/>`,
+        square:   `<rect x="10" y="10" width="100" height="100" rx="16" fill="#ff6b6b"/>`,
+        diamond:  `<polygon points="60,4 116,60 60,116 4,60" fill="#06d6a0"/>`,
+        cloud:    `<ellipse cx="60" cy="70" rx="45" ry="32" fill="#a8d8ea"/><ellipse cx="38" cy="58" rx="26" ry="22" fill="#a8d8ea"/><ellipse cx="76" cy="54" rx="28" ry="24" fill="#a8d8ea"/><ellipse cx="58" cy="48" rx="22" ry="20" fill="#a8d8ea"/>`,
+        heart:    `<path d="M60 95 C60 95 10 65 10 38 C10 20 25 10 40 14 C50 17 60 28 60 28 C60 28 70 17 80 14 C95 10 110 20 110 38 C110 65 60 95 60 95Z" fill="#ff6b9d"/>`,
+        hexagon:  `<polygon points="60,8 104,34 104,86 60,112 16,86 16,34" fill="#9b5de5"/>`,
+        moon:     `<path d="M75 15 A45 45 0 1 0 75 105 A30 30 0 1 1 75 15Z" fill="#ffd166"/>`,
+        ghost:    `<path d="M15 110 L15 50 Q15 10 60 10 Q105 10 105 50 L105 110 L88 95 L75 110 L60 95 L45 110 L32 95 Z" fill="#e8e8f0"/>`,
+    };
+    const face = {
+        circle:   { eyeY:50, mouthY1:72, mouthY2:84 },
+        flower:   { eyeY:56, mouthY1:68, mouthY2:76 },
+        star:     { eyeY:56, mouthY1:72, mouthY2:82 },
+        triangle: { eyeY:72, mouthY1:86, mouthY2:95 },
+        square:   { eyeY:50, mouthY1:72, mouthY2:84 },
+        diamond:  { eyeY:56, mouthY1:72, mouthY2:82 },
+        cloud:    { eyeY:64, mouthY1:78, mouthY2:86 },
+        heart:    { eyeY:52, mouthY1:70, mouthY2:80 },
+        hexagon:  { eyeY:54, mouthY1:72, mouthY2:82 },
+        moon:     { eyeY:52, mouthY1:68, mouthY2:78 },
+        ghost:    { eyeY:60, mouthY1:78, mouthY2:88 },
+    };
+    const f = face[shape] || face.circle;
+    const eyeColor = (shape==="ghost") ? "#5050a0" : "#1e2d2b";
+    const faceColor = ["flower","star","ghost"].includes(shape) ? "#1e2d2b" : "white";
+    const eyeOpacity = ["flower","star","ghost"].includes(shape) ? "1" : "0.9";
+
+    const eyes = E.eyes === "closed"
+        ? `<path d="M${44} ${f.eyeY} Q${50} ${f.eyeY-5} ${56} ${f.eyeY}" stroke="${eyeColor}" stroke-width="2.5" fill="none"/>
+           <path d="M${64} ${f.eyeY} Q${70} ${f.eyeY-5} ${76} ${f.eyeY}" stroke="${eyeColor}" stroke-width="2.5" fill="none"/>`
+        : E.eyes === "stars"
+        ? `<text x="44" y="${f.eyeY+4}" font-size="12" fill="${eyeColor}">★</text><text x="68" y="${f.eyeY+4}" font-size="12" fill="${eyeColor}">★</text>`
+        : E.eyes === "hearts"
+        ? `<text x="42" y="${f.eyeY+4}" font-size="12" fill="#ff6b9d">♥</text><text x="66" y="${f.eyeY+4}" font-size="12" fill="#ff6b9d">♥</text>`
+        : E.eyes === "dots"
+        ? `<circle cx="48" cy="${f.eyeY}" r="5" fill="${faceColor}" opacity="${eyeOpacity}"/><circle cx="72" cy="${f.eyeY}" r="5" fill="${faceColor}" opacity="${eyeOpacity}"/><circle cx="50" cy="${f.eyeY}" r="2.5" fill="${eyeColor}"/><circle cx="74" cy="${f.eyeY}" r="2.5" fill="${eyeColor}"/>`
+        : `<circle cx="44" cy="${f.eyeY}" r="7" fill="${faceColor}" opacity="${eyeOpacity}"/><circle cx="76" cy="${f.eyeY}" r="7" fill="${faceColor}" opacity="${eyeOpacity}"/><circle cx="46" cy="${f.eyeY}" r="3.5" fill="${eyeColor}"/><circle cx="78" cy="${f.eyeY}" r="3.5" fill="${eyeColor}"/>`;
+
+    const mouth = E.mouth === "sad"
+        ? `<path d="M44 ${f.mouthY2} Q60 ${f.mouthY1} 76 ${f.mouthY2}" stroke="${faceColor}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+        : E.mouth === "straight"
+        ? `<line x1="44" y1="${f.mouthY1}" x2="76" y2="${f.mouthY1}" stroke="${faceColor}" stroke-width="3" stroke-linecap="round"/>`
+        : E.mouth === "open"
+        ? `<ellipse cx="60" cy="${f.mouthY1+4}" rx="12" ry="9" fill="${eyeColor}" opacity="0.85"/>`
+        : E.mouth === "big"
+        ? `<path d="M40 ${f.mouthY1} Q60 ${f.mouthY2+4} 80 ${f.mouthY1}" stroke="${faceColor}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+        : `<path d="M44 ${f.mouthY1} Q60 ${f.mouthY2} 76 ${f.mouthY1}" stroke="${faceColor}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+
+    const extras = E.extras || "";
+
+    return `<svg id="mascotaSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">${bodies[shape]||bodies.circle}${eyes}${mouth}${extras}</svg>`;
+}
+
+const SHAPES = {
+    circle:   true, flower: true, star: true, triangle: true,
+    square:   true, diamond: true, cloud: true, heart: true,
+    hexagon:  true, moon: true, ghost: true
+};
+
+const SHAPE_INFO = {
+    circle:   { label:"Bola",      emoji:"⬤",  color:"#4a7c6f" },
+    flower:   { label:"Flor",      emoji:"🌸",  color:"#e87fa0" },
+    star:     { label:"Estrella",  emoji:"⭐",  color:"#f9c74f" },
+    triangle: { label:"Triángulo", emoji:"🔺",  color:"#7b68ee" },
+    square:   { label:"Cuadrado",  emoji:"⬛",  color:"#ff6b6b" },
+    diamond:  { label:"Diamante",  emoji:"💎",  color:"#06d6a0" },
+    cloud:    { label:"Nube",      emoji:"☁️",  color:"#a8d8ea" },
+    heart:    { label:"Corazón",   emoji:"❤️",  color:"#ff6b9d" },
+    hexagon:  { label:"Hexágono",  emoji:"⬡",  color:"#9b5de5" },
+    moon:     { label:"Luna",      emoji:"🌙",  color:"#ffd166" },
+    ghost:    { label:"Fantasma",  emoji:"👻",  color:"#c8c8e8" },
+};
+
+const EXPRESSIONS = {
+    feliz:      { label:"Feliz",       emoji:"😊", eyes:"normal", mouth:"happy"    },
+    muy_feliz:  { label:"Muy feliz",   emoji:"😄", eyes:"normal", mouth:"big"      },
+    asombrado:  { label:"Asombrado",   emoji:"😮", eyes:"normal", mouth:"open"     },
+    dormido:    { label:"Dormido",     emoji:"😴", eyes:"closed", mouth:"straight" },
+    neutral:    { label:"Neutral",     emoji:"😐", eyes:"dots",   mouth:"straight" },
+    triste:     { label:"Triste",      emoji:"😢", eyes:"normal", mouth:"sad"      },
+    enamorado:  { label:"Enamorado",   emoji:"😍", eyes:"hearts", mouth:"happy"    },
+    sorprendido:{ label:"Sorprendido", emoji:"😲", eyes:"dots",   mouth:"open"     },
+    guiño:      { label:"Guiño",       emoji:"😉", eyes:"closed", mouth:"happy"    },
+    estrellado: { label:"Estrellado",  emoji:"🤩", eyes:"stars",  mouth:"big"      },
+};
+
+const LOGROS_DEF = [
+    { id:"created_account", icon:"🎉", name:"¡Bienvenido!", desc:"Crea tu cuenta en PsicoConecta" },
+    { id:"first_match",     icon:"💚", name:"Primer match",  desc:"Haz match con un psicólogo o paciente" },
+    { id:"sobre_mi",        icon:"✍️", name:"Cuéntate",      desc:"Escribe tu Sobre mí (psicólogos) o Motivo de consulta (pacientes)" },
+    { id:"first_message",   icon:"💬", name:"Rompe el hielo", desc:"Envía tu primer mensaje a un match" }
+];
+
+let mascotaState = {
+    shape: "circle",
+    expr:  "feliz",
+    hat:   "",
+    logros: {}
+};
+let hatsUnlocked = false;
+
+function openMascota() {
+    document.getElementById("mascotaPanel").classList.add("open");
+    document.body.style.overflow = "hidden";
+    loadMascotaState();
+}
+function closeMascota() {
+    document.getElementById("mascotaPanel").classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+async function loadMascotaState() {
+    if (!currentUser) return;
+    try {
+        const coll = userType === "psicologo" ? "psicologos" : "usuarios";
+        const snap = await db.collection(coll).doc(currentUser.uid).get();
+        if (snap.exists) {
+            const d = snap.data();
+            mascotaState.shape  = d.mascotaShape  || "circle";
+            mascotaState.expr   = d.mascotaExpr   || "feliz";
+            mascotaState.hat    = d.mascotaHat    || "";
+            mascotaState.logros = d.mascotaLogros || {};
+
+            // Auto-detectar logros
+            if (!mascotaState.logros.created_account) {
+                mascotaState.logros.created_account = true;
+            }
+            if (!mascotaState.logros.first_match) {
+                const myF = userType === "paciente" ? "paciente" : "psicologo";
+                const mSnap = await db.collection("matches").where(myF,"==",currentUser.uid).limit(1).get();
+                if (!mSnap.empty) mascotaState.logros.first_match = true;
+            }
+            // Fix: psicólogo usa sobreMi, paciente usa motivo
+            if (!mascotaState.logros.sobre_mi) {
+                const hasSobreMi = d.sobreMi && d.sobreMi.trim().length > 0;
+                const hasMotivo  = d.motivo  && d.motivo.trim().length > 0;
+                if (hasSobreMi || hasMotivo) mascotaState.logros.sobre_mi = true;
+            }
+            if (!mascotaState.logros.first_message) {
+                const myF = userType === "paciente" ? "paciente" : "psicologo";
+                const mSnap = await db.collection("matches").where(myF,"==",currentUser.uid).limit(5).get();
+                for (const mdoc of mSnap.docs) {
+                    const msgSnap = await db.collection("chats").doc(mdoc.id).collection("messages")
+                        .where("sender","==",currentUser.uid).limit(1).get();
+                    if (!msgSnap.empty) { mascotaState.logros.first_message = true; break; }
+                }
+            }
+
+            // Guardar logros actualizados
+            await db.collection(coll).doc(currentUser.uid).set({
+                mascotaShape:  mascotaState.shape,
+                mascotaExpr:   mascotaState.expr,
+                mascotaHat:    mascotaState.hat,
+                mascotaLogros: mascotaState.logros
+            }, { merge: true });
+        }
+    } catch(e) { console.warn("Mascota load error:", e); }
+
+    renderMascota();
+}
+
+function renderMascota() {
+    // Build SVG with current shape + expression
+    const svgWrap = document.getElementById("mascotaSvg");
+    if (svgWrap && svgWrap.parentNode) {
+        svgWrap.outerHTML = buildSvgMascota(mascotaState.shape, mascotaState.expr);
+    }
+
+    // Hat
+    document.getElementById("mascotaHat").innerText = mascotaState.hat;
+
+    // Shape buttons
+    document.querySelectorAll("#shapeOptions .cust-btn").forEach(b => {
+        b.classList.toggle("selected", b.id === "shape-" + mascotaState.shape);
+    });
+
+    // Expression buttons
+    document.querySelectorAll("#exprOptions .cust-btn").forEach(b => {
+        b.classList.toggle("selected", b.id === "expr-" + mascotaState.expr);
+    });
+
+    // XP / logros
+    const completados = LOGROS_DEF.filter(l => mascotaState.logros[l.id]).length;
+    const total       = LOGROS_DEF.length;
+    hatsUnlocked      = completados >= total;
+
+    document.getElementById("xpText").innerText = completados + " / " + total + " logros";
+    document.getElementById("xpFill").style.width = Math.round((completados/total)*100) + "%";
+
+    if (hatsUnlocked) {
+        document.getElementById("levelBadge").innerText = "Nivel 2 🌟";
+        document.getElementById("hatLockLabel").style.display = "none";
+        document.querySelectorAll("#hatOptions .cust-btn").forEach(b => b.classList.remove("locked"));
+        document.getElementById("nivel2Section").style.opacity = "1";
+    } else {
+        document.getElementById("levelBadge").innerText = "Nivel 1 ⭐";
+    }
+
+    // Hat selected state
+    document.querySelectorAll("#hatOptions .cust-btn").forEach(b => {
+        b.classList.toggle("selected",
+            (b.id === "hat-none" && mascotaState.hat === "") ||
+            (b.id !== "hat-none" && b.childNodes[0]?.textContent?.trim() === mascotaState.hat)
+        );
+    });
+
+    // Render logros
+    const list = document.getElementById("logrosList");
+    list.innerHTML = LOGROS_DEF.map(l => {
+        const done = !!mascotaState.logros[l.id];
+        return `<div class="logro-item ${done?"done":""}">
+            <div class="logro-icon">${l.icon}</div>
+            <div class="logro-info">
+                <div class="logro-name">${l.name}</div>
+                <div class="logro-desc">${l.desc}</div>
+            </div>
+            <div class="logro-check">${done ? "✅" : "⬜"}</div>
+        </div>`;
+    }).join("");
+}
+
+async function saveMascotaPrefs() {
+    if (!currentUser) return;
+    const coll = userType === "psicologo" ? "psicologos" : "usuarios";
+    try {
+        await db.collection(coll).doc(currentUser.uid).set({
+            mascotaShape:  mascotaState.shape,
+            mascotaExpr:   mascotaState.expr,
+            mascotaHat:    mascotaState.hat,
+            mascotaLogros: mascotaState.logros
+        }, { merge: true });
+    } catch(e) { console.warn("Mascota save error:", e); }
+}
+
+function setShape(shape) {
+    mascotaState.shape = shape;
+    renderMascota();
+    saveMascotaPrefs();
+}
+
+function setExpr(expr) {
+    mascotaState.expr = expr;
+    renderMascota();
+    saveMascotaPrefs();
+}
+
+function setHat(hat) {
+    if (!hatsUnlocked) return;
+    mascotaState.hat = hat;
+    renderMascota();
+    saveMascotaPrefs();
+}
+
+// ── LOGOUT ───────────────────────────────────────────────────────────────────
+function logout() {
+    if (lastSeenTimer) clearInterval(lastSeenTimer);
+    if (chatUnsub) chatUnsub();
+    auth.signOut().then(() => { window.location.href = "index.html"; });
+}
+
+// ══════════════════════════════════════════════════════
+//  GUARDAR EDICIÓN DE PERFIL
+// ══════════════════════════════════════════════════════
+async function saveEditInfo() {
+    const isPsi = userType === "psicologo";
+    const coll  = isPsi ? "psicologos" : "usuarios";
+    const data  = {};
+
+    if (isPsi) {
+        data.enfoque     = document.getElementById("edit_enfoque").value.trim();
+        data.consultorio = document.getElementById("edit_consultorio").value.trim();
+    } else {
+        const sel    = document.getElementById("edit_ubicacion");
+        data.ubicacion = sel ? sel.value : userData.ubicacion;
+        data.motivo    = document.getElementById("edit_motivo").value.trim();
+    }
+
+    try {
+        // set con merge:true funciona tanto si el doc existe como si no
+        await db.collection(coll).doc(currentUser.uid).set(data, { merge: true });
+        Object.assign(userData, data);
+        const c = document.getElementById("editInfoConfirm");
+        c.style.display = "block";
+        setTimeout(() => { c.style.display = "none"; renderMyProfile(); }, 2000);
+    } catch(e) {
+        console.error("saveEditInfo error:", e);
+        alert("Error al guardar: " + (e.message || e.code || e));
+    }
+}
+
+// ══════════════════════════════════════════════════════
+//  ROMPER CONEXIÓN
+// ══════════════════════════════════════════════════════
+let _breakMatchId   = null;
+let _breakOtherUid  = null;
+let _breakOtherName = "";
+
+function openBreakModal(matchId, otherUid, otherName) {
+    _breakMatchId   = matchId;
+    _breakOtherUid  = otherUid;
+    _breakOtherName = otherName;
+    document.getElementById("breakTargetName").innerText = otherName;
+    document.getElementById("breakReason").value = "";
+    document.getElementById("breakReportNote").style.display = "none";
+    document.getElementById("breakModal").classList.add("show");
+}
+
+function closeBreakModal() { document.getElementById("breakModal").classList.remove("show"); }
+
+function checkBreakReason() {
+    const val = document.getElementById("breakReason").value;
+    document.getElementById("breakReportNote").style.display =
+        val === "problema_psicologo" ? "block" : "none";
+}
+
+async function confirmBreakMatch() {
+    const reason = document.getElementById("breakReason").value;
+    if (!reason) { alert("Por favor elige una razón."); return; }
+    if (!_breakMatchId) return;
+
+    try {
+        // Guardar razón de desconexión
+        await db.collection("disconnections").add({
+            matchId: _breakMatchId, initiator: currentUser.uid,
+            otherUid: _breakOtherUid, otherName: _breakOtherName,
+            userType, reason, timestamp: new Date()
+        });
+        // Borrar match y chat
+        await db.collection("matches").doc(_breakMatchId).delete();
+        try { await db.collection("chats").doc(_breakMatchId).delete(); } catch(e) {}
+
+        closeBreakModal();
+
+        if (reason === "problema_psicologo") {
+            openReport(_breakOtherUid, _breakOtherName);
+        } else {
+            loadFeed();
+        }
+    } catch(e) { alert("Error al romper la conexión."); console.error(e); }
+}
+
+// ══════════════════════════════════════════════════════
+//  RE-QUIZ (volver a contestar cuestionario)
+// ══════════════════════════════════════════════════════
+let rqCurrent    = 0;
+let rqRespuestas = [];
+let rqQuestions  = [];
+
+const rqLabelsPac = ["¿Cómo prefieres tomar terapia?","¿Qué tan lejos estarías dispuesto a atenderte?","¿Para quién es la terapia?","Tipo de terapia que buscas","Motivo principal de consulta","¿Cómo te gustaría que fuera la terapia?","¿Qué tipo de enfoque te gustaría más?","¿Qué estilo prefieres en tu terapeuta?","¿Qué esperas principalmente del terapeuta?","¿Te gustaría que tu terapia incluya elementos religiosos o espirituales?","¿Cuánto tiempo crees que necesitarás terapia?","¿Con qué frecuencia te gustaría tener sesiones?","Preferencia de género del terapeuta","¿Qué aspectos deseas que tome en cuenta tu terapeuta?","¿En qué horario puedes tomar terapia?","¿Cuál es tu presupuesto por sesión?","¿Te importa la experiencia del terapeuta?","¿Qué nivel de formación prefieres?","¿Te interesan otras actividades además de terapia individual?","¿Qué tan pronto necesitas empezar?"];
+const rqLabelsPsi = ["Modalidad de atención que ofreces principalmente","Ubicación o alcance geográfico","Población con la que trabajas principalmente","Tipo de terapia que ofreces","Áreas principales de atención","Nivel de estructura de tu terapia","Enfoque terapéutico predominante","Estilo de intervención","Rol del terapeuta en sesión","¿Tu práctica clínica integra alguna religión o creencia?","Duración promedio del proceso","Frecuencia recomendada","Género de pacientes con los que te especializas","Enfoque cultural o social en tu práctica","Horarios de atención","Costo por sesión","Experiencia profesional","Nivel de especialización","Modalidades adicionales","Disponibilidad para nuevos pacientes"];
+
+function startReQuiz() {
+    rqCurrent    = 0;
+    rqRespuestas = [];
+    rqQuestions  = userType === "paciente" ? qPac : qPsi;
+    const labels = userType === "paciente" ? rqLabelsPac : rqLabelsPsi;
+    document.getElementById("requizSubtitle").innerText =
+        `Actualizando tu cuestionario de compatibilidad — ${rqQuestions.length} preguntas`;
+    // Attach labels to question objects for this session
+    rqQuestions = rqQuestions.map((q, i) => ({ ...q, q: labels[i] }));
+    document.getElementById("requizModal").classList.add("show");
+    rqShow();
+}
+
+function rqShow() {
+    const q   = rqQuestions[rqCurrent];
+    const pct = (rqCurrent / rqQuestions.length) * 100;
+    document.getElementById("rq_progress").innerText = `Pregunta ${rqCurrent + 1} de ${rqQuestions.length}`;
+    document.getElementById("rq_fill").style.width   = pct + "%";
+    document.getElementById("rq_question").innerText = q.q;
+    document.getElementById("rq_religion_sub").style.display = "none";
+
+    const container = document.getElementById("rq_options");
+    container.innerHTML = "";
+    q.opts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText  = opt;
+        btn.style.cssText = "padding:11px 14px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);cursor:pointer;text-align:left;transition:all 0.18s;width:100%;margin-bottom:0;";
+        btn.onmouseover = () => { btn.style.borderColor="var(--sage-light)"; btn.style.background="#f0f6f4"; };
+        btn.onmouseout  = () => { btn.style.borderColor="var(--border)";     btn.style.background="var(--cream)"; };
+        btn.onclick = () => {
+            const isReligion = q.opts.indexOf(opt) === 2 &&
+                (q.q.includes("espiritu") || q.q.includes("religi") || q.q.includes("creencia"));
+            if (isReligion) {
+                document.getElementById("rq_religion_sub").style.display = "block";
+            } else {
+                rqNext(opt);
+            }
+        };
+        container.appendChild(btn);
+    });
+}
+
+function rqConfirmReligion() {
+    const val = document.getElementById("rq_religion_select").value;
+    const prefix = userType === "paciente" ? "Sí, integra creencia: " : "Sí, práctica basada en tradición: ";
+    rqNext(prefix + val);
+}
+
+function rqNext(answer) {
+    rqRespuestas.push(answer);
+    document.getElementById("rq_religion_sub").style.display = "none";
+    if (rqCurrent < rqQuestions.length - 1) {
+        rqCurrent++;
+        rqShow();
+    } else {
+        rqSave();
+    }
+}
+
+function rqPrev() {
+    if (rqCurrent > 0) { rqCurrent--; rqRespuestas.pop(); rqShow(); }
+    else { document.getElementById("requizModal").classList.remove("show"); }
+}
+
+async function rqSave() {
+    const coll = userType === "paciente" ? "usuarios" : "psicologos";
+    try {
+        await db.collection(coll).doc(currentUser.uid).set({ respuestas: rqRespuestas }, { merge: true });
+        userData.respuestas = rqRespuestas;
+        document.getElementById("requizModal").classList.remove("show");
+        renderRespuestas();
+        alert("✅ ¡Cuestionario actualizado! Tu perfil de compatibilidad ha sido recalculado.");
+    } catch(e) { alert("Error al guardar. Intenta de nuevo."); }
+}
+
+// ══════════════════════════════════════════════════════
+//  ADMIN: DESCONEXIONES
+// ══════════════════════════════════════════════════════
+async function loadAdminDesconexiones() {
+    const container = document.getElementById("desconexionesList");
+    container.innerHTML = '<div class="spinner" style="margin:30px auto;"></div>';
+
+    const reasonLabels = {
+        ya_no_necesito: "Ya no necesito el servicio",
+        encontre_algo_mejor: "Encontró algo mejor",
+        muy_lejos: "El psicólogo está muy lejos",
+        informacion_no_precisa: "La información no es precisa",
+        problema_psicologo: "Tuvo un problema con el psicólogo"
+    };
+
+    try {
+        let snap;
+        try { snap = await db.collection("disconnections").orderBy("timestamp","desc").limit(80).get(); }
+        catch(e) { snap = await db.collection("disconnections").limit(80).get(); }
+
+        if (!snap || snap.empty) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">💔</div><h3>Sin desconexiones registradas</h3><p>Aquí aparecerán las razones por las que los usuarios rompieron conexiones.</p></div>`;
+            return;
+        }
+
+        // Conteo por razón
+        const counts = {};
+        snap.forEach(doc => { const r = doc.data().reason||"otro"; counts[r]=(counts[r]||0)+1; });
+
+        let html = `<div class="stat-grid" style="margin-bottom:20px;">`;
+        Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([r,n]) => {
+            html += `<div class="stat-box"><div class="stat-num">${n}</div><div class="stat-lbl">${reasonLabels[r]||r}</div></div>`;
+        });
+        html += `</div><h4 style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Registros recientes</h4>`;
+        container.innerHTML = html;
+
+        snap.forEach(doc => {
+            const d  = doc.data();
+            const ts = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}) : "—";
+            const row = document.createElement("div");
+            row.className = "disc-row";
+            row.innerHTML = `<strong>${d.userType==="paciente"?"Paciente":"Psicólogo"}</strong> rompió conexión con <strong>${d.otherName||d.otherUid||"—"}</strong><br>
+                <span>Razón: ${reasonLabels[d.reason]||d.reason||"—"} · ${ts}</span>`;
+            container.appendChild(row);
+        });
+    } catch(e) { container.innerHTML = "<p style='color:var(--error);'>Error al cargar.</p>"; }
+}
+</script>
+
+</body>
+</html>
